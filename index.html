@@ -19,8 +19,11 @@
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
 
 nav{display:flex;justify-content:space-between;align-items:center;padding:0 3rem;height:52px;background:var(--dark);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:100;}
-.nav-logo{font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;}
-.nav-ig{font-size:12px;color:var(--accent);text-decoration:none;font-weight:500;}
+.nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;}
+.nav-logo-mark{width:28px;height:28px;object-fit:contain;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
+.nav-actions{display:flex;align-items:center;gap:.65rem;}
+.nav-book{display:inline-flex;align-items:center;justify-content:center;padding:.52rem 1.1rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:#2a170a;color:var(--bg);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;box-shadow:0 8px 18px rgba(0,0,0,.18);}
+.nav-book:hover{background:#3a2010;border-color:rgba(255,255,255,.12);transform:translateY(-1px);}
 
 .hero{text-align:center;padding:6rem 2rem 4rem;background:var(--bg);}
 .hero-logo{
@@ -49,9 +52,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 3rem
 .hero-eyebrow{font-size:12px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.6rem;font-family:'Noto Serif SC',serif;}
 .hero-title{font-size:clamp(3rem,8vw,6.5rem);font-weight:600;line-height:0.95;letter-spacing:-0.03em;color:var(--text);margin-bottom:1.2rem;}
 .hero-title em{font-style:normal;color:var(--text);font-weight:600;}
-.hero-sub{font-size:15px;color:var(--muted);font-weight:300;margin-bottom:2.5rem;}
-.hero-actions{display:flex;flex-direction:column;align-items:center;gap:1rem;}
-.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.hero-sub{font-size:15px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:2.5rem;}
 .hero-links{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;}
 .btn-dark{background:var(--dark);color:var(--bg);padding:.7rem 1.6rem;border-radius:100px;font-size:13px;text-decoration:none;font-weight:400;transition:background .2s;border:none;cursor:pointer;font-family:inherit;}
 .btn-dark:hover{background:#3a2010;}
@@ -194,6 +195,10 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
   .grid{grid-template-columns:1fr;}
   .grid-row2{grid-template-columns:1fr;}
   nav{padding:0 1.5rem;}
+  .nav-logo{gap:.42rem;font-size:13px;}
+  .nav-logo-mark{width:24px;height:24px;}
+  .nav-actions{gap:.45rem;}
+  .nav-book{padding:.42rem .9rem;font-size:11px;}
   .hero-logo{width:min(80vw,300px);}
   .hero-wordmark{width:min(100%,420px);}
   .social-feed{padding:0 1.2rem 4rem;}
@@ -213,8 +218,13 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
 <body>
 
 <nav>
-  <div class="nav-logo">Makkie Mua</div>
-  <a href="https://www.instagram.com/makkiemua/" class="nav-ig">@makkiemua</a>
+  <div class="nav-logo">
+    <img class="nav-logo-mark" src="assets/images/brand/Makkie_Original_Logo.png" alt="Makkie logo">
+    <span>Makkie Mua</span>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-book" type="button" data-qr-open>立刻预定</button>
+  </div>
 </nav>
 
 <div class="hero">
@@ -222,20 +232,14 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
     <source src="assets/video/makkie-waving-clean.webm?v=20260403-143509" type="video/webm">
   </video>
   <div class="hero-eyebrow">마키 무아 · 独家创意甜品</div>
-  <img class="hero-wordmark-art" src="assets/images/brand/makkie_logo_brown.png" alt="Makkie Mua">
-  <p class="hero-sub">每一层都是手作的温度 · Los Angeles &amp; Orange County</p>
-  <div class="hero-actions">
-    <div class="hero-btns">
-      <button class="btn-dark" type="button" data-qr-open>立刻预定</button>
-    </div>
-    <div class="hero-links">
-
-      <a href="#menu" class="btn-chip">浏览甜品集</a>
-      <a href="#products" class="btn-chip">探索层层夹心</a>
-      <a href="#instagram" class="btn-chip">Instagram </a>
-      <a href="#order" class="btn-chip">预订详情须知</a>
-      <a href="#footer" class="btn-chip">联系我们</a>
-    </div>
+  <img class="hero-wordmark-art" src="assets/images/brand/Makkie_Mua_Text_Original.png" alt="Makkie Mua">
+  <p class="hero-sub">每一层都是手作的温度<br>Los Angeles &amp; Orange County</p>
+  <div class="hero-links">
+    <a href="#menu" class="btn-chip">浏览甜品集</a>
+    <a href="#products" class="btn-chip">探索层层夹心</a>
+    <a href="#instagram" class="btn-chip">Instagram </a>
+    <a href="#order" class="btn-chip">预订详情须知</a>
+    <a href="#footer" class="btn-chip">联系我们</a>
   </div>
 </div>
 
@@ -308,7 +312,7 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
       </button>
       <button class="menu-card" type="button" data-menu-target="menu-pudding">
         <div class="menu-card-heading">
-          <div class="menu-card-title">布丁 / 奶冻 / 慕斯类</div>
+          <div class="menu-card-title">布丁奶冻慕斯</div>
           <div class="menu-card-sub">柔滑口感</div>
         </div>
         <span class="menu-card-icon">查看往期</span>
@@ -368,8 +372,8 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
             <li>原味夹心曲奇</li>
             <li>豆乳曲奇</li>
             <li>桂花曲奇</li>
-            <li>艾草曲奇</li>
-            <li>咸蛋黄肉松曲奇</li>
+            <li>艾草咸蛋黄曲奇</li> 
+            <li>肉松咸蛋黄曲奇</li>
             <li>芋泥曲奇</li>
             <li>抹茶曲奇</li>
             <li>酸奶青提曲奇</li>
@@ -396,11 +400,11 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
         </div>
         <div class="menu-content">
           <ul>
-            <li>原味蛋挞</li>
-            <li>伯爵茶蛋挞</li>
-            <li>豆乳蛋挞</li>
-            <li>提拉米苏蛋挞</li>
-            <li>抹茶麻薯蛋挞</li>
+            <li>原味酥皮挞挞</li>
+            <li>伯爵茶酥皮挞挞</li>
+            <li>豆乳酥皮挞挞</li>
+            <li>提拉米苏酥皮挞挞</li>
+            <li>抹茶麻薯酥皮挞挞</li>
           </ul>
           <div class="menu-addon">
             <div class="menu-addon-title">增加风味</div>
@@ -470,7 +474,7 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
       </div>
       <div id="menu-pudding">
         <div class="menu-overlay-header">
-          <div class="menu-card-title">布丁 / 奶冻 / 慕斯类</div>
+          <div class="menu-card-title">布丁奶冻</div>
           <div class="menu-card-sub">滑滑软软，适合慢慢吃</div>
         </div>
         <div class="menu-content">
@@ -497,7 +501,7 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
         <div class="menu-content">
           <ul>
             <li>雪媚娘</li>
-            <li>麻薯</li>
+            <li>米麻薯</li>
             <li>山楂冻</li>
             <li>桂花冻</li>
           </ul>
@@ -511,10 +515,6 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
         <div class="menu-content">
           <ul>
             <li>提拉米苏</li>
-            <li>布丁奶糕</li>
-            <li>玉米奶油蛋糕</li>
-            <li>桂花柿子酒酿奶糕</li>
-            <li>香芋大白兔玫瑰奶糕</li>
           </ul>
         </div>
       </div>
@@ -525,6 +525,10 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
         </div>
         <div class="menu-content">
           <ul>
+            <li>布丁奶糕</li>
+            <li>玉米奶油蛋糕</li>
+            <li>桂花柿子酒酿奶糕</li>
+            <li>香芋大白兔玫瑰奶糕</li>
             <li>迪拜糯曲奇</li>
           </ul>
         </div>
@@ -627,7 +631,7 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
           <div class="tag" style="top:92px;left:calc(50% + 108px);">戚风底层</div>
         </div>
       </div>
-      <div class="card-foot">戚风蛋糕 · 新鲜芒果<br>轻盈奶油 · 手工现切</div>
+      <div class="card-foot">戚风蛋糕 · 新鲜水果<br>轻盈奶油 · 手工现切</div>
     </div>
 
     <div class="card">
@@ -728,7 +732,7 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
             </svg>
           </div>
           <div class="tag" style="top:6px;left:calc(50% + 88px);">轻盈奶油顶</div>
-          <div class="tag" style="top:90px;left:calc(50% + 88px);">糯米 · 草莓底</div>
+          <div class="tag" style="top:90px;left:calc(50% + 88px);">糯米 · 水果底</div>
         </div>
       </div>
       <div class="card-foot">牛奶<br>奶油 · 米粒布丁</div>
@@ -736,7 +740,7 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
 
     <div class="card">
       <div class="card-eye">No.05</div>
-      <div class="card-name">挞挞</div>
+      <div class="card-name">酥皮挞挞</div>
       <div class="card-en">Tart</div>
       <div class="scene" style="width:220px;height:200px;">
         <div class="stack" style="width:220px;height:200px;">
@@ -823,12 +827,12 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
               <path d="M5 10 Q25 2 45 12 Q65 22 85 12 Q105 2 125 12 Q138 18 148 12" stroke="#C49040" stroke-width=".8" fill="none" opacity=".35"/>
             </svg>
           </div>
-          <div class="tag" style="top:12px;left:calc(50% + 83px);">可可粉球体</div>
-          <div class="tag" style="top:55px;left:calc(50% + 83px);">开心果 · 天使面</div>
+          <div class="tag" style="top:12px;left:calc(50% + 83px);">棉花糖球体</div>
+          <div class="tag" style="top:55px;left:calc(50% + 83px);">迪拜脆 · 天使可可</div>
           <div class="tag" style="top:118px;left:calc(50% + 83px);">白纸托</div>
         </div>
       </div>
-      <div class="card-foot">可可外壳 · 开心果碎<br>天使细面 · 迪拜风味</div>
+      <div class="card-foot">糯糯外壳 · 脆脆内核<br>天使可可 · 迪拜风味</div>
     </div>
   </div>
 </section>
@@ -889,13 +893,13 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
 <section id="order" class="order">
   <div class="sec-eye">预订详情须知</div>
   <h2 class="sec-title">限量纯手工制作，采用新鲜有机原料</h2>
-  <p class="sec-sub">甜品每周轮换 请通过 WeChat/Instagram DM 预订 · 每周会有新链接 · Los Angeles &amp; Orange County</p>
+  <p class="sec-sub">甜品每周轮换 · 为保证新鲜度与食品安全 仅接受提前预订 · 每周更新最新预订链接 ·  详询WeChat/Instrgram</p>
   <div style="display:flex;flex-direction:column;align-items:center;gap:1.5rem;">
     <div class="contact-codes">
       <div class="contact-code">
-        <div class="contact-code-label">微信咨询</div>
+        <div class="contact-code-label">微信</div>
         <div class="contact-code-box">
-          <img src="assets/images/qr/Makkie Wechat QR Code.jpeg" alt="Makkie Mua WeChat QR code"/>
+          <img src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua WeChat QR code"/>
         </div>
       </div>
       <div class="contact-code">
@@ -912,7 +916,7 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
   <div class="ft">
     <div>
       <div class="ft-brand">Makkie Mua</div>
-      <div class="ft-tag">마키 무아 · 独家创意甜品<br>Butter off with Makkie · Los Angeles &amp; Orange County</div>
+      <div class="ft-tag">마키 무아 · 独家创意甜品<br>Butter off with Makkie© · Los Angeles &amp; Orange County</div>
       <a class="ft-credit" href="https://www.instagram.com/littlejulia_art/" target="_blank" rel="noreferrer">Makkie 艺术设计 by @littlejulia_art</a>
     </div>
     <div>
@@ -927,9 +931,9 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
     <div>
       <div class="ft-col-title">联系</div>
       <div class="ft-col">
-        <a href="https://www.instagram.com/makkiemua/">Instagram @makkiemua</a>
+        <a href="https://www.instagram.com/makkiemua/">Instagram @MakkieMua</a>
         <a href="#">小红书 @MakkieMua</a>
-        <a href="mailto:makkiemua@gmail.com">邮箱 makkiemua@gmail.com</a>
+        <a href="mailto:makkiemua@gmail.com">邮箱 MakkieMua@gmail.com</a>
         <a href="tel:4086468740">电话 408-646-8740</a>
       </div>
     </div>
@@ -953,7 +957,7 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
     <h2 class="qr-overlay-title" id="qrOverlayTitle">扫码联系</h2>
     <p class="qr-overlay-sub">打开微信扫一扫，直接联系 Makkie Mua。</p>
     <div class="qr-overlay-code">
-      <img src="assets/images/qr/Makkie Wechat QR Code.jpeg" alt="Makkie Mua WeChat QR code">
+      <img src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua WeChat QR code">
     </div>
   </div>
 </div>
