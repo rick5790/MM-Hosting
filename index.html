@@ -32,6 +32,10 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 3rem
 .nav-actions{display:flex;align-items:center;gap:.65rem;}
 .nav-book{display:inline-flex;align-items:center;justify-content:center;padding:.52rem 1.1rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:#2a170a;color:var(--bg);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;box-shadow:0 8px 18px rgba(0,0,0,.18);}
 .nav-book:hover{background:#3a2010;border-color:rgba(255,255,255,.12);transform:translateY(-1px);}
+.nav-lang{display:inline-flex;align-items:center;justify-content:center;gap:.38rem;padding:.52rem .9rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.08);color:rgba(245,237,224,.78);font-size:11px;font-weight:600;font-family:inherit;letter-spacing:.06em;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease,color .2s ease;}
+.nav-lang:hover{background:rgba(245,237,224,.14);border-color:rgba(255,255,255,.14);transform:translateY(-1px);}
+.nav-lang .is-active{color:var(--bg);}
+.nav-lang-sep{color:rgba(245,237,224,.32);}
 
 .hero{text-align:center;padding:6rem 2rem 4rem;background:var(--bg);}
 .hero-logo{
@@ -191,6 +195,12 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
 .ft-col a{display:block;font-size:12px;color:rgba(245,237,224,.4);text-decoration:none;margin-bottom:.4rem;transition:color .2s;}
 .ft-col a:hover{color:var(--bg);}
 .ft-copy{text-align:center;font-size:11px;color:rgba(245,237,224,.2);}
+body[data-lang='en'] .hero-eyebrow,
+body[data-lang='en'] .sec-title,
+body[data-lang='en'] .card-name,
+body[data-lang='en'] .ig-card-title,
+body[data-lang='en'] .menu-card-title,
+body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 
 @media(max-width:980px){
   .social-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
@@ -207,6 +217,7 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
   .nav-logo-mark{width:24px;height:24px;}
   .nav-actions{gap:.45rem;}
   .nav-book{padding:.42rem .9rem;font-size:11px;}
+  .nav-lang{padding:.42rem .72rem;font-size:10px;}
   .hero-logo{width:min(80vw,300px);}
   .hero-wordmark{width:min(100%,420px);}
   .social-feed{padding:0 1.2rem 4rem;}
@@ -231,6 +242,11 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
     <span>Makkie Mua</span>
   </div>
   <div class="nav-actions">
+    <button class="nav-lang" id="langToggle" type="button" aria-label="Switch language">
+      <span class="nav-lang-zh is-active">中文</span>
+      <span class="nav-lang-sep">/</span>
+      <span class="nav-lang-en">ENG</span>
+    </button>
     <button class="nav-book" type="button" data-qr-open>立刻预定</button>
   </div>
 </nav>
@@ -866,35 +882,35 @@ footer{background:var(--dark);padding:3rem 3rem 2rem;}
       <a href="https://www.instagram.com/makkiemua/" class="btn-dark" target="_blank" rel="noreferrer">查看主页</a>
     </div>
     <div class="social-grid">
-      <a class="ig-card" href="https://www.instagram.com/p/DXGTVqSFZhJ/" target="_blank" rel="noreferrer">
-        <img src="assets/images/social/instagram-1.jpg" alt="Instagram dessert post from April 13, 2026 featuring chiffon cake and basque cheesecake" loading="lazy">
+      <a class="ig-card" href="https://www.instagram.com/p/DZGBNk7D6LV/" target="_blank" rel="noreferrer">
+        <img src="assets/images/social/instagram-latest-20260602.jpg" alt="Instagram latest dessert post from June 2, 2026 featuring 杀糕局 cake" loading="lazy">
         <div class="ig-card-body">
-          <div class="ig-card-date">2026.04.13</div>
-          <div class="ig-card-title">&#x9999;&#x828B;&#x5927;&#x767D;&#x5154;&#x73AB;&#x7470;&#x5E03;&#x4E01;&#x5976;&#x7CD5;</div>
+          <div class="ig-card-date">2026.06.02</div>
+          <div class="ig-card-title">&#x6740;&#x7CD5;&#x5C40;</div>
           <div class="ig-card-link">点开看完整帖子</div>
         </div>
       </a>
-      <a class="ig-card" href="https://www.instagram.com/p/DXGTSgDFLJa/" target="_blank" rel="noreferrer">
-        <img src="assets/images/social/instagram-2.jpg" alt="Instagram dessert post from April 13, 2026 featuring brownie and chocolate desserts" loading="lazy">
+      <a class="ig-card" href="https://www.instagram.com/p/DX2UYP2AYGv/" target="_blank" rel="noreferrer">
+        <img src="assets/images/social/instagram-latest-20260502.jpg" alt="Instagram dessert post from May 2, 2026 featuring 芭乐慕斯" loading="lazy">
         <div class="ig-card-body">
-          <div class="ig-card-date">2026.04.13</div>
-          <div class="ig-card-title">&#x8FEA;&#x62DC;&#x7CEF;&#x66F2;&#x5947;</div>
+          <div class="ig-card-date">2026.05.02</div>
+          <div class="ig-card-title">&#x82AD;&#x4E50;&#x6155;&#x65AF;</div>
           <div class="ig-card-link">点开看完整帖子</div>
         </div>
       </a>
-      <a class="ig-card" href="https://www.instagram.com/p/DXGTQavFQtM/" target="_blank" rel="noreferrer">
-        <img src="assets/images/social/instagram-3.jpg" alt="Instagram dessert post from April 13, 2026 featuring chiffon cake and tart" loading="lazy">
+      <a class="ig-card" href="https://www.instagram.com/p/DXdBMrOGcRd/" target="_blank" rel="noreferrer">
+        <img src="assets/images/social/instagram-latest-20260423.jpg" alt="Instagram dessert post from April 23, 2026 featuring 稻米米奶油四重奏戚风三明治" loading="lazy">
         <div class="ig-card-body">
-          <div class="ig-card-date">2026.04.13</div>
-          <div class="ig-card-title">&#x6842;&#x82B1;&#x67FF;&#x5B50;&#x9152;&#x91C0;&#x5E03;&#x4E01;&#x5976;&#x7CD5;</div>
-          <div class="ig-card-link">点开看完整帖子</div>
-        </div>
-      </a>
-      <a class="ig-card" href="https://www.instagram.com/p/DXGTNAaFQY2/" target="_blank" rel="noreferrer">
-        <img src="assets/images/social/instagram-4.jpg" alt="Instagram dessert post from April 13, 2026 featuring chiffon cake cheesecake and tart" loading="lazy">
-        <div class="ig-card-body">
-          <div class="ig-card-date">2026.04.13</div>
+          <div class="ig-card-date">2026.04.23</div>
           <div class="ig-card-title">&#x7A3B;&#x7C73;&#x7C73;&#x5976;&#x6CB9;&#x56DB;&#x91CD;&#x594F;&#x621A;&#x98A8;&#x4E09;&#x660E;&#x6CBB;</div>
+          <div class="ig-card-link">点开看完整帖子</div>
+        </div>
+      </a>
+      <a class="ig-card" href="https://www.instagram.com/p/DXGTVqSFZhJ/" target="_blank" rel="noreferrer">
+        <img src="assets/images/social/instagram-1.jpg" alt="Instagram dessert post from April 14, 2026 featuring 香芋大白兔玫瑰布丁奶糕" loading="lazy">
+        <div class="ig-card-body">
+          <div class="ig-card-date">2026.04.14</div>
+          <div class="ig-card-title">&#x9999;&#x828B;&#x5927;&#x767D;&#x5154;&#x73AB;&#x7470;&#x5E03;&#x4E01;&#x5976;&#x7CD5;</div>
           <div class="ig-card-link">点开看完整帖子</div>
         </div>
       </a>
@@ -1091,32 +1107,32 @@ qrCloseButtons.forEach((button) => {
 
 const latestInstagramPosts = [
   {
+    href: 'https://www.instagram.com/p/DZGBNk7D6LV/',
+    image: 'assets/images/social/instagram-latest-20260602.jpg',
+    alt: 'Instagram latest dessert post from June 2, 2026 featuring 杀糕局 cake',
+    date: '2026.06.02',
+    title: '\u6740\u7cd5\u5c40'
+  },
+  {
+    href: 'https://www.instagram.com/p/DX2UYP2AYGv/',
+    image: 'assets/images/social/instagram-latest-20260502.jpg',
+    alt: 'Instagram dessert post from May 2, 2026 featuring 芭乐慕斯',
+    date: '2026.05.02',
+    title: '\u82ad\u4e50\u6155\u65af'
+  },
+  {
+    href: 'https://www.instagram.com/p/DXdBMrOGcRd/',
+    image: 'assets/images/social/instagram-latest-20260423.jpg',
+    alt: 'Instagram dessert post from April 23, 2026 featuring 稻米米奶油四重奏戚风三明治',
+    date: '2026.04.23',
+    title: '\u7a3b\u7c73\u7c73\u5976\u6cb9\u56db\u91cd\u594f\u621a\u98a8\u4e09\u660e\u6cbb'
+  },
+  {
     href: 'https://www.instagram.com/p/DXGTVqSFZhJ/',
     image: 'assets/images/social/instagram-1.jpg',
-    alt: 'Instagram dessert post from April 13, 2026 featuring chiffon cake and basque cheesecake',
-    date: '2026.04.13',
+    alt: 'Instagram dessert post from April 14, 2026 featuring 香芋大白兔玫瑰布丁奶糕',
+    date: '2026.04.14',
     title: '\u9999\u828b\u5927\u767d\u5154\u73ab\u7470\u5e03\u4e01\u5976\u7cd5'
-  },
-  {
-    href: 'https://www.instagram.com/p/DXGTSgDFLJa/',
-    image: 'assets/images/social/instagram-2.jpg',
-    alt: 'Instagram dessert post from April 13, 2026 featuring brownie and chocolate desserts',
-    date: '2026.04.13',
-    title: '\u8fea\u62dc\u7cef\u66f2\u5947'
-  },
-  {
-    href: 'https://www.instagram.com/p/DXGTQavFQtM/',
-    image: 'assets/images/social/instagram-3.jpg',
-    alt: 'Instagram dessert post from April 13, 2026 featuring chiffon cake and tart',
-    date: '2026.04.13',
-    title: '\u6842\u82b1\u67ff\u5b50\u9152\u91c0\u5e03\u4e01\u5976\u7cd5'
-  },
-  {
-    href: 'https://www.instagram.com/p/DXGTNAaFQY2/',
-    image: 'assets/images/social/instagram-4.jpg',
-    alt: 'Instagram dessert post from April 13, 2026 featuring chiffon cake, cheesecake, whipped cream, and tart',
-    date: '2026.04.13',
-    title: '\u7a3b\u7c73\u7c73\u5976\u6cb9\u56db\u91cd\u594f\u621a\u98a8\u4e09\u660e\u6cbb'
   }
 ];
 
@@ -1162,6 +1178,488 @@ document.addEventListener('click', (event) => {
   if (event.target.closest('.card')) return;
   collapseCards();
 });
+</script>
+<script>
+const bilingualLangToggle = document.getElementById('langToggle');
+const bilingualMenuOverlay = document.getElementById('menuOverlay');
+const bilingualMenuOverlayBody = document.getElementById('menuOverlayBody');
+const bilingualMenuButtons = document.querySelectorAll('[data-menu-target]');
+const bilingualMenuCloseButtons = document.querySelectorAll('[data-menu-close]');
+const bilingualQrOverlay = document.getElementById('qrOverlay');
+const bilingualInstagramCards = document.querySelectorAll('#instagram .ig-card');
+const bilingualProductCards = document.querySelectorAll('.card');
+const bilingualStorageKey = 'makkie-language';
+let bilingualLanguage = 'zh';
+let bilingualActiveMenuId = null;
+
+try {
+  bilingualLanguage = localStorage.getItem(bilingualStorageKey) === 'en' ? 'en' : 'zh';
+} catch (error) {
+  bilingualLanguage = 'zh';
+}
+
+const bilingualCopy = {
+  zh: {
+    htmlLang: 'zh',
+    toggleAria: '切换到 English',
+    navBook: '立刻预定',
+    hero: {
+      videoAria: 'Makkie Mua 挥手 logo',
+      eyebrow: '마키 무아 · 独家创意甜品',
+      sub: '每一层都是手作的温度<br>Los Angeles &amp; Orange County',
+      links: ['浏览甜品集', '探索层层夹心', 'Instagram', '预订详情须知', '联系我们']
+    },
+    menu: {
+      headEye: '浏览甜品集',
+      headTitle: '甜品菜单',
+      cardIcon: '查看往期',
+      cards: {
+        'menu-basque': { title: '巴斯克蛋糕', sub: '焦香绵密，一口就上头' },
+        'menu-cookie': { title: 'Makkie 胖曲奇', sub: '酥香松软，咬开就有惊喜' },
+        'menu-tart': { title: '酥皮挞挞', sub: '来上一口轻轻糯糯' },
+        'menu-madeleine': { title: '米德琳', sub: '小小一颗，也能很温柔' },
+        'menu-chiffon': { title: '戚风三明治', sub: '云朵一样软，奶香慢慢化开' },
+        'menu-millefeuille': { title: '拿破仑类', sub: '一层一层，轻轻碎在嘴里' },
+        'menu-pudding': { title: '布丁奶冻慕斯', sub: '滑滑软软，适合慢慢吃' },
+        'menu-fusion': { title: '中式融合甜品', sub: '熟悉的味道，也能玩出新花样' },
+        'menu-classic': { title: '经典西点扩展', sub: '经典口味，做得更细腻一点' },
+        'menu-creative': { title: '创意甜品', sub: '脑洞甜品，第一口就记住' }
+      },
+      templates: {
+        'menu-basque': {
+          title: '巴斯克蛋糕',
+          sub: '焦香绵密，一口就上头',
+          items: ['提拉米苏巴斯克', '黑芝麻豆乳巴斯克', '斑斓芭乐巴斯克', '伯爵茶巴斯克', '蔓越莓巴斯克', '覆盆子巴斯克', '百香果西米巴斯克', '绿豆沙巴斯克', '芋泥巴斯克', '抹茶巴斯克', '山楂巴斯克', '咸蛋黄麻薯巴斯克', '雪媚娘巴斯克', '海盐榴莲巴斯克', '酒酿姜撞奶巴斯克', '法葱巴斯克', '龙井抹茶巴斯克']
+        },
+        'menu-cookie': {
+          title: 'Makkie 胖曲奇',
+          sub: '酥香松软，咬开就有惊喜',
+          items: ['豆乳年糕曲奇', '桂花酒酿曲奇', '艾草咸蛋黄曲奇', '肉松咸蛋黄曲奇', '芋泥曲奇', '抹茶曲奇', '酸奶青提曲奇', '咖啡曲奇', '斑斓菠萝曲奇', '玫瑰曲奇', '焙茶曲奇', '奶黄曲奇', '咸蛋黄曲奇', '可可曲奇', '开心果面包丝曲奇', '朗姆提子曲奇', '燕麦糯米糍曲奇', '玄米茶曲奇', '咸奶茶炒米曲奇', '奶酪柿饼曲奇']
+        },
+        'menu-tart': {
+          title: '酥皮挞挞',
+          sub: '来上一口轻轻糯糯',
+          items: ['原味酥皮挞挞', '伯爵茶酥皮挞挞', '豆乳酥皮挞挞', '提拉米苏酥皮挞挞', '抹茶麻薯酥皮挞挞'],
+          addonTitle: '增加风味',
+          addonItems: ['提拉米苏奶油顶', '焙茶奶油顶', '抹茶奶油顶', '糯糯麻薯夹心']
+        },
+        'menu-madeleine': {
+          title: '米德琳',
+          sub: '小小一颗，也能很温柔',
+          items: ['原味米德琳', '红枣糯米米德琳', '柠檬米德琳', '焙茶米德琳', '咸豆乳奶酪夹心米德琳']
+        },
+        'menu-chiffon': {
+          title: '戚风三明治',
+          sub: '云朵一样软，奶香慢慢化开',
+          items: ['紫苏戚风', '桂花戚风', '焙茶戚风', '伯爵茶戚风', '斑斓戚风', '黑芝麻戚风', '稻米米奶油四重奏戚风'],
+          addonTitle: '组合夹心',
+          addonItems: ['芭乐白桃', '洋梨栗子', '焙茶柿子', '草莓红茶', '芒果椰子糯米', '酸奶奶油', '黑芝麻豆乳']
+        },
+        'menu-millefeuille': {
+          title: '酥皮拿破仑',
+          sub: '一层一层，轻轻碎在嘴里',
+          items: ['开心果火龙果树莓酥皮拿破仑', '香草玫瑰酥皮拿破仑']
+        },
+        'menu-pudding': {
+          title: '布丁奶冻慕斯',
+          sub: '滑滑软软，适合慢慢吃',
+          items: ['红茶慕斯', '玫瑰奶冻', '可可奶冻', '茉莉奶冻', '香芋海盐奶皮子', '豆乳慕斯', '抹茶慕斯', '芭乐慕斯', '草莓芭乐慕斯', '豆腐慕斯']
+        },
+        'menu-fusion': {
+          title: '中式融合甜品',
+          sub: '熟悉的味道，也能玩出新花样',
+          items: ['雪媚娘', '米麻薯', '山楂冻', '桂花冻']
+        },
+        'menu-classic': {
+          title: '经典西点扩展',
+          sub: '经典口味，做得更细腻一点',
+          items: ['可可提拉米苏']
+        },
+        'menu-creative': {
+          title: '创意甜品',
+          sub: '脑洞甜品，第一口就记住',
+          items: ['米布丁奶糕', '玉米奶油蛋糕', '桂花柿子酒酿布丁奶糕', '香芋大白兔玫瑰布丁奶糕', '迪拜糯曲奇*']
+        }
+      }
+    },
+    products: {
+      eye: '看看里面有什么',
+      title: '探索层层夹心',
+      sub: '每一款都是改良配方，小批量手工现制',
+      cards: [
+        { nameHtml: '<span>MakkieMua</span><span>胖曲奇</span>', secondary: '招牌胖曲奇', tags: ['双层饼干', '轻奶油夹心', '招牌品牌款'], footHtml: '招牌饼干夹心 · 轻奶油<br>简洁层次造型' },
+        { nameHtml: '戚风三明治', secondary: '轻盈夹心蛋糕', tags: ['戚风蛋糕层', '鲜芒果 · 轻奶油', '戚风底层'], footHtml: '戚风蛋糕 · 新鲜水果<br>轻盈奶油 · 手工现切' },
+        { nameHtml: '巴斯克芝士蛋糕', secondary: '焦香软心芝士蛋糕', tags: ['炭烤焦顶', '浓郁芝士体', '饼干底'], footHtml: '重芝士 · 烤焦顶 · 软心<br>干花点缀 · 高品质动物奶油' },
+        { nameHtml: '米布丁', secondary: '酒酿米布丁', tags: ['轻盈奶油顶', '糯米 · 水果底'], footHtml: '牛奶<br>奶油 · 米粒布丁' },
+        { nameHtml: '酥皮挞挞', secondary: '酥香挞类', tags: ['糖面 · 花边酥饼', '厚奶油夹心', '花边底饼'], footHtml: '花边酥饼 · 厚奶油<br>糖霜 · 入口即化' },
+        { nameHtml: '迪拜糯曲奇', secondary: '迪拜风味糯曲奇', tags: ['棉花糖球体', '卡达伊夫碎丝', '软软外壳'], footHtml: '糯糯外壳 · 碎丝内核<br>开心果酱 · 迪拜风味' }
+      ]
+    },
+    instagram: {
+      profileTag: '公开主页作品精选',
+      title: '最近的甜品动态',
+      button: '查看主页',
+      openPost: '点开看完整帖子'
+    },
+    order: {
+      eye: '预订详情须知',
+      title: '限量纯手工制作，采用新鲜有机原料',
+      sub: '甜品每周轮换 · 为保证新鲜度与食品安全 仅接受提前预订 · 每周更新最新预订链接 · 详询 WeChat / Instagram',
+      labels: ['微信', '小红书作品']
+    },
+    footer: {
+      tagline: '마키 무아 · 独家创意甜品<br>Butter off with Makkie © · Los Angeles &amp; Orange County',
+      credit: 'Makkie 艺术设计 by @littlejulia_art',
+      sectionTitles: ['菜单', '联系'],
+      menuLinks: ['浏览甜品集', '探索层层夹心', 'Instagram', '预订详情须知'],
+      contactLinks: ['Instagram @MakkieMua', '小红书 @MakkieMua', '邮箱 MakkieMua@gmail.com', '电话 408-646-8740'],
+      copy: '© 2026 Makkie Mua · 独家创意甜品 · Southern California'
+    },
+    overlays: {
+      closeMenu: '关闭菜单',
+      closeQr: '关闭二维码',
+      qrTitle: '扫码联系',
+      qrSub: '打开微信扫一扫，直接联系 Makkie Mua。'
+    }
+  },
+  en: {
+    htmlLang: 'en',
+    toggleAria: 'Switch to 中文',
+    navBook: 'Book Now',
+    hero: {
+      videoAria: 'Makkie Mua waving logo',
+      eyebrow: 'Makkie Mua · Signature Creative Desserts',
+      sub: 'Handmade warmth in every layer<br>Los Angeles &amp; Orange County',
+      links: ['Browse Menu', 'Explore the Layers', 'Instagram', 'Booking Info', 'Contact']
+    },
+    menu: {
+      headEye: 'Dessert Menu',
+      headTitle: 'Our Dessert Repertoire',
+      cardIcon: 'View Archive',
+      cards: {
+        'menu-basque': { title: 'Basque Cheesecake', sub: 'Burnt edge, creamy center, instant obsession' },
+        'menu-cookie': { title: 'Makkie Stuffed Cookies', sub: 'Buttery, soft, and full of surprises' },
+        'menu-tart': { title: 'Tart Series', sub: 'Tender, flaky, and lightly chewy' },
+        'menu-madeleine': { title: 'Madeleines', sub: 'Small bites with a gentle sweetness' },
+        'menu-chiffon': { title: 'Chiffon Sandwiches', sub: 'Cloud-soft cake with slow-melting cream' },
+        'menu-millefeuille': { title: 'Mille-Feuille', sub: 'Layer by layer, crisp and delicate' },
+        'menu-pudding': { title: 'Puddings · Mousses · Jellies', sub: 'Silky, chilled, and easy to love' },
+        'menu-fusion': { title: 'Chinese Fusion Desserts', sub: 'Familiar flavors reimagined' },
+        'menu-classic': { title: 'Classic Pastry Expansions', sub: 'Classic flavors, made a little finer' },
+        'menu-creative': { title: 'Creative Signatures', sub: 'Memorable ideas from the very first bite' }
+      },
+      templates: {
+        'menu-basque': {
+          title: 'Basque Cheesecake',
+          sub: 'Burnt edge, creamy center, instant obsession',
+          items: ['Tiramisu Basque', 'Black Sesame Soy Basque', 'Pandan Guava Basque', 'Earl Grey Basque', 'Cranberry Basque', 'Raspberry Basque', 'Passionfruit Sago Basque', 'Mung Bean Paste Basque', 'Taro Basque', 'Matcha Basque', 'Hawthorn Basque', 'Salted Egg Yolk Mochi Basque', 'Snow Skin Basque', 'Sea Salt Durian Basque', 'Fermented Rice Ginger Milk Basque', 'Scallion Basque', 'Longjing Matcha Basque']
+        },
+        'menu-cookie': {
+          title: 'Makkie Stuffed Cookies',
+          sub: 'Buttery, soft, and full of surprises',
+          items: ['Soy Milk Rice Cake Cookie', 'Osmanthus Fermented Rice Cookie', 'Mugwort Salted Egg Cookie', 'Pork Floss Salted Egg Cookie', 'Taro Cookie', 'Matcha Cookie', 'Yogurt Green Grape Cookie', 'Coffee Cookie', 'Pandan Pineapple Cookie', 'Rose Cookie', 'Hojicha Cookie', 'Custard Cookie', 'Salted Egg Cookie', 'Cocoa Cookie', 'Pistachio Shredded Bread Cookie', 'Rum Raisin Cookie', 'Oat Mochi Cookie', 'Genmaicha Cookie', 'Salted Milk Tea Toasted Rice Cookie', 'Cheese Persimmon Cookie']
+        },
+        'menu-tart': {
+          title: 'Tart Series',
+          sub: 'Tender, flaky, and lightly chewy',
+          items: ['Classic Tart', 'Earl Grey Tart', 'Soy Milk Tart', 'Tiramisu Tart', 'Matcha Mochi Tart'],
+          addonTitle: 'Add-On Finishes',
+          addonItems: ['Tiramisu Cream Top', 'Hojicha Cream Top', 'Matcha Cream Top', 'Chewy Mochi Center']
+        },
+        'menu-madeleine': {
+          title: 'Madeleines',
+          sub: 'Small bites with a gentle sweetness',
+          items: ['Classic Madeleine', 'Red Date Sticky Rice Madeleine', 'Lemon Madeleine', 'Hojicha Madeleine', 'Savory Soy Milk Cheese Filled Madeleine']
+        },
+        'menu-chiffon': {
+          title: 'Chiffon Sandwiches',
+          sub: 'Cloud-soft cake with slow-melting cream',
+          items: ['Perilla Chiffon', 'Osmanthus Chiffon', 'Hojicha Chiffon', 'Earl Grey Chiffon', 'Pandan Chiffon', 'Black Sesame Chiffon', 'Rice Milk Cream Quartet Chiffon'],
+          addonTitle: 'Flavor Pairings',
+          addonItems: ['Guava White Peach', 'Pear Chestnut', 'Hojicha Persimmon', 'Strawberry Black Tea', 'Mango Coconut Mochi', 'Yogurt Cream', 'Black Sesame Soy Milk']
+        },
+        'menu-millefeuille': {
+          title: 'Mille-Feuille',
+          sub: 'Layer by layer, crisp and delicate',
+          items: ['Pistachio Dragon Fruit Berry Mille-Feuille', 'Vanilla Rose Mille-Feuille']
+        },
+        'menu-pudding': {
+          title: 'Puddings · Mousses · Jellies',
+          sub: 'Silky, chilled, and easy to love',
+          items: ['Black Tea Mousse', 'Rose Milk Jelly', 'Cocoa Milk Jelly', 'Jasmine Milk Jelly', 'Taro Sea Salt Milk Skin', 'Soy Milk Mousse', 'Matcha Mousse', 'Guava Mousse', 'Strawberry Guava Mousse', 'Tofu Mousse']
+        },
+        'menu-fusion': {
+          title: 'Chinese Fusion Desserts',
+          sub: 'Familiar flavors reimagined',
+          items: ['Snow Skin Mochi', 'Rice Mochi', 'Hawthorn Jelly', 'Osmanthus Jelly']
+        },
+        'menu-classic': {
+          title: 'Classic Pastry Expansions',
+          sub: 'Classic flavors, made a little finer',
+          items: ['Cocoa Tiramisu']
+        },
+        'menu-creative': {
+          title: 'Creative Signatures',
+          sub: 'Memorable ideas from the very first bite',
+          items: ['Rice Pudding Milk Cake', 'Corn Cream Cake', 'Osmanthus Persimmon Fermented Rice Pudding Milk Cake', 'Taro White Rabbit Rose Pudding Milk Cake', 'Dubai Kunafa Cookie*']
+        }
+      }
+    },
+    products: {
+      eye: 'What Is Inside',
+      title: 'Explore the Layers',
+      sub: 'Every recipe is refined in-house and made fresh in small batches',
+      cards: [
+        { nameHtml: 'MakkieMua Stuffed Cookie', secondary: 'Signature stuffed cookie', tags: ['Double cookie layers', 'Light cream filling', 'Signature house style'], footHtml: 'Signature cookie sandwich · light cream<br>Clean lines · layered bite' },
+        { nameHtml: 'Chiffon Sandwich', secondary: 'Airy cream-filled cake', tags: ['Chiffon cake top', 'Fresh mango · light cream', 'Chiffon cake base'], footHtml: 'Chiffon cake · fresh fruit<br>Light cream · hand-finished' },
+        { nameHtml: 'Basque Cheesecake', secondary: 'Burnt-top soft-centered cheesecake', tags: ['Burnt top', 'Dense cheesecake center', 'Cookie crust'], footHtml: 'Rich cheesecake · burnt top · molten center<br>Dried florals · premium dairy cream' },
+        { nameHtml: 'Rice Pudding', secondary: 'Fermented rice milk pudding', tags: ['Light cream top', 'Sticky rice · fruit base'], footHtml: 'Milk<br>Cream · rice pudding pearls' },
+        { nameHtml: 'Tart', secondary: 'Flaky cream tart', tags: ['Iced shell · fluted crust', 'Thick cream filling', 'Fluted tart base'], footHtml: 'Fluted pastry shell · thick cream<br>Royal icing · melts on the tongue' },
+        { nameHtml: 'Dubai Kunafa Cookie', secondary: 'Dubai-inspired mochi cookie', tags: ['Cottony shell', 'Kunafa filling', 'Soft outer layer'], footHtml: 'Chewy shell · shredded filling<br>Pistachio spread · Dubai-inspired flavor' }
+      ]
+    },
+    instagram: {
+      profileTag: 'Highlights from the public profile',
+      title: 'Latest Dessert Posts',
+      button: 'View Profile',
+      openPost: 'Open full post'
+    },
+    order: {
+      eye: 'Booking Details',
+      title: 'Small-batch handmade desserts made with fresh premium ingredients',
+      sub: 'The lineup rotates weekly. To protect freshness and food safety, all orders are preorder only. The latest booking link updates every week. Message us on WeChat or Instagram.',
+      labels: ['WeChat', 'Rednote Highlights']
+    },
+    footer: {
+      tagline: '마키 무아 · Signature creative desserts<br>Butter off with Makkie © · Los Angeles &amp; Orange County',
+      credit: 'Makkie art direction by @littlejulia_art',
+      sectionTitles: ['Menu', 'Contact'],
+      menuLinks: ['Browse Menu', 'Explore the Layers', 'Instagram', 'Booking Info'],
+      contactLinks: ['Instagram @MakkieMua', 'Rednote @MakkieMua', 'Email MakkieMua@gmail.com', 'Phone 408-646-8740'],
+      copy: '© 2026 Makkie Mua · Signature creative desserts · Southern California'
+    },
+    overlays: {
+      closeMenu: 'Close menu',
+      closeQr: 'Close QR code',
+      qrTitle: 'Scan to Connect',
+      qrSub: 'Open WeChat Scan to contact Makkie Mua directly.'
+    }
+  }
+};
+
+const bilingualInstagramPosts = [
+  {
+    href: 'https://www.instagram.com/p/DZGBNk7D6LV/',
+    image: 'assets/images/social/instagram-latest-20260602.jpg',
+    date: '2026.06.02',
+    title: { zh: '杀糕局', en: 'LA Cake-Off' },
+    alt: { zh: 'Instagram 2026 年 6 月 2 日甜品帖子：杀糕局', en: 'Instagram dessert post from June 2, 2026 featuring LA Cake-Off' }
+  },
+  {
+    href: 'https://www.instagram.com/p/DX2UYP2AYGv/',
+    image: 'assets/images/social/instagram-latest-20260502.jpg',
+    date: '2026.05.02',
+    title: { zh: '芭乐慕斯', en: 'Guava Mousse' },
+    alt: { zh: 'Instagram 2026 年 5 月 2 日甜品帖子：芭乐慕斯', en: 'Instagram dessert post from May 2, 2026 featuring Guava Mousse' }
+  },
+  {
+    href: 'https://www.instagram.com/p/DXdBMrOGcRd/',
+    image: 'assets/images/social/instagram-latest-20260423.jpg',
+    date: '2026.04.23',
+    title: { zh: '稻米米奶油四重奏戚风三明治', en: 'Rice Milk Cream Quartet Chiffon Sandwich' },
+    alt: { zh: 'Instagram 2026 年 4 月 23 日甜品帖子：稻米米奶油四重奏戚风三明治', en: 'Instagram dessert post from April 23, 2026 featuring Rice Milk Cream Quartet Chiffon Sandwich' }
+  },
+  {
+    href: 'https://www.instagram.com/p/DXGTVqSFZhJ/',
+    image: 'assets/images/social/instagram-1.jpg',
+    date: '2026.04.14',
+    title: { zh: '香芋大白兔玫瑰布丁奶糕', en: 'Taro White Rabbit Rose Pudding Milk Cake' },
+    alt: { zh: 'Instagram 2026 年 4 月 14 日甜品帖子：香芋大白兔玫瑰布丁奶糕', en: 'Instagram dessert post from April 14, 2026 featuring Taro White Rabbit Rose Pudding Milk Cake' }
+  }
+];
+
+function bilingualSetText(target, value) {
+  const element = typeof target === 'string' ? document.querySelector(target) : target;
+  if (element) element.textContent = value;
+}
+
+function bilingualSetHTML(target, value) {
+  const element = typeof target === 'string' ? document.querySelector(target) : target;
+  if (element) element.innerHTML = value;
+}
+
+function bilingualSetAttr(target, attr, value) {
+  const element = typeof target === 'string' ? document.querySelector(target) : target;
+  if (element) element.setAttribute(attr, value);
+}
+
+function bilingualSetList(selector, items) {
+  const list = document.querySelector(selector);
+  if (!list) return;
+  list.innerHTML = items.map((item) => `<li>${item}</li>`).join('');
+}
+
+function bilingualRefreshOpenMenu() {
+  if (!bilingualActiveMenuId || !bilingualMenuOverlay || bilingualMenuOverlay.hidden || !bilingualMenuOverlayBody) return;
+  const template = document.getElementById(bilingualActiveMenuId);
+  if (!template) return;
+  bilingualMenuOverlayBody.innerHTML = template.innerHTML;
+  const overlayTitle = bilingualMenuOverlayBody.querySelector('.menu-card-title');
+  if (overlayTitle) overlayTitle.id = 'menuOverlayTitle';
+}
+
+function applyBilingualLanguage(lang) {
+  bilingualLanguage = lang;
+  const copy = bilingualCopy[lang];
+
+  document.documentElement.lang = copy.htmlLang;
+  document.body.dataset.lang = lang;
+
+  try {
+    localStorage.setItem(bilingualStorageKey, lang);
+  } catch (error) {}
+
+  if (bilingualLangToggle) {
+    const zh = bilingualLangToggle.querySelector('.nav-lang-zh');
+    const en = bilingualLangToggle.querySelector('.nav-lang-en');
+    if (zh) zh.classList.toggle('is-active', lang === 'zh');
+    if (en) en.classList.toggle('is-active', lang === 'en');
+    bilingualLangToggle.setAttribute('aria-label', copy.toggleAria);
+  }
+
+  bilingualSetText('.nav-book', copy.navBook);
+  bilingualSetAttr('.hero-logo', 'aria-label', copy.hero.videoAria);
+  bilingualSetText('.hero-eyebrow', copy.hero.eyebrow);
+  bilingualSetHTML('.hero-sub', copy.hero.sub);
+  document.querySelectorAll('.hero-links .btn-chip').forEach((link, index) => {
+    link.textContent = copy.hero.links[index] || link.textContent;
+  });
+
+  bilingualSetText('#menu .menu-head .sec-eye', copy.menu.headEye);
+  bilingualSetText('#menu .menu-head .sec-title', copy.menu.headTitle);
+
+  bilingualMenuButtons.forEach((button) => {
+    const key = button.dataset.menuTarget;
+    const cardCopy = copy.menu.cards[key];
+    if (!cardCopy) return;
+    bilingualSetText(button.querySelector('.menu-card-title'), cardCopy.title);
+    bilingualSetText(button.querySelector('.menu-card-sub'), cardCopy.sub);
+    bilingualSetText(button.querySelector('.menu-card-icon'), copy.menu.cardIcon);
+  });
+
+  Object.entries(copy.menu.templates).forEach(([key, templateCopy]) => {
+    bilingualSetText(`#${key} .menu-overlay-header .menu-card-title`, templateCopy.title);
+    bilingualSetText(`#${key} .menu-overlay-header .menu-card-sub`, templateCopy.sub);
+    bilingualSetList(`#${key} .menu-content > ul`, templateCopy.items);
+
+    const addon = document.querySelector(`#${key} .menu-addon`);
+    if (!addon) return;
+    if (templateCopy.addonTitle && templateCopy.addonItems) {
+      addon.hidden = false;
+      bilingualSetText(addon.querySelector('.menu-addon-title'), templateCopy.addonTitle);
+      const addonList = addon.querySelector('ul');
+      if (addonList) addonList.innerHTML = templateCopy.addonItems.map((item) => `<li>${item}</li>`).join('');
+    } else {
+      addon.hidden = true;
+    }
+  });
+
+  bilingualRefreshOpenMenu();
+
+  bilingualSetText('#products .sec-eye', copy.products.eye);
+  bilingualSetText('#products .sec-title', copy.products.title);
+  bilingualSetText('#products .sec-sub', copy.products.sub);
+
+  bilingualProductCards.forEach((card, index) => {
+    const cardCopy = copy.products.cards[index];
+    if (!cardCopy) return;
+    bilingualSetHTML(card.querySelector('.card-name'), cardCopy.nameHtml);
+    bilingualSetText(card.querySelector('.card-en'), cardCopy.secondary);
+    card.querySelectorAll('.tag').forEach((tag, tagIndex) => {
+      tag.textContent = cardCopy.tags[tagIndex] || '';
+    });
+    bilingualSetHTML(card.querySelector('.card-foot'), cardCopy.footHtml);
+  });
+
+  bilingualSetText('.social-profile-copy span', copy.instagram.profileTag);
+  bilingualSetText('#instagram .social-head .sec-title', copy.instagram.title);
+  bilingualSetText('#instagram .social-head .btn-dark', copy.instagram.button);
+
+  bilingualInstagramCards.forEach((card, index) => {
+    const post = bilingualInstagramPosts[index];
+    if (!post) return;
+    const image = card.querySelector('img');
+    const date = card.querySelector('.ig-card-date');
+    const title = card.querySelector('.ig-card-title');
+    const link = card.querySelector('.ig-card-link');
+
+    card.href = post.href;
+    if (image) {
+      image.src = post.image;
+      image.alt = post.alt[lang];
+    }
+    if (date) date.textContent = post.date;
+    if (title) title.textContent = post.title[lang];
+    if (link) link.textContent = copy.instagram.openPost;
+  });
+
+  bilingualSetText('#order .sec-eye', copy.order.eye);
+  bilingualSetText('#order .sec-title', copy.order.title);
+  bilingualSetText('#order .sec-sub', copy.order.sub);
+  document.querySelectorAll('.contact-code-label').forEach((label, index) => {
+    label.textContent = copy.order.labels[index] || label.textContent;
+  });
+
+  bilingualSetHTML('.ft-tag', copy.footer.tagline);
+  bilingualSetText('.ft-credit', copy.footer.credit);
+  document.querySelectorAll('.ft-col-title').forEach((title, index) => {
+    title.textContent = copy.footer.sectionTitles[index] || title.textContent;
+  });
+
+  const footerCols = document.querySelectorAll('footer .ft-col');
+  if (footerCols[0]) {
+    footerCols[0].querySelectorAll('a').forEach((link, index) => {
+      link.textContent = copy.footer.menuLinks[index] || link.textContent;
+    });
+  }
+  if (footerCols[1]) {
+    footerCols[1].querySelectorAll('a').forEach((link, index) => {
+      link.textContent = copy.footer.contactLinks[index] || link.textContent;
+    });
+  }
+  bilingualSetText('.ft-copy', copy.footer.copy);
+
+  bilingualSetAttr('.menu-overlay-close', 'aria-label', copy.overlays.closeMenu);
+  bilingualSetAttr('.qr-overlay-close', 'aria-label', copy.overlays.closeQr);
+  bilingualSetText('.qr-overlay-title', copy.overlays.qrTitle);
+  bilingualSetText('.qr-overlay-sub', copy.overlays.qrSub);
+}
+
+bilingualMenuButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    bilingualActiveMenuId = button.dataset.menuTarget;
+  });
+});
+
+bilingualMenuCloseButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    bilingualActiveMenuId = null;
+  });
+});
+
+document.querySelectorAll('[data-qr-close]').forEach((button) => {
+  button.addEventListener('click', () => {
+    if (bilingualQrOverlay) bilingualQrOverlay.hidden = true;
+  });
+});
+
+if (bilingualLangToggle) {
+  bilingualLangToggle.addEventListener('click', () => {
+    applyBilingualLanguage(bilingualLanguage === 'zh' ? 'en' : 'zh');
+  });
+}
+
+applyBilingualLanguage(bilingualLanguage);
 </script>
 
 </body>
