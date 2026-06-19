@@ -26,10 +26,11 @@ gtag('config', 'G-TTK9YKP3GT');
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
 
-nav{display:flex;justify-content:space-between;align-items:center;padding:0 3rem;height:52px;background:var(--dark);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:100;}
-.nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;}
+nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--dark);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:100;min-height:68px;}
+.nav-main{display:flex;justify-content:space-between;align-items:center;padding:0 3rem;height:52px;}
+.nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;min-height:52px;flex:0 0 auto;}
 .nav-logo-mark{width:28px;height:28px;object-fit:contain;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
-.nav-actions{display:flex;align-items:center;gap:.65rem;}
+.nav-actions{display:flex;align-items:center;gap:.65rem;min-height:52px;flex:0 0 auto;margin-left:auto;}
 .nav-book{display:inline-flex;align-items:center;justify-content:center;padding:.52rem 1.1rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:#2a170a;color:var(--bg);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;box-shadow:0 8px 18px rgba(0,0,0,.18);}
 .nav-book:hover{background:#3a2010;border-color:rgba(255,255,255,.12);transform:translateY(-1px);}
 .nav-lang{display:inline-flex;align-items:center;justify-content:center;gap:.38rem;padding:.52rem .9rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.08);color:rgba(245,237,224,.78);font-size:11px;font-weight:600;font-family:inherit;letter-spacing:.06em;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease,color .2s ease;}
@@ -37,7 +38,15 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 3rem
 .nav-lang .is-active{color:var(--bg);}
 .nav-lang-sep{color:rgba(245,237,224,.32);}
 
-.hero{text-align:center;padding:6rem 2rem 4rem;background:var(--bg);}
+.top-tabs{
+  position:relative;
+  flex:1 1 auto;
+  z-index:6;
+  padding:0;
+  background:none;
+  border-top:none;
+}
+.hero{text-align:center;padding:4.4rem 2rem 4rem;background:var(--bg);}
 .hero-logo{
   width:min(68vw,360px);
   display:block;
@@ -65,13 +74,107 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 3rem
 .hero-title{font-size:clamp(3rem,8vw,6.5rem);font-weight:600;line-height:0.95;letter-spacing:-0.03em;color:var(--text);margin-bottom:1.2rem;}
 .hero-title em{font-style:normal;color:var(--text);font-weight:600;}
 .hero-sub{font-size:15px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:2.5rem;}
-.hero-links{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;}
+.hero-links{
+  position:relative;
+  display:flex;
+  gap:.85rem;
+  justify-content:center;
+  flex-wrap:wrap;
+  width:fit-content;
+  max-width:100%;
+  margin:0 auto;
+  padding:0;
+}
+.hero > .hero-links{display:none;}
+.top-tabs .hero-links{display:flex;}
 .btn-dark{background:var(--dark);color:var(--bg);padding:.7rem 1.6rem;border-radius:100px;font-size:13px;text-decoration:none;font-weight:400;transition:background .2s;border:none;cursor:pointer;font-family:inherit;}
 .btn-dark:hover{background:#3a2010;}
 .btn-ghost{color:var(--accent);font-size:13px;text-decoration:none;display:flex;align-items:center;gap:4px;padding:.7rem 0;}
 .btn-ghost::after{content:'›';font-size:18px;}
-.btn-chip{padding:.5rem .95rem;border-radius:999px;border:1px solid rgba(196,153,106,.28);background:rgba(237,224,204,.55);color:var(--muted);font-size:12px;letter-spacing:.04em;text-decoration:none;transition:background .2s,border-color .2s,color .2s;}
-.btn-chip:hover{background:rgba(237,224,204,.9);border-color:rgba(196,153,106,.48);color:var(--text);}
+.btn-chip{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:.7rem 1.25rem;
+  border-radius:999px;
+  border:1px solid rgba(196,153,106,.34);
+  background:rgba(245,237,224,.82);
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:.04em;
+  text-decoration:none;
+  overflow:visible;
+  isolation:isolate;
+  box-shadow:0 10px 24px rgba(111,84,55,.06), inset 0 1px 0 rgba(255,255,255,.58);
+  transition:transform .35s cubic-bezier(.22,1,.36,1), border-color .35s ease, color .3s ease, box-shadow .35s ease, background .35s ease;
+}
+.btn-chip:hover,
+.btn-chip:focus-visible{
+  transform:translateY(-2px);
+  color:var(--text);
+  border-color:rgba(196,153,106,.58);
+  background:rgba(250,243,233,.94);
+  box-shadow:0 18px 34px rgba(111,84,55,.12), inset 0 1px 0 rgba(255,255,255,.74);
+}
+.btn-chip:focus-visible{outline:none;}
+.top-tabs .btn-chip{
+  border-color:rgba(255,255,255,.1);
+  background:rgba(245,237,224,.9);
+  color:#8e755f;
+  box-shadow:0 12px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.62);
+}
+.top-tabs .btn-chip:hover,
+.top-tabs .btn-chip:focus-visible{
+  color:var(--text);
+  border-color:rgba(255,255,255,.16);
+  background:rgba(250,243,233,.98);
+  box-shadow:0 16px 30px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.78);
+}
+.btn-chip-label{
+  position:relative;
+  z-index:3;
+  pointer-events:none;
+}
+.btn-chip-goo{
+  position:absolute;
+  inset:-16px;
+  z-index:1;
+  pointer-events:none;
+  filter:url(#makkie-gooey-filter);
+}
+.btn-chip-particle{
+  --particle-size:12px;
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:var(--particle-size);
+  height:var(--particle-size);
+  margin:-6px 0 0 -6px;
+  border-radius:999px;
+  opacity:0;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,.25) 38%, transparent 42%),
+    radial-gradient(circle at 50% 50%, rgba(224,191,151,.95), rgba(196,153,106,.85));
+  box-shadow:0 0 18px rgba(196,153,106,.24);
+  transform:translate3d(0,0,0) scale(.2);
+}
+.btn-chip::before{
+  content:'';
+  position:absolute;
+  inset:2px;
+  border-radius:inherit;
+  background:linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0));
+  opacity:.7;
+  z-index:0;
+}
+.btn-chip:hover .btn-chip-particle,
+.btn-chip:focus-visible .btn-chip-particle{
+  animation:
+    gooey-particle calc(1500ms + var(--particle-variance, 0ms)) cubic-bezier(.22,1,.36,1) infinite,
+    gooey-pulse calc(1100ms + var(--particle-variance, 0ms)) ease-in-out infinite;
+}
 
 .products{padding:5rem 2rem 7rem;background:var(--bg);}
 .sec-eye{font-size:11px;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;text-align:center;margin-bottom:.5rem;}
@@ -122,8 +225,8 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 3rem
 .menu-set{background:var(--dark);padding:4.5rem 2rem;}
 .menu-shell{max-width:1180px;margin:0 auto;padding:2.25rem;border-radius:28px;background:rgba(245,237,224,.06);border:1px solid rgba(245,237,224,.12);box-shadow:0 20px 60px rgba(0,0,0,.16);}
 .menu-head{text-align:center;margin-bottom:2.5rem;}
-.menu-head .sec-eye{margin-bottom:.65rem;color:rgba(245,237,224,.55);}
-.menu-head .sec-title{margin-bottom:.75rem;color:var(--bg);font-family:'Inter',sans-serif;font-size:clamp(2.6rem,7vw,5.4rem);font-weight:600;line-height:.95;letter-spacing:-.03em;}
+.menu-head .sec-eye{display:none;}
+.menu-head .sec-title{margin-bottom:0;color:var(--bg);font-family:'Inter',sans-serif;font-weight:600;}
 .menu-head .sec-sub{max-width:760px;margin:0 auto;color:rgba(245,237,224,.62);}
 .menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;}
 .menu-card{width:100%;padding:1.15rem 1.2rem;border-radius:22px;background:rgba(245,237,224,.05);border:1px solid rgba(245,237,224,.08);display:flex;align-items:center;justify-content:space-between;gap:1rem;text-align:left;cursor:pointer;transition:transform .18s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease;color:inherit;}
@@ -202,6 +305,74 @@ body[data-lang='en'] .ig-card-title,
 body[data-lang='en'] .menu-card-title,
 body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 
+.reveal{
+  --reveal-delay:0ms;
+  --reveal-distance:38px;
+  opacity:0;
+  transform:translate3d(0,var(--reveal-distance),0) scale(.985);
+  filter:blur(10px);
+  transition:
+    opacity .9s cubic-bezier(.22,1,.36,1) var(--reveal-delay),
+    transform .9s cubic-bezier(.22,1,.36,1) var(--reveal-delay),
+    filter .9s cubic-bezier(.22,1,.36,1) var(--reveal-delay);
+  will-change:opacity,transform,filter;
+}
+.reveal.reveal-left{
+  transform:translate3d(-42px,14px,0) scale(.985);
+}
+.reveal.reveal-right{
+  transform:translate3d(42px,14px,0) scale(.985);
+}
+.reveal.reveal-soft{
+  --reveal-distance:24px;
+}
+.reveal.reveal-scale{
+  transform:translate3d(0,22px,0) scale(.94);
+}
+.reveal.is-visible{
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  filter:blur(0);
+}
+.ig-card.reveal img,
+.card.reveal .stack,
+.social-shell.reveal{
+  transition:transform 1.05s cubic-bezier(.22,1,.36,1) var(--reveal-delay);
+}
+.ig-card.reveal img{
+  transform:scale(1.06);
+}
+.ig-card.reveal.is-visible img{
+  transform:scale(1);
+}
+.card.reveal .stack{
+  transform:translateY(14px) rotateX(0deg) rotateY(0deg);
+}
+.card.reveal.is-visible .stack{
+  transform:translateY(0) rotateX(0deg) rotateY(0deg);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .reveal,
+  .reveal.reveal-left,
+  .reveal.reveal-right,
+  .reveal.reveal-scale{
+    opacity:1;
+    transform:none;
+    filter:none;
+    transition:none;
+  }
+  .ig-card.reveal img,
+  .card.reveal .stack,
+  .social-shell.reveal{
+    transform:none;
+    transition:none;
+  }
+  .btn-chip-particle{
+    animation:none !important;
+  }
+}
+
 @media(max-width:980px){
   .social-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
@@ -212,12 +383,15 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .menu-shell{padding:1.4rem;}
   .grid{grid-template-columns:1fr;}
   .grid-row2{grid-template-columns:1fr;}
-  nav{padding:0 1.5rem;}
+  nav{flex-wrap:wrap;padding:.6rem 1rem .9rem;}
+  .top-tabs{order:3;flex:0 0 100%;padding:.55rem 0 0;}
   .nav-logo{gap:.42rem;font-size:13px;}
   .nav-logo-mark{width:24px;height:24px;}
   .nav-actions{gap:.45rem;}
   .nav-book{padding:.42rem .9rem;font-size:11px;}
   .nav-lang{padding:.42rem .72rem;font-size:10px;}
+  .hero-links{gap:.65rem;padding:0;}
+  .btn-chip{min-height:40px;padding:.62rem 1rem;font-size:11px;}
   .hero-logo{width:min(80vw,300px);}
   .hero-wordmark{width:min(100%,420px);}
   .social-feed{padding:0 1.2rem 4rem;}
@@ -232,9 +406,42 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 @media (hover:none), (pointer:coarse){
   .card{padding-bottom:1.8rem;}
 }
+
+@keyframes gooey-particle{
+  0%{
+    opacity:0;
+    transform:translate3d(0,0,0) scale(.18);
+  }
+  18%{
+    opacity:.96;
+  }
+  65%{
+    opacity:.72;
+    transform:translate3d(var(--particle-x), var(--particle-y), 0) scale(1);
+  }
+  100%{
+    opacity:0;
+    transform:translate3d(calc(var(--particle-x) * 1.12), calc(var(--particle-y) * 1.12), 0) scale(.48);
+  }
+}
+
+@keyframes gooey-pulse{
+  0%,100%{filter:brightness(1) saturate(1);}
+  50%{filter:brightness(1.08) saturate(1.08);}
+}
 </style>
 </head>
 <body>
+
+<svg aria-hidden="true" width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="makkie-gooey-filter">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo"/>
+      <feBlend in="SourceGraphic" in2="goo"/>
+    </filter>
+  </defs>
+</svg>
 
 <nav>
   <div class="nav-logo">
@@ -251,6 +458,16 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   </div>
 </nav>
 
+<div class="top-tabs">
+  <div class="hero-links">
+    <a href="#menu" class="btn-chip">浏览图鉴</a>
+    <a href="#products" class="btn-chip">探索层层夹心</a>
+    <a href="#instagram" class="btn-chip">Instagram</a>
+    <a href="#order" class="btn-chip">预订详情须知</a>
+    <a href="#footer" class="btn-chip">联系我们</a>
+  </div>
+</div>
+
 <div class="hero">
   <video class="hero-logo" autoplay muted loop playsinline preload="auto" aria-label="Makkie Mua waving logo">
     <source src="assets/video/makkie-waving-clean.webm?v=20260403-143509" type="video/webm">
@@ -259,7 +476,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   <img class="hero-wordmark-art" src="assets/images/brand/Makkie_Mua_Text_Original.png" alt="Makkie Mua">
   <p class="hero-sub">每一层都是手作的温度<br>Los Angeles &amp; Orange County</p>
   <div class="hero-links">
-    <a href="#menu" class="btn-chip">浏览甜品集</a>
+    <a href="#menu" class="btn-chip">浏览图鉴</a>
     <a href="#products" class="btn-chip">探索层层夹心</a>
     <a href="#instagram" class="btn-chip">Instagram </a>
     <a href="#order" class="btn-chip">预订详情须知</a>
@@ -288,8 +505,8 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 <section id="menu" class="menu-set">
   <div class="menu-shell">
     <div class="menu-head">
-      <div class="sec-eye">浏览甜品集</div>
-      <h2 class="sec-title">Our dessert repertoire</h2>
+      <div class="sec-eye">&#x6D4F;&#x89C8;&#x56FE;&#x9274;</div>
+      <h2 class="sec-title">&#x751C;&#x54C1;&#x56FE;&#x9274;</h2>
     </div>
     <div class="menu-grid">
       <button class="menu-card" type="button" data-menu-target="menu-basque">
@@ -950,7 +1167,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <div>
       <div class="ft-col-title">菜单</div>
       <div class="ft-col">
-        <a href="#menu">浏览甜品集</a>
+        <a href="#menu">浏览图鉴</a>
         <a href="#products">探索层层夹心</a>
         <a href="#instagram">Instagram </a>
         <a href="#order">预订详情须知</a>
@@ -1161,6 +1378,115 @@ document.querySelectorAll('#instagram .ig-card').forEach((card, index) => {
   }
 });
 
+const gooeyParticleCount = 5;
+const gooeyAnimationVariance = 500;
+const gooeyRadiusFactor = 200;
+const stickyNav = document.querySelector('nav');
+const topTabs = document.querySelector('.top-tabs');
+const navLogo = document.querySelector('.nav-logo');
+
+if (stickyNav && topTabs && topTabs.parentElement !== stickyNav) {
+  if (navLogo && navLogo.parentElement === stickyNav) {
+    navLogo.insertAdjacentElement('afterend', topTabs);
+  } else {
+    stickyNav.appendChild(topTabs);
+  }
+}
+
+document.querySelectorAll('.hero-links .btn-chip').forEach((link) => {
+  if (!link.querySelector('.btn-chip-label')) {
+    const label = document.createElement('span');
+    label.className = 'btn-chip-label';
+    label.textContent = link.textContent.trim();
+    link.textContent = '';
+    link.appendChild(label);
+  }
+
+  if (link.querySelector('.btn-chip-goo')) return;
+
+  const goo = document.createElement('span');
+  goo.className = 'btn-chip-goo';
+  goo.setAttribute('aria-hidden', 'true');
+
+  for (let index = 0; index < gooeyParticleCount; index += 1) {
+    const particle = document.createElement('span');
+    const angle = ((Math.PI * 2) / gooeyParticleCount) * index + (Math.PI / 7);
+    const distance = (gooeyRadiusFactor / 10) + ((index % 2 === 0 ? 1 : -1) * 6) + (index * 3);
+    const variance = Math.round((index / Math.max(gooeyParticleCount - 1, 1)) * gooeyAnimationVariance);
+    const size = 10 + (index % 3) * 2;
+
+    particle.className = 'btn-chip-particle';
+    particle.style.setProperty('--particle-x', `${Math.cos(angle) * distance}px`);
+    particle.style.setProperty('--particle-y', `${Math.sin(angle) * distance}px`);
+    particle.style.setProperty('--particle-size', `${size}px`);
+    particle.style.setProperty('--particle-variance', `${variance}ms`);
+    goo.appendChild(particle);
+  }
+
+  link.appendChild(goo);
+});
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function revealElements(elements, variant, startDelay, stepDelay) {
+  const items = Array.from(elements).filter(Boolean);
+  if (!items.length) return [];
+
+  items.forEach((element, index) => {
+    element.classList.add('reveal', variant);
+    element.style.setProperty('--reveal-delay', `${startDelay + index * stepDelay}ms`);
+  });
+
+  return items;
+}
+
+const revealTargets = [
+  ...revealElements([
+    document.querySelector('.top-tabs'),
+    document.querySelector('.hero-logo'),
+    document.querySelector('.hero-eyebrow'),
+    document.querySelector('.hero-wordmark-art'),
+    document.querySelector('.hero-sub')
+  ], 'reveal-soft', 0, 90),
+  ...revealElements([document.querySelector('.menu-shell')], 'reveal-soft', 40, 0),
+  ...revealElements(document.querySelectorAll('.menu-card'), 'reveal-up', 80, 70),
+  ...revealElements([
+    document.querySelector('#products .sec-eye'),
+    document.querySelector('#products .sec-title'),
+    document.querySelector('#products .sec-sub')
+  ], 'reveal-soft', 30, 70),
+  ...revealElements(document.querySelectorAll('.card'), 'reveal-scale', 60, 90),
+  ...revealElements([document.querySelector('.social-shell')], 'reveal-soft', 20, 0),
+  ...revealElements([document.querySelector('.social-profile')], 'reveal-left', 40, 0),
+  ...revealElements(document.querySelectorAll('.social-head > *'), 'reveal-right', 100, 90),
+  ...revealElements(document.querySelectorAll('.ig-card'), 'reveal-up', 120, 90),
+  ...revealElements([
+    document.querySelector('#order .sec-eye'),
+    document.querySelector('#order .sec-title'),
+    document.querySelector('#order .sec-sub')
+  ], 'reveal-soft', 30, 80),
+  ...revealElements(document.querySelectorAll('.contact-code'), 'reveal-up', 120, 110),
+  ...revealElements(document.querySelectorAll('.ft > div'), 'reveal-up', 40, 110),
+  ...revealElements([document.querySelector('.ft-copy')], 'reveal-soft', 120, 0)
+];
+
+if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+  revealTargets.forEach((element) => element.classList.add('is-visible'));
+} else {
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    });
+  }, {
+    threshold: 0.16,
+    rootMargin: '0px 0px -10% 0px'
+  });
+
+  revealTargets.forEach((element) => revealObserver.observe(element));
+}
+
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && menuOverlay && !menuOverlay.hidden) {
     closeMenuOverlay();
@@ -1207,11 +1533,11 @@ const bilingualCopy = {
       videoAria: 'Makkie Mua 挥手 logo',
       eyebrow: '마키 무아 · 独家创意甜品',
       sub: '每一层都是手作的温度<br>Los Angeles &amp; Orange County',
-      links: ['浏览甜品集', '探索层层夹心', 'Instagram', '预订详情须知', '联系我们']
+      links: ['浏览图鉴', '探索层层夹心', 'Instagram', '预订详情须知', '联系我们']
     },
     menu: {
-      headEye: '浏览甜品集',
-      headTitle: '甜品菜单',
+      headEye: '浏览图鉴',
+      headTitle: '甜品图鉴',
       cardIcon: '查看往期',
       cards: {
         'menu-basque': { title: '巴斯克蛋糕', sub: '焦香绵密，一口就上头' },
@@ -1311,7 +1637,7 @@ const bilingualCopy = {
       tagline: '마키 무아 · 独家创意甜品<br>Butter off with Makkie © · Los Angeles &amp; Orange County',
       credit: 'Makkie 艺术设计 by @littlejulia_art',
       sectionTitles: ['菜单', '联系'],
-      menuLinks: ['浏览甜品集', '探索层层夹心', 'Instagram', '预订详情须知'],
+      menuLinks: ['浏览图鉴', '探索层层夹心', 'Instagram', '预订详情须知'],
       contactLinks: ['Instagram @MakkieMua', '小红书 @MakkieMua', '邮箱 MakkieMua@gmail.com', '电话 408-646-8740'],
       copy: '© 2026 Makkie Mua · 独家创意甜品 · Southern California'
     },
@@ -1330,11 +1656,11 @@ const bilingualCopy = {
       videoAria: 'Makkie Mua waving logo',
       eyebrow: 'Makkie Mua · Signature Creative Desserts',
       sub: 'Handmade warmth in every layer<br>Los Angeles &amp; Orange County',
-      links: ['Browse Menu', 'Explore the Layers', 'Instagram', 'Booking Info', 'Contact']
+      links: ['Browse Atlas', 'Explore the Layers', 'Instagram', 'Booking Info', 'Contact']
     },
     menu: {
       headEye: 'Dessert Menu',
-      headTitle: 'Our Dessert Repertoire',
+      headTitle: 'Dessert Atlas',
       cardIcon: 'View Archive',
       cards: {
         'menu-basque': { title: 'Basque Cheesecake', sub: 'Burnt edge, creamy center, instant obsession' },
@@ -1434,7 +1760,7 @@ const bilingualCopy = {
       tagline: '마키 무아 · Signature creative desserts<br>Butter off with Makkie © · Los Angeles &amp; Orange County',
       credit: 'Makkie art direction by @littlejulia_art',
       sectionTitles: ['Menu', 'Contact'],
-      menuLinks: ['Browse Menu', 'Explore the Layers', 'Instagram', 'Booking Info'],
+      menuLinks: ['Browse Atlas', 'Explore the Layers', 'Instagram', 'Booking Info'],
       contactLinks: ['Instagram @MakkieMua', 'Rednote @MakkieMua', 'Email MakkieMua@gmail.com', 'Phone 408-646-8740'],
       copy: '© 2026 Makkie Mua · Signature creative desserts · Southern California'
     },
@@ -1532,7 +1858,10 @@ function applyBilingualLanguage(lang) {
   bilingualSetText('.hero-eyebrow', copy.hero.eyebrow);
   bilingualSetHTML('.hero-sub', copy.hero.sub);
   document.querySelectorAll('.hero-links .btn-chip').forEach((link, index) => {
-    link.textContent = copy.hero.links[index] || link.textContent;
+    const label = link.querySelector('.btn-chip-label');
+    if (label) {
+      label.textContent = copy.hero.links[index] || label.textContent;
+    }
   });
 
   bilingualSetText('#menu .menu-head .sec-eye', copy.menu.headEye);
@@ -1661,6 +1990,5 @@ if (bilingualLangToggle) {
 
 applyBilingualLanguage(bilingualLanguage);
 </script>
-
 </body>
 </html>
