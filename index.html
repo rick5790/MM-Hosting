@@ -26,7 +26,7 @@ gtag('config', 'G-TTK9YKP3GT');
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
 
-nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--dark);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:100;min-height:68px;}
+nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--dark);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:100;min-height:68px;overflow:visible;}
 .nav-main{display:flex;justify-content:space-between;align-items:center;padding:0 3rem;height:52px;}
 .nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;min-height:52px;flex:0 0 auto;}
 .nav-logo-mark{width:28px;height:28px;object-fit:contain;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
@@ -45,6 +45,11 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
   padding:0;
   background:none;
   border-top:none;
+  overflow:hidden;
+  max-height:88px;
+  opacity:1;
+  transform:translateY(0);
+  transition:max-height .32s cubic-bezier(.22,1,.36,1), opacity .24s ease, transform .32s cubic-bezier(.22,1,.36,1), padding .32s cubic-bezier(.22,1,.36,1), border-top-color .32s ease;
 }
 .hero{text-align:center;padding:4.4rem 2rem 4rem;background:var(--bg);}
 .hero-logo{
@@ -169,11 +174,10 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
   opacity:.7;
   z-index:0;
 }
-.btn-chip:hover .btn-chip-particle,
-.btn-chip:focus-visible .btn-chip-particle{
+.btn-chip.is-burst .btn-chip-particle{
   animation:
-    gooey-particle calc(1500ms + var(--particle-variance, 0ms)) cubic-bezier(.22,1,.36,1) infinite,
-    gooey-pulse calc(1100ms + var(--particle-variance, 0ms)) ease-in-out infinite;
+    gooey-particle calc(900ms + var(--particle-variance, 0ms)) cubic-bezier(.22,1,.36,1) 1 both,
+    gooey-pulse calc(620ms + var(--particle-variance, 0ms)) ease-out 1 both;
 }
 
 .products{padding:5rem 2rem 7rem;background:var(--bg);}
@@ -281,6 +285,8 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
 
 .order{padding:5rem 2rem;background:var(--bg2);text-align:center;}
 .order .sec-title{margin-bottom:.5rem;}
+.order-title-line{display:inline;}
+.order-title-line + .order-title-line{margin-left:.35ch;}
 .order .sec-sub{margin-bottom:2.5rem;}
 .contact-codes{display:grid;grid-template-columns:repeat(2,minmax(0,220px));justify-content:center;gap:1.25rem;margin-top:1rem;}
 .contact-code{text-align:center;}
@@ -377,21 +383,93 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .social-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
 
+@media(min-width:701px) and (max-width:980px){
+  nav{
+    flex-wrap:wrap;
+    padding:0 .9rem .85rem;
+  }
+  .top-tabs{
+    order:3;
+    flex:0 0 100%;
+    padding:.5rem 0 0;
+  }
+  .top-tabs .hero-links{
+    flex-wrap:nowrap;
+    justify-content:space-between;
+    width:100%;
+    min-width:0;
+    gap:.45rem;
+    padding:0;
+  }
+  .top-tabs .btn-chip{
+    flex:1 1 0;
+    min-width:0;
+    min-height:38px;
+    padding:.5rem .55rem;
+    font-size:11px;
+    letter-spacing:0;
+  }
+  .top-tabs .btn-chip-label{
+    white-space:nowrap;
+  }
+  .nav-actions{gap:.5rem;}
+  .nav-book{padding:.46rem .92rem;font-size:11px;}
+  .nav-lang{padding:.46rem .74rem;font-size:10px;}
+}
+
 @media(max-width:700px){
   .menu-grid{grid-template-columns:1fr;}
   .menu-set{padding:3rem 1.2rem;}
   .menu-shell{padding:1.4rem;}
   .grid{grid-template-columns:1fr;}
   .grid-row2{grid-template-columns:1fr;}
-  nav{flex-wrap:wrap;padding:.6rem 1rem .9rem;}
-  .top-tabs{order:3;flex:0 0 100%;padding:.55rem 0 0;}
+  nav{flex-wrap:wrap;padding:.6rem 1rem 1rem;overflow:visible;}
+  .top-tabs{
+    order:3;
+    flex:0 0 100%;
+    padding:.45rem 0 0;
+    overflow-x:auto;
+    overflow-y:visible;
+    -ms-overflow-style:none;
+    scrollbar-width:none;
+  }
+  .top-tabs::-webkit-scrollbar{display:none;}
+  nav.is-tabs-hidden .top-tabs{
+    max-height:0;
+    opacity:0;
+    transform:translateY(-8px);
+    padding-top:0;
+    border-top-color:transparent;
+    pointer-events:none;
+  }
   .nav-logo{gap:.42rem;font-size:13px;}
   .nav-logo-mark{width:24px;height:24px;}
   .nav-actions{gap:.45rem;}
   .nav-book{padding:.42rem .9rem;font-size:11px;}
   .nav-lang{padding:.42rem .72rem;font-size:10px;}
-  .hero-links{gap:.65rem;padding:0;}
-  .btn-chip{min-height:40px;padding:.62rem 1rem;font-size:11px;}
+  .hero-links{
+    flex-wrap:nowrap;
+    justify-content:space-between;
+    width:100%;
+    min-width:0;
+    gap:.35rem;
+    padding:0 .55rem 0 .1rem;
+  }
+  .btn-chip{
+    flex:1 1 0;
+    min-height:auto;
+    min-width:0;
+    padding:.42rem clamp(.28rem, 1vw, .9rem);
+    font-size:clamp(8px, 1.95vw, 11px);
+    letter-spacing:0;
+    white-space:nowrap;
+    border-radius:999px;
+  }
+  .btn-chip-goo{inset:-12px;}
+  .btn-chip-particle{--particle-size:9px;}
+  .order .sec-title{line-height:1.05;}
+  .order-title-line{display:block;}
+  .order-title-line + .order-title-line{margin-left:0;}
   .hero-logo{width:min(80vw,300px);}
   .hero-wordmark{width:min(100%,420px);}
   .social-feed{padding:0 1.2rem 4rem;}
@@ -1137,7 +1215,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 
 <section id="order" class="order">
   <div class="sec-eye">预订详情须知</div>
-  <h2 class="sec-title">限量纯手工制作，采用新鲜有机原料</h2>
+  <h2 class="sec-title"><span class="order-title-line">限量纯手工制作，</span><span class="order-title-line">采用新鲜有机原料</span></h2>
   <p class="sec-sub">甜品每周轮换 · 为保证新鲜度与食品安全 仅接受提前预订 · 每周更新最新预订链接 ·  详询WeChat/Instrgram</p>
   <div style="display:flex;flex-direction:column;align-items:center;gap:1.5rem;">
     <div class="contact-codes">
@@ -1381,9 +1459,12 @@ document.querySelectorAll('#instagram .ig-card').forEach((card, index) => {
 const gooeyParticleCount = 5;
 const gooeyAnimationVariance = 500;
 const gooeyRadiusFactor = 200;
+const gooeyBurstDuration = 1500;
 const stickyNav = document.querySelector('nav');
 const topTabs = document.querySelector('.top-tabs');
 const navLogo = document.querySelector('.nav-logo');
+const mobileTabsQuery = window.matchMedia('(max-width: 700px)');
+let suppressMobileTabsAutoHideUntil = 0;
 
 if (stickyNav && topTabs && topTabs.parentElement !== stickyNav) {
   if (navLogo && navLogo.parentElement === stickyNav) {
@@ -1392,6 +1473,41 @@ if (stickyNav && topTabs && topTabs.parentElement !== stickyNav) {
     stickyNav.appendChild(topTabs);
   }
 }
+
+let lastScrollY = window.scrollY;
+
+function syncMobileTabsVisibility() {
+  if (!stickyNav) return;
+  if (!mobileTabsQuery.matches) {
+    stickyNav.classList.remove('is-tabs-hidden');
+    lastScrollY = window.scrollY;
+    return;
+  }
+
+  const currentScrollY = window.scrollY;
+  const delta = currentScrollY - lastScrollY;
+  const isSuppressed = performance.now() < suppressMobileTabsAutoHideUntil;
+
+  if (isSuppressed) {
+    stickyNav.classList.remove('is-tabs-hidden');
+    lastScrollY = currentScrollY;
+    return;
+  }
+
+  if (currentScrollY < 24) {
+    stickyNav.classList.remove('is-tabs-hidden');
+  } else if (delta > 10) {
+    stickyNav.classList.add('is-tabs-hidden');
+  } else if (delta < -8) {
+    stickyNav.classList.remove('is-tabs-hidden');
+  }
+
+  lastScrollY = currentScrollY;
+}
+
+window.addEventListener('scroll', syncMobileTabsVisibility, { passive: true });
+mobileTabsQuery.addEventListener('change', syncMobileTabsVisibility);
+syncMobileTabsVisibility();
 
 document.querySelectorAll('.hero-links .btn-chip').forEach((link) => {
   if (!link.querySelector('.btn-chip-label')) {
@@ -1424,6 +1540,33 @@ document.querySelectorAll('.hero-links .btn-chip').forEach((link) => {
   }
 
   link.appendChild(goo);
+
+  const triggerBurst = () => {
+    link.classList.remove('is-burst');
+    void link.offsetWidth;
+    link.classList.add('is-burst');
+    window.clearTimeout(link.__gooeyBurstTimer);
+    link.__gooeyBurstTimer = window.setTimeout(() => {
+      link.classList.remove('is-burst');
+    }, gooeyBurstDuration);
+  };
+
+  link.addEventListener('click', () => {
+    suppressMobileTabsAutoHideUntil = performance.now() + 900;
+    if (stickyNav) {
+      stickyNav.classList.remove('is-tabs-hidden');
+    }
+    triggerBurst();
+  });
+  link.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      suppressMobileTabsAutoHideUntil = performance.now() + 900;
+      if (stickyNav) {
+        stickyNav.classList.remove('is-tabs-hidden');
+      }
+      triggerBurst();
+    }
+  });
 });
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1629,7 +1772,7 @@ const bilingualCopy = {
     },
     order: {
       eye: '预订详情须知',
-      title: '限量纯手工制作，采用新鲜有机原料',
+      title: '<span class="order-title-line">限量纯手工制作，</span><span class="order-title-line">采用新鲜有机原料</span>',
       sub: '甜品每周轮换 · 为保证新鲜度与食品安全 仅接受提前预订 · 每周更新最新预订链接 · 详询 WeChat / Instagram',
       labels: ['微信', '小红书作品']
     },
@@ -1752,7 +1895,7 @@ const bilingualCopy = {
     },
     order: {
       eye: 'Booking Details',
-      title: 'Small-batch handmade desserts made with fresh premium ingredients',
+      title: '<span class="order-title-line">Small-batch handmade desserts</span><span class="order-title-line">made with fresh premium ingredients</span>',
       sub: 'The lineup rotates weekly. To protect freshness and food safety, all orders are preorder only. The latest booking link updates every week. Message us on WeChat or Instagram.',
       labels: ['WeChat', 'Rednote Highlights']
     },
@@ -1933,7 +2076,7 @@ function applyBilingualLanguage(lang) {
   });
 
   bilingualSetText('#order .sec-eye', copy.order.eye);
-  bilingualSetText('#order .sec-title', copy.order.title);
+  bilingualSetHTML('#order .sec-title', copy.order.title);
   bilingualSetText('#order .sec-sub', copy.order.sub);
   document.querySelectorAll('.contact-code-label').forEach((label, index) => {
     label.textContent = copy.order.labels[index] || label.textContent;
