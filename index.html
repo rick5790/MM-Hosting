@@ -202,6 +202,71 @@ body[data-lang='en'] .ig-card-title,
 body[data-lang='en'] .menu-card-title,
 body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 
+.reveal{
+  --reveal-delay:0ms;
+  --reveal-distance:38px;
+  opacity:0;
+  transform:translate3d(0,var(--reveal-distance),0) scale(.985);
+  filter:blur(10px);
+  transition:
+    opacity .9s cubic-bezier(.22,1,.36,1) var(--reveal-delay),
+    transform .9s cubic-bezier(.22,1,.36,1) var(--reveal-delay),
+    filter .9s cubic-bezier(.22,1,.36,1) var(--reveal-delay);
+  will-change:opacity,transform,filter;
+}
+.reveal.reveal-left{
+  transform:translate3d(-42px,14px,0) scale(.985);
+}
+.reveal.reveal-right{
+  transform:translate3d(42px,14px,0) scale(.985);
+}
+.reveal.reveal-soft{
+  --reveal-distance:24px;
+}
+.reveal.reveal-scale{
+  transform:translate3d(0,22px,0) scale(.94);
+}
+.reveal.is-visible{
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  filter:blur(0);
+}
+.ig-card.reveal img,
+.card.reveal .stack,
+.social-shell.reveal{
+  transition:transform 1.05s cubic-bezier(.22,1,.36,1) var(--reveal-delay);
+}
+.ig-card.reveal img{
+  transform:scale(1.06);
+}
+.ig-card.reveal.is-visible img{
+  transform:scale(1);
+}
+.card.reveal .stack{
+  transform:translateY(14px) rotateX(0deg) rotateY(0deg);
+}
+.card.reveal.is-visible .stack{
+  transform:translateY(0) rotateX(0deg) rotateY(0deg);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .reveal,
+  .reveal.reveal-left,
+  .reveal.reveal-right,
+  .reveal.reveal-scale{
+    opacity:1;
+    transform:none;
+    filter:none;
+    transition:none;
+  }
+  .ig-card.reveal img,
+  .card.reveal .stack,
+  .social-shell.reveal{
+    transform:none;
+    transition:none;
+  }
+}
+
 @media(max-width:980px){
   .social-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
@@ -1161,6 +1226,67 @@ document.querySelectorAll('#instagram .ig-card').forEach((card, index) => {
   }
 });
 
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function revealElements(elements, variant, startDelay, stepDelay) {
+  const items = Array.from(elements).filter(Boolean);
+  if (!items.length) return [];
+
+  items.forEach((element, index) => {
+    element.classList.add('reveal', variant);
+    element.style.setProperty('--reveal-delay', `${startDelay + index * stepDelay}ms`);
+  });
+
+  return items;
+}
+
+const revealTargets = [
+  ...revealElements([
+    document.querySelector('.hero-logo'),
+    document.querySelector('.hero-eyebrow'),
+    document.querySelector('.hero-wordmark-art'),
+    document.querySelector('.hero-sub'),
+    document.querySelector('.hero-links')
+  ], 'reveal-soft', 0, 90),
+  ...revealElements([document.querySelector('.menu-shell')], 'reveal-soft', 40, 0),
+  ...revealElements(document.querySelectorAll('.menu-card'), 'reveal-up', 80, 70),
+  ...revealElements([
+    document.querySelector('#products .sec-eye'),
+    document.querySelector('#products .sec-title'),
+    document.querySelector('#products .sec-sub')
+  ], 'reveal-soft', 30, 70),
+  ...revealElements(document.querySelectorAll('.card'), 'reveal-scale', 60, 90),
+  ...revealElements([document.querySelector('.social-shell')], 'reveal-soft', 20, 0),
+  ...revealElements([document.querySelector('.social-profile')], 'reveal-left', 40, 0),
+  ...revealElements(document.querySelectorAll('.social-head > *'), 'reveal-right', 100, 90),
+  ...revealElements(document.querySelectorAll('.ig-card'), 'reveal-up', 120, 90),
+  ...revealElements([
+    document.querySelector('#order .sec-eye'),
+    document.querySelector('#order .sec-title'),
+    document.querySelector('#order .sec-sub')
+  ], 'reveal-soft', 30, 80),
+  ...revealElements(document.querySelectorAll('.contact-code'), 'reveal-up', 120, 110),
+  ...revealElements(document.querySelectorAll('.ft > div'), 'reveal-up', 40, 110),
+  ...revealElements([document.querySelector('.ft-copy')], 'reveal-soft', 120, 0)
+];
+
+if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+  revealTargets.forEach((element) => element.classList.add('is-visible'));
+} else {
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    });
+  }, {
+    threshold: 0.16,
+    rootMargin: '0px 0px -10% 0px'
+  });
+
+  revealTargets.forEach((element) => revealObserver.observe(element));
+}
+
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && menuOverlay && !menuOverlay.hidden) {
     closeMenuOverlay();
@@ -1661,6 +1787,5 @@ if (bilingualLangToggle) {
 
 applyBilingualLanguage(bilingualLanguage);
 </script>
-
 </body>
 </html>
