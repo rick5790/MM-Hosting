@@ -432,6 +432,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     overflow-y:visible;
     -ms-overflow-style:none;
     scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
   }
   .top-tabs::-webkit-scrollbar{display:none;}
   nav.is-tabs-hidden .top-tabs{
@@ -449,21 +450,23 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .nav-lang{padding:.42rem .72rem;font-size:10px;}
   .hero-links{
     flex-wrap:nowrap;
-    justify-content:space-between;
-    width:100%;
-    min-width:0;
-    gap:.35rem;
-    padding:0 .55rem 0 .1rem;
+    justify-content:flex-start;
+    width:max-content;
+    min-width:max-content;
+    gap:.5rem;
+    padding:0 .9rem 0 .1rem;
+    scroll-snap-type:x proximity;
   }
   .btn-chip{
-    flex:1 1 0;
+    flex:0 0 auto;
     min-height:auto;
-    min-width:0;
-    padding:.42rem clamp(.28rem, 1vw, .9rem);
-    font-size:clamp(8px, 1.95vw, 11px);
-    letter-spacing:0;
+    min-width:auto;
+    padding:.42rem .95rem;
+    font-size:11px;
+    letter-spacing:.01em;
     white-space:nowrap;
     border-radius:999px;
+    scroll-snap-align:start;
   }
   .btn-chip-goo{inset:-12px;}
   .btn-chip-particle{--particle-size:9px;}
@@ -539,9 +542,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 <div class="top-tabs">
   <div class="hero-links">
     <a href="#menu" class="btn-chip">浏览图鉴</a>
-    <a href="#products" class="btn-chip">探索层层夹心</a>
+    <a href="#products" class="btn-chip">层层夹心</a>
     <a href="#instagram" class="btn-chip">Instagram</a>
-    <a href="#order" class="btn-chip">预订详情须知</a>
+    <a href="#order" class="btn-chip">预订详情</a>
     <a href="#footer" class="btn-chip">联系我们</a>
   </div>
 </div>
@@ -555,9 +558,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   <p class="hero-sub">每一层都是手作的温度<br>Los Angeles &amp; Orange County</p>
   <div class="hero-links">
     <a href="#menu" class="btn-chip">浏览图鉴</a>
-    <a href="#products" class="btn-chip">探索层层夹心</a>
+    <a href="#products" class="btn-chip">层层夹</a>
     <a href="#instagram" class="btn-chip">Instagram </a>
-    <a href="#order" class="btn-chip">预订详情须知</a>
+    <a href="#order" class="btn-chip">预订详情</a>
     <a href="#footer" class="btn-chip">联系我们</a>
   </div>
 </div>
@@ -1246,9 +1249,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
       <div class="ft-col-title">菜单</div>
       <div class="ft-col">
         <a href="#menu">浏览图鉴</a>
-        <a href="#products">探索层层夹心</a>
+        <a href="#products">层层夹心</a>
         <a href="#instagram">Instagram </a>
-        <a href="#order">预订详情须知</a>
+        <a href="#order">预订详情</a>
       </div>
     </div>
     <div>
@@ -1465,6 +1468,10 @@ const topTabs = document.querySelector('.top-tabs');
 const navLogo = document.querySelector('.nav-logo');
 const mobileTabsQuery = window.matchMedia('(max-width: 700px)');
 let suppressMobileTabsAutoHideUntil = 0;
+let mobileTabsHidden = false;
+let mobileTabsLockUntil = 0;
+let mobileTabsDownDistance = 0;
+let mobileTabsUpDistance = 0;
 
 if (stickyNav && topTabs && topTabs.parentElement !== stickyNav) {
   if (navLogo && navLogo.parentElement === stickyNav) {
@@ -1476,10 +1483,19 @@ if (stickyNav && topTabs && topTabs.parentElement !== stickyNav) {
 
 let lastScrollY = window.scrollY;
 
+function setMobileTabsHidden(hidden) {
+  if (!stickyNav || mobileTabsHidden === hidden) return;
+  mobileTabsHidden = hidden;
+  stickyNav.classList.toggle('is-tabs-hidden', hidden);
+  mobileTabsLockUntil = performance.now() + 260;
+  mobileTabsDownDistance = 0;
+  mobileTabsUpDistance = 0;
+}
+
 function syncMobileTabsVisibility() {
   if (!stickyNav) return;
   if (!mobileTabsQuery.matches) {
-    stickyNav.classList.remove('is-tabs-hidden');
+    setMobileTabsHidden(false);
     lastScrollY = window.scrollY;
     return;
   }
@@ -1487,19 +1503,37 @@ function syncMobileTabsVisibility() {
   const currentScrollY = window.scrollY;
   const delta = currentScrollY - lastScrollY;
   const isSuppressed = performance.now() < suppressMobileTabsAutoHideUntil;
+  const isLocked = performance.now() < mobileTabsLockUntil;
 
   if (isSuppressed) {
-    stickyNav.classList.remove('is-tabs-hidden');
+    setMobileTabsHidden(false);
     lastScrollY = currentScrollY;
     return;
   }
 
   if (currentScrollY < 24) {
-    stickyNav.classList.remove('is-tabs-hidden');
-  } else if (delta > 10) {
-    stickyNav.classList.add('is-tabs-hidden');
-  } else if (delta < -8) {
-    stickyNav.classList.remove('is-tabs-hidden');
+    setMobileTabsHidden(false);
+    lastScrollY = currentScrollY;
+    return;
+  }
+
+  if (isLocked || Math.abs(delta) < 2) {
+    lastScrollY = currentScrollY;
+    return;
+  }
+
+  if (delta > 0) {
+    mobileTabsDownDistance += delta;
+    mobileTabsUpDistance = 0;
+  } else {
+    mobileTabsUpDistance += Math.abs(delta);
+    mobileTabsDownDistance = 0;
+  }
+
+  if (!mobileTabsHidden && mobileTabsDownDistance > 26 && currentScrollY > 90) {
+    setMobileTabsHidden(true);
+  } else if (mobileTabsHidden && mobileTabsUpDistance > 18) {
+    setMobileTabsHidden(false);
   }
 
   lastScrollY = currentScrollY;
@@ -1676,7 +1710,7 @@ const bilingualCopy = {
       videoAria: 'Makkie Mua 挥手 logo',
       eyebrow: '마키 무아 · 独家创意甜品',
       sub: '每一层都是手作的温度<br>Los Angeles &amp; Orange County',
-      links: ['浏览图鉴', '探索层层夹心', 'Instagram', '预订详情须知', '联系我们']
+      links: ['浏览图鉴', '层层夹心', 'Instagram', '预订详情', '联系我们']
     },
     menu: {
       headEye: '浏览图鉴',
@@ -1753,7 +1787,7 @@ const bilingualCopy = {
     },
     products: {
       eye: '看看里面有什么',
-      title: '探索层层夹心',
+      title: '层层夹心',
       sub: '每一款都是改良配方，小批量手工现制',
       cards: [
         { nameHtml: '<span>MakkieMua</span><span>胖曲奇</span>', secondary: '招牌胖曲奇', tags: ['双层饼干', '轻奶油夹心', '招牌品牌款'], footHtml: '招牌饼干夹心 · 轻奶油<br>简洁层次造型' },
@@ -1780,7 +1814,7 @@ const bilingualCopy = {
       tagline: '마키 무아 · 独家创意甜品<br>Butter off with Makkie © · Los Angeles &amp; Orange County',
       credit: 'Makkie 艺术设计 by @littlejulia_art',
       sectionTitles: ['菜单', '联系'],
-      menuLinks: ['浏览图鉴', '探索层层夹心', 'Instagram', '预订详情须知'],
+      menuLinks: ['浏览图鉴', '层层夹心', 'Instagram', '预订详情'],
       contactLinks: ['Instagram @MakkieMua', '小红书 @MakkieMua', '邮箱 MakkieMua@gmail.com', '电话 408-646-8740'],
       copy: '© 2026 Makkie Mua · 独家创意甜品 · Southern California'
     },
