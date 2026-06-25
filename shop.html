@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="site-version" content="5.1">
+<title>Makkie Mua 预定 | 本周菜单</title>
+<meta name="description" content="查看 Makkie Mua 本周菜单、预定状态与取货信息。">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://www.makkiemua.com/shop.html">
+<link rel="icon" type="image/png" href="assets/images/brand/Makkie_Original_Logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/subpages.css">
+</head>
+<body data-page="shop">
+<nav>
+  <button class="nav-menu" id="navMenuButton" type="button" aria-label="Open navigation" aria-expanded="false"><span class="nav-menu-lines"></span></button>
+  <div class="nav-logo"><img class="nav-logo-mark" src="assets/images/brand/Makkie_Original_Logo.png" alt="Makkie logo"><span>Makkie Mua</span></div>
+  <div class="top-tabs"><div class="hero-links"></div></div>
+  <div class="nav-actions">
+    <button class="nav-lang" id="langToggle" type="button" aria-label="Switch language"></button>
+    <button class="nav-profile" type="button" data-profile-entry aria-label="我的">
+      <svg class="nav-icon-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 20a6 6 0 0 0-12 0"></path>
+        <circle cx="12" cy="8" r="4"></circle>
+      </svg>
+    </button>
+    <button class="nav-book nav-book-header" type="button" data-order-entry aria-label="预定">
+      <svg class="nav-book-icon-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 8h10l1 11H6L7 8Z"></path>
+        <path d="M9 8a3 3 0 0 1 6 0"></path>
+      </svg>
+      <span class="nav-book-label">预定</span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-drawer" id="mobileDrawer" hidden>
+  <div class="mobile-drawer-backdrop" data-mobile-drawer-close></div>
+  <div class="mobile-drawer-panel">
+    <div class="mobile-drawer-head">
+      <div class="mobile-drawer-brand"><img src="assets/images/brand/Makkie_Original_Logo.png" alt="Makkie logo"><span>Makkie Mua</span></div>
+      <button class="mobile-drawer-close" type="button" aria-label="Close navigation" data-mobile-drawer-close>&times;</button>
+    </div>
+    <div class="mobile-drawer-links"></div>
+    <div class="mobile-drawer-actions"><button class="nav-book" type="button" data-order-entry>预定</button></div>
+  </div>
+</div>
+
+<main class="page-main">
+  <section class="page-hero reveal">
+    <div class="page-hero-shell">
+      <div class="sec-eye" id="pageEye">预定</div>
+      <h1 class="sec-title" id="pageTitle">本周预定</h1>
+      <p class="sec-sub" id="pageSub">这里会显示本周菜单、截止时间和取货信息。开放时即可直接进入预定。</p>
+      <div class="page-actions" id="pageActions"></div>
+      <div class="shop-entry-status" id="shopEntryStatus" style="justify-content:center;">
+        <span class="shop-pill">同步中</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="shop reveal" id="shopAnchor">
+    <div class="shop-panel">
+      <div id="shopRoot" class="shop-loading">正在读取本周菜单...</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="ft">
+    <div>
+      <div class="ft-brand">Makkie Mua</div>
+      <div class="ft-tag" id="footerTag">独家创意甜品<br>Butter off with Makkie © · Los Angeles & Orange County</div>
+      <a class="ft-credit" id="footerCredit" href="https://www.instagram.com/littlejulia_art/" target="_blank" rel="noreferrer">Makkie 艺术设计 by @littlejulia_art</a>
+    </div>
+    <div><div class="ft-col-title" id="footerMenuTitle">页面</div><div class="ft-col" id="footerMenuLinks"></div></div>
+    <div><div class="ft-col-title" id="footerContactTitle">联系</div><div class="ft-col" id="footerContactLinks"></div></div>
+  </div>
+  <div class="ft-copy" id="footerCopy">© 2026 Makkie Mua · 独家创意甜品 · Southern California</div>
+</footer>
+
+<div class="portal-overlay" id="orderReviewOverlay" hidden>
+  <div class="portal-overlay-backdrop" data-order-review-close></div>
+  <div class="portal-panel" role="dialog" aria-modal="true">
+    <button class="portal-close" type="button" aria-label="Close order review" data-order-review-close>&times;</button>
+    <div id="orderReviewBody"></div>
+  </div>
+</div>
+<div class="portal-overlay" id="profileOverlay" hidden>
+  <div class="portal-overlay-backdrop" data-profile-close></div>
+  <div class="portal-panel" role="dialog" aria-modal="true">
+    <button class="portal-close" type="button" aria-label="Close profile" data-profile-close>&times;</button>
+    <div id="profileOverlayBody"></div>
+  </div>
+</div>
+<div class="portal-overlay" id="pickupOverlay" hidden>
+  <div class="portal-overlay-backdrop" data-pickup-close></div>
+  <div class="portal-panel" role="dialog" aria-modal="true">
+    <button class="portal-close" type="button" aria-label="Close pickup selection" data-pickup-close>&times;</button>
+    <div id="pickupOverlayBody"></div>
+  </div>
+</div>
+<div class="portal-overlay" id="adminOverlay" hidden>
+  <div class="portal-overlay-backdrop" data-admin-close></div>
+  <div class="portal-panel" role="dialog" aria-modal="true">
+    <button class="portal-close" type="button" aria-label="Close admin" data-admin-close>&times;</button>
+    <div id="adminOverlayBody"></div>
+  </div>
+</div>
+
+<script src="assets/subpages.js"></script>
+<script src="assets/shop-page.js"></script>
+</body>
+</html>
