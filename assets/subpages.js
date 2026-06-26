@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   const storageKey = 'makkie-language';
   const body = document.body;
   const page = body.dataset.page || 'collection';
@@ -19,17 +19,27 @@
   const footerContactTitle = document.getElementById('footerContactTitle');
   const footerTag = document.getElementById('footerTag');
   const footerCredit = document.getElementById('footerCredit');
+  const footerLocation = document.getElementById('footerLocation');
   const footerCopyText = document.getElementById('footerCopy');
   const mobileDrawerFoot = document.getElementById('mobileDrawerFoot');
+  const footerContactSection = footerContact ? footerContact.closest('div') : null;
 
   let drawerCloseTimer = null;
 
   const pageLinks = [
     { key: 'home', url: 'index.html', zh: '主页', en: 'Home' },
-    { key: 'collection', url: 'collection.html', zh: '浏览图鉴', en: 'Collection' },
+    { key: 'collection', url: 'collection.html', zh: 'Makkie 图鉴', en: 'Collection' },
     { key: 'layers', url: 'layers.html', zh: '层层夹心', en: 'Layers' },
-    { key: 'instagram', url: 'instagram.html', zh: '社交媒体', en: 'Social' },
+    { key: 'instagram', url: 'instagram.html', zh: '甜品动态', en: 'Recent Post' },
     { key: 'contact', url: 'contact.html', zh: '联系我们', en: 'Contact' }
+  ];
+
+  const footerMenuLinks = [
+    { url: 'index.html' },
+    { url: 'collection.html' },
+    { url: 'layers.html' },
+    { url: 'instagram.html' },
+    { url: 'shop.html' }
   ];
 
   const pageCopy = {
@@ -47,8 +57,8 @@
       eye: { zh: 'Makkie Collection', en: 'Makkie Collection' },
       title: { zh: '甜品图鉴', en: 'Dessert Collection' },
       sub: {
-        zh: '把近期做过、值得回看的口味整理成一套图鉴，方便在手机上快速翻，也能在大屏上慢慢看。',
-        en: 'A curated archive of recent flavors, designed to feel quick on mobile and more spacious on larger screens.'
+        zh: '出现过的风味，造型和记忆',
+        en: 'Flavors, forms, and memories that have appeared.'
       },
       actions: []
     },
@@ -66,7 +76,7 @@
       eye: { zh: '看看里面有什么', en: 'What Is Inside' },
       title: { zh: '探索层层夹心', en: 'Explore the Layers' },
       sub: {
-        zh: '把每一类甜品拆开来看，讲清楚里面的结构、口感节奏和层次搭配。',
+        zh: '看看夹心里有什么',
         en: 'A closer look at the internal structure, fillings, and texture rhythm inside each dessert.'
       },
       actions: []
@@ -74,16 +84,16 @@
     instagram: {
       seo: {
         zh: {
-          title: 'Makkie Mua 社交媒体 | 最新动态',
-          description: '查看 Makkie Mua 最近公开发布的社交媒体内容与最新甜品动态。'
+          title: 'Makkie Mua 甜品动态 | 最近更新',
+          description: '查看 Makkie Mua 最近公开发布的内容与最新甜品动态。'
         },
         en: {
-          title: 'Makkie Mua Social | Latest Posts',
+          title: 'Makkie Mua Recent Post | Latest Updates',
           description: 'See the latest public social posts and featured dessert updates from Makkie Mua.'
         }
       },
-      eye: { zh: '社交媒体', en: 'Social' },
-      title: { zh: '最近的甜品动态', en: 'Latest Dessert Posts' },
+      eye: { zh: '甜品动态', en: 'Recent Post' },
+      title: { zh: '最近甜品动态', en: 'Recent Post' },
       sub: {
         zh: '最近公开发过的内容都收在这里，点开就能跳到完整帖子。',
         en: 'Recent public posts live here, with direct links to the full content.'
@@ -104,13 +114,10 @@
       eye: { zh: '预定', en: 'Preorder' },
       title: { zh: '本周预定', en: 'This Week’s Preorder' },
       sub: {
-        zh: '这里会显示本周菜单、截止时间和取货信息。开放时即可直接进入预定。',
-        en: 'This page shows the weekly menu, deadline, and pickup details. When the week opens, you can order directly here.'
+        zh: '',
+        en: ''
       },
-      actions: [
-        { href: 'collection.html', style: '', zh: '先看图鉴', en: 'Browse Collection' },
-        { href: 'contact.html', style: '', zh: '查看联系', en: 'Contact' }
-      ]
+      actions: []
     },
     contact: {
       seo: {
@@ -126,8 +133,27 @@
       eye: { zh: '联系我们', en: 'Contact' },
       title: { zh: '联系 Makkie Mua', en: 'Contact Makkie Mua' },
       sub: {
-        zh: '常用联系方式、二维码和私信入口都收在这一页里。',
-        en: 'Message channels, QR codes, and quick contact options all live on this page.'
+        zh: '如何找到我们',
+        en: 'How to find us'
+      },
+      actions: []
+    },
+    intro: {
+      seo: {
+        zh: {
+          title: 'Makkie 的故事 | 关于 Makkie',
+          description: '认识 Makkie Mua 的品牌故事，了解这个从旧金山开始的创意甜点品牌，如何把记忆、温度与灵感放进每一层口感里。'
+        },
+        en: {
+          title: 'About Makkie | Our Story',
+          description: 'Meet the story behind Makkie Mua, a creative dessert brand founded in San Francisco and shaped by memory, warmth, and playful imagination.'
+        }
+      },
+      eye: { zh: '关于 Makkie', en: 'About Makkie' },
+      title: { zh: 'Makkie 的故事', en: 'Our Story' },
+      sub: {
+        zh: 'Butter off with Makkie',
+        en: 'Butter off with Makkie'
       },
       actions: []
     }
@@ -135,27 +161,35 @@
 
   const footerCopy = {
     zh: {
-      title1: '页面',
-      title2: '联系',
-      menu: ['主页', 'Makkie Collection', '探索夹心', '联系我们'],
-      contacts: ['Instagram @MakkieMua', '小红书 @MakkieMua', '邮箱 MakkieMua@gmail.com', '电话 408-646-8740'],
-      tagline: '独家创意甜品<br>Butter off with Makkie © · Los Angeles & Orange County',
+      title1: '网站',
+      title2: '关于 Makkie',
+      menu: ['主页', 'Makkie 图鉴', '探索夹心', '甜品动态', '马上预定'],
+      contacts: [
+        { label: '联系我们', href: 'contact.html' },
+        { label: 'Makkie 的故事', href: 'intro.html' }
+      ],
+      tagline: 'Butter off with Makkie',
       credit: 'Makkie 艺术设计 by @littlejulia_art',
-      copy: '© 2026 Makkie Mua · 独家创意甜品 · Southern California',
-      book: '预定',
+      location: 'Los Angeles, Orange County',
+      copy: '© 2026 Makkie Mua. All Rights Reserved.',
+      book: '马上预定',
       profile: '我的',
       toggleAria: '切换到 English',
       mobileLang: '语言'
     },
     en: {
-      title1: 'Pages',
-      title2: 'Contact',
-      menu: ['Home', 'Collection', 'Layers', 'Contact'],
-      contacts: ['Instagram @MakkieMua', 'Rednote @MakkieMua', 'Email MakkieMua@gmail.com', 'Phone 408-646-8740'],
-      tagline: 'Signature creative desserts<br>Butter off with Makkie © · Los Angeles & Orange County',
+      title1: 'Shop',
+      title2: 'About Makkie',
+      menu: ['Home', 'Collection', 'Layers', 'Recent Post', 'Order Now'],
+      contacts: [
+        { label: 'Contact', href: 'contact.html' },
+        { label: 'Makkie Story', href: 'intro.html' }
+      ],
+      tagline: 'Butter off with Makkie',
       credit: 'Makkie art direction by @littlejulia_art',
-      copy: '© 2026 Makkie Mua · Signature creative desserts · Southern California',
-      book: 'Preorder',
+      location: 'Los Angeles, Orange County',
+      copy: '© 2026 Makkie Mua. All Rights Reserved.',
+      book: 'Order Now',
       profile: 'Profile',
       toggleAria: 'Switch to 中文',
       mobileLang: 'Language'
@@ -465,44 +499,49 @@
   ];
 
   const contactContent = {
-    actions: [
-      {
-        key: 'instagram',
-        style: 'light',
-        label: { zh: 'Instagram 私信', en: 'Instagram DM' },
-        sub: { zh: '想要最快联系到我们，可以直接私信', en: 'The fastest place to reach us is through DMs' },
-        href: 'https://www.instagram.com/makkiemua/',
-        external: true
-      }
-    ],
     qrCards: [
-      {
-        key: 'instagram',
-        label: { zh: 'Instagram', en: 'Instagram' },
-        value: '@makkiemua',
-        note: { zh: '扫码查看主页，或直接进入私信。', en: 'Scan to view the profile or jump into DMs.' },
-        href: 'https://www.instagram.com/makkiemua/',
-        external: true,
-        image: 'https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=https%3A%2F%2Fwww.instagram.com%2Fmakkiemua%2F'
-      },
-      {
-        key: 'rednote',
-        label: { zh: '小红书', en: 'Rednote' },
-        value: '@MakkieMua',
-        note: { zh: '作品归档和更多灵感更新都会放在这里。', en: 'Archived work and extra inspiration updates live here.' },
-        image: 'assets/images/qr/Makkie Rednote QR Code.jpg'
-      },
       {
         key: 'wechat',
         label: { zh: '微信', en: 'WeChat' },
         value: 'Makkie Mua',
-        note: { zh: '扫码添加微信，方便确认预定和取货。', en: 'Scan to add WeChat for preorder and pickup coordination.' },
+        note: { zh: '扫码添加微信，方便聊天和接收更新。', en: 'Scan to add WeChat for chats and updates.' },
+        action: { zh: '扫码添加', en: 'Scan to Add' },
         image: 'assets/images/qr/Makkie Wechat QR Code Clean.jpg'
+      },
+      {
+        key: 'email',
+        label: { zh: '邮箱', en: 'Email' },
+        value: 'MakkieMua@gmail.com',
+        note: { zh: '需要详细沟通定制或合作，也可以直接发邮件给我们。', en: 'For custom orders or collaborations, feel free to email us directly.' },
+        action: { zh: '发送邮件', en: 'Send Email' },
+        href: 'mailto:MakkieMua@gmail.com'
+      },
+      {
+        key: 'phone',
+        label: { zh: '电话', en: 'Phone' },
+        value: '408-646-8740',
+        note: { zh: '如果你更习惯电话或短信联系，也可以通过这个号码找到我们。', en: 'If phone calls or texts are easier, you can reach us here as well.' },
+        action: { zh: '电话 / 短信', en: 'Call / Text' },
+        href: 'tel:4086468740'
       }
-    ],
-    links: {
-      zh: '打开入口',
-      en: 'Open'
+    ]
+  };
+  const introContent = {
+    kicker: { zh: 'Butter off with Makkie', en: 'Butter off with Makkie' },
+    title: { zh: '你好～ 这里是 Makkie', en: 'Hello, this is Makkie.' },
+    lead: {
+      zh: 'Makkie Mua 于 2024 年在美国旧金山创立，是一个全新的甜点品牌。',
+      en: 'Founded in San Francisco in 2024, Makkie Mua is a new dessert brand built around handmade care and imaginative flavor.'
+    },
+    paragraphs: {
+      zh: [
+        '我们不仅致力于制作出美味的甜点，也希望把记忆里的香气、手作的温度，以及天马行空的创意，轻轻融入每一层口感之中。',
+        '从 Makkie 胖曲奇、咸风三明治，到更具中式灵感的融合甜点，我们不断尝试，让熟悉的味道变得更加柔软、细腻，成为一份值得铭记的心意。'
+      ],
+      en: [
+        'We care deeply about making desserts that taste beautiful, but also about carrying the scent of memory, the warmth of handmade work, and a sense of playful creativity into every layer.',
+        'From Makkie stuffed cookies and savory chiffon sandwiches to fusion desserts inspired by Chinese flavors, we keep experimenting so familiar tastes can feel softer, finer, and more worth remembering.'
+      ]
     }
   };
 
@@ -535,6 +574,7 @@
   function renderActions() {
     if (!pageActions) return;
     const actions = (pageCopy[page] && pageCopy[page].actions) || [];
+    pageActions.hidden = actions.length === 0;
     pageActions.innerHTML = actions.map((action) => `
       <a class="page-button ${action.style === 'dark' ? 'is-dark' : ''}" href="${escapeHtml(action.href)}" ${action.external ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(t(action))}</a>
     `).join('');
@@ -608,22 +648,24 @@
     if (footerContactTitle) footerContactTitle.textContent = copy.title2;
     if (footerTag) footerTag.innerHTML = copy.tagline;
     if (footerCredit) footerCredit.textContent = copy.credit;
+    if (footerLocation) footerLocation.textContent = copy.location;
     if (footerCopyText) footerCopyText.textContent = copy.copy;
+    document.querySelectorAll('.ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]').forEach((link) => {
+      link.setAttribute('aria-label', currentLang === 'en' ? 'Rednote' : '小红书');
+    });
     if (mobileDrawerFoot) mobileDrawerFoot.remove();
+    if (footerContactSection) footerContactSection.hidden = false;
 
     if (footerMenu) {
-      footerMenu.innerHTML = pageLinks.map((link, index) => `
+      footerMenu.innerHTML = footerMenuLinks.map((link, index) => `
         <a href="${escapeHtml(link.url)}">${escapeHtml(copy.menu[index])}</a>
       `).join('');
     }
 
     if (footerContact) {
-      footerContact.innerHTML = `
-        <a href="https://www.instagram.com/makkiemua/" target="_blank" rel="noreferrer">${escapeHtml(copy.contacts[0])}</a>
-        <a href="#">${escapeHtml(copy.contacts[1])}</a>
-        <a href="mailto:makkiemua@gmail.com">${escapeHtml(copy.contacts[2])}</a>
-        <a href="tel:4086468740">${escapeHtml(copy.contacts[3])}</a>
-      `;
+      footerContact.innerHTML = copy.contacts.map((entry) => `
+        <a href="${escapeHtml(entry.href)}" ${entry.external ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(entry.label)}</a>
+      `).join('');
     }
   }
 
@@ -636,7 +678,6 @@
           <div class="menu-card-title">${escapeHtml(t(group.title))}</div>
           <div class="menu-card-sub">${escapeHtml(t(group.subtitle))}</div>
         </div>
-        <span class="menu-card-icon">${escapeHtml(currentLang === 'en' ? 'View Collection' : '查看图鉴')}</span>
       </button>
     `).join('');
   }
@@ -745,8 +786,29 @@
         </svg>
       `;
     }
+    if (key === 'email') {
+      return `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="3"></rect>
+          <path d="M5 8l7 5 7-5"></path>
+        </svg>
+      `;
+    }
+    if (key === 'phone') {
+      return `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 16.92v2a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 3.18 2 2 0 0 1 4.11 1h2a2 2 0 0 1 2 1.72c.12.9.35 1.79.68 2.64a2 2 0 0 1-.45 2.11L7.1 8.91a16 16 0 0 0 8 8l1.44-1.24a2 2 0 0 1 2.11-.45c.85.33 1.74.56 2.64.68A2 2 0 0 1 22 16.92z"></path>
+        </svg>
+      `;
+    }
     if (key === 'rednote') {
-      return '<span class="contact-icon-text">小红书</span>';
+      return `
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="4.8" fill="#bc8450"></rect>
+          <rect x="3.35" y="3.35" width="17.3" height="17.3" rx="4.45" stroke="#8e6136" stroke-width=".7"></rect>
+          <text x="12" y="13.15" text-anchor="middle" fill="#fff8ee" font-size="4.25" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif" font-weight="700">小红书</text>
+        </svg>
+      `;
     }
     return `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -758,38 +820,42 @@
   }
 
   function renderContactPage() {
-    const actions = document.getElementById('contactActions');
     const qrGrid = document.getElementById('contactQrGrid');
-
-    if (actions) {
-      actions.innerHTML = contactContent.actions.map((action) => `
-        <a class="contact-action ${action.style === 'dark' ? 'is-dark' : ''}" href="${escapeHtml(action.href)}" ${action.external ? 'target="_blank" rel="noreferrer"' : ''}>
-          <span class="contact-action-icon">${getContactIcon(action.key)}</span>
-          <span class="contact-action-copy">
-            <span class="contact-action-label">${escapeHtml(t(action.label))}</span>
-            <span class="contact-action-sub">${escapeHtml(t(action.sub))}</span>
-          </span>
-          <span class="contact-action-arrow" aria-hidden="true">›</span>
-        </a>
-      `).join('');
-    }
 
     if (qrGrid) {
       qrGrid.innerHTML = contactContent.qrCards.map((card) => `
-        <article class="contact-qr-card">
-          <div class="contact-qr-meta">
+        <article class="contact-qr-card ${card.image ? 'has-qr' : 'is-detail-card'}">
+          <div class="contact-qr-card-side">
             <div class="contact-qr-icon">${getContactIcon(card.key)}</div>
-            <div class="contact-qr-copy">
+            ${card.image ? `<div class="contact-qr-box">
+              <img src="${escapeHtml(card.image)}" alt="${escapeHtml(t(card.label))} QR">
+            </div>` : ''}
+          </div>
+          <div class="contact-qr-copy">
+            <div class="contact-qr-copy-main">
               <div class="contact-qr-label">${escapeHtml(t(card.label))}</div>
               <div class="contact-qr-handle">${escapeHtml(card.value)}</div>
               <div class="contact-qr-note">${escapeHtml(t(card.note))}</div>
-              ${card.href ? `<a class="contact-qr-link" href="${escapeHtml(card.href)}" ${card.external ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(contactContent.links[currentLang])}</a>` : ''}
             </div>
-          </div>
-          <div class="contact-qr-box">
-            <img src="${escapeHtml(card.image)}" alt="${escapeHtml(t(card.label))} QR">
+            ${card.href ? `<a class="contact-qr-link" href="${escapeHtml(card.href)}" ${card.external ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(t(card.action))}</a>` : `<span class="contact-qr-link is-static">${escapeHtml(t(card.action))}</span>`}
           </div>
         </article>
+      `).join('');
+    }
+  }
+
+  function renderIntroPage() {
+    const kicker = document.getElementById('introKicker');
+    const title = document.getElementById('introStoryTitle');
+    const lead = document.getElementById('introLead');
+    const bodyEl = document.getElementById('introBody');
+
+    if (kicker) kicker.textContent = t(introContent.kicker);
+    if (title) title.textContent = t(introContent.title);
+    if (lead) lead.textContent = t(introContent.lead);
+    if (bodyEl) {
+      bodyEl.innerHTML = introContent.paragraphs[currentLang].map((paragraph) => `
+        <p>${escapeHtml(paragraph)}</p>
       `).join('');
     }
   }
@@ -818,6 +884,7 @@
     renderLayersPage();
     renderInstagramPage();
     renderContactPage();
+    renderIntroPage();
 
     document.dispatchEvent(new CustomEvent('makkie:languagechange', {
       detail: { lang: currentLang }
@@ -1062,3 +1129,11 @@
   applyLanguage(currentLang);
   initReveal();
 })();
+
+
+
+
+
+
+
+

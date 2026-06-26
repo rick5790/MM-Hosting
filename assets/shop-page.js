@@ -10,6 +10,8 @@
   const adminOverlay = document.getElementById('adminOverlay');
   const adminOverlayBody = document.getElementById('adminOverlayBody');
   const navLogo = document.querySelector('.nav-logo');
+  const pageEye = document.getElementById('pageEye');
+  const pageSub = document.getElementById('pageSub');
 
   if (!shopRoot) return;
 
@@ -266,6 +268,23 @@
     return state.pickups[state.pickupIndex] || state.pickups[0] || null;
   }
 
+  function getShopDeadlineText() {
+    return state.weeklyOrder && state.weeklyOrder.deadline_text
+      ? state.weeklyOrder.deadline_text
+      : '';
+  }
+
+  function updateShopHeroMeta() {
+    if (pageEye) {
+      pageEye.textContent = '';
+      pageEye.hidden = true;
+    }
+    if (pageSub) {
+      pageSub.textContent = '';
+      pageSub.hidden = true;
+    }
+  }
+
   function getSelectedItems() {
     return state.products
       .map((product) => ({ ...product, quantity: state.cartQuantities[product.id] || 0 }))
@@ -283,16 +302,12 @@
   function updateEntryStatus() {
     if (!shopEntryStatus) return;
     const c = copy();
-    const pickup = getPickup();
-    const pills = [];
-    pills.push(`<span class="shop-pill ${isWeeklyOpen() ? 'is-open' : 'is-closed'}">${escapeHtml(isWeeklyOpen() ? c.open : c.closed)}</span>`);
-    if (state.weeklyOrder && state.weeklyOrder.deadline_text) {
-      pills.push(`<span class="shop-pill">${escapeHtml(c.deadlinePrefix + state.weeklyOrder.deadline_text)}</span>`);
-    }
-    if (pickup && pickup.label) {
-      pills.push(`<span class="shop-pill">${escapeHtml(getPickupLabel(pickup))}</span>`);
-    }
-    shopEntryStatus.innerHTML = pills.join('');
+    const deadlineText = getShopDeadlineText();
+    const statusText = isWeeklyOpen()
+      ? `${c.open}${deadlineText ? ` · ${deadlineText}` : ''}`
+      : c.closed;
+    updateShopHeroMeta();
+    shopEntryStatus.innerHTML = `<span class="shop-pill ${isWeeklyOpen() ? 'is-open' : 'is-closed'}">${escapeHtml(statusText)}</span>`;
   }
 
   function renderCountdown(deadlineIso) {
@@ -350,15 +365,12 @@
     if (!isWeeklyOpen()) {
       shopRoot.className = '';
       shopRoot.innerHTML = `
-        <div class="shop-hero">
-          <div class="shop-hero-copy">
-            <div class="shop-kicker">${escapeHtml(c.weeklyMenu)}</div>
-            <div class="shop-title">${escapeHtml((state.weeklyOrder && (state.weeklyOrder.title || state.weeklyOrder.name)) || c.weeklyMenu)}</div>
-            <div class="shop-sub">${escapeHtml(c.orderClosedCopy)}</div>
+        <div class="shop-state-card">
+          <div class="shop-state-copy">
+            <div class="shop-menu-title">${escapeHtml(c.weeklyMenu)}</div>
+            <div class="shop-state-sub">${escapeHtml(c.orderClosedCopy)}</div>
           </div>
-          <div class="shop-countdown-wrap">
-            <div class="shop-deadline">${escapeHtml(c.closed)}</div>
-          </div>
+          <div class="shop-state-badge">${escapeHtml(c.closed)}</div>
         </div>
       `;
       return;
@@ -366,46 +378,52 @@
 
     const totalQuantity = getCartTotalQuantity();
     const pickup = getPickup();
+    const deadlineText = getShopDeadlineText();
     shopRoot.className = '';
     shopRoot.innerHTML = `
-      <div class="shop-hero">
-        <div class="shop-hero-copy">
-          <div class="shop-kicker">${escapeHtml(c.weeklyMenu)}</div>
-          <div class="shop-title">${escapeHtml((state.weeklyOrder && (state.weeklyOrder.title || state.weeklyOrder.name)) || c.weeklyMenu)}</div>
-          <div class="shop-sub">${escapeHtml((state.weeklyOrder && (state.weeklyOrder.description || state.weeklyOrder.summary)) || c.orderClosedCopy)}</div>
+      <div class="shop-menu-shell">
+        <div class="shop-menu-hero">
+          <div class="shop-menu-copy">
+            <div class="shop-menu-title">${escapeHtml(c.weeklyMenu)}</div>
+          </div>
+          <div class="shop-menu-status">${escapeHtml(isWeeklyOpen() ? c.open : c.closed)}</div>
         </div>
-        <div class="shop-countdown-wrap">${renderCountdown(state.weeklyOrder && (state.weeklyOrder.order_deadline_at || state.weeklyOrder.end_at || state.weeklyOrder.close_at))}</div>
-      </div>
-      <div class="shop-toolbar">
-        <div class="pickup-current">
-          <span class="pickup-current-label">${escapeHtml(c.pickupInfo)}</span>
-          <span class="pickup-current-value">${escapeHtml((pickup && getPickupLabel(pickup)) || c.pickupSelect)}</span>
-          <span class="pickup-current-meta">${escapeHtml((pickup && localizePickupText([pickup.time, pickup.zipcode].filter(Boolean).join(' · '))) || '')}</span>
+        <div class="shop-menu-head">
+          <div class="pickup-current">
+            <span class="pickup-current-label">${escapeHtml(c.pickupInfo)}</span>
+            <span class="pickup-current-value">${escapeHtml((pickup && getPickupLabel(pickup)) || c.pickupSelect)}</span>
+            <span class="pickup-current-meta">${escapeHtml((pickup && localizePickupText([pickup.time, pickup.zipcode].filter(Boolean).join(' · '))) || '')}</span>
+          </div>
+          <div class="shop-menu-side">
+            <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>
+          </div>
         </div>
-        <div class="shop-sections">
-          <button class="shop-secondary-button" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>
-          <button class="shop-secondary-button" type="button" data-shop-action="profile">${escapeHtml(state.auth && state.auth.user ? (state.auth.user.profile?.nickname || state.auth.user.nickname || c.nickname) : c.completeProfile)}</button>
-        </div>
-      </div>
-      <div class="shop-grid">
+        <div class="shop-menu-divider"></div>
+        <div class="shop-grid shop-grid--catalog">
         ${state.products.map((product) => {
           const quantity = state.cartQuantities[product.id] || 0;
           const cap = Math.min(product.stock || Infinity, product.limit || Infinity);
           return `
             <article class="shop-card">
-              ${product.image ? `<img class="shop-card-image" src="${escapeHtml(product.image)}" alt="${escapeHtml(product.title)}" loading="lazy">` : ''}
+              <div class="shop-card-media">
+                ${product.stock ? `<div class="shop-card-stock">${escapeHtml(c.stock)} ${product.stock}</div>` : ''}
+                ${product.image
+                  ? `<img class="shop-card-image" src="${escapeHtml(product.image)}" alt="${escapeHtml(product.title)}" loading="lazy">`
+                  : `<div class="shop-card-placeholder">
+                      <div class="shop-card-placeholder-icon">+</div>
+                      <div class="shop-card-placeholder-title">${escapeHtml(product.title)}</div>
+                    </div>`
+                }
+              </div>
               <div class="shop-card-body">
-                <div class="shop-card-top">
-                  <div class="shop-card-category">${escapeHtml(product.category)}</div>
-                  <div class="shop-card-badge">${product.stock ? `${escapeHtml(c.stock)} ${product.stock}` : ''}</div>
-                </div>
                 <div class="shop-card-title">${escapeHtml(product.title)}</div>
-                <div class="shop-card-meta">
-                  ${product.limit ? `<span>${escapeHtml(c.limit)} ${product.limit}</span>` : ''}
-                </div>
-                <div class="shop-card-desc">${escapeHtml(product.desc || '')}</div>
+                ${product.desc ? `<div class="shop-card-desc">${escapeHtml(product.desc)}</div>` : ''}
+                ${product.limit ? `<div class="shop-card-meta"><span>${escapeHtml(c.limit)} ${product.limit}</span></div>` : ''}
                 <div class="shop-card-bottom">
-                  <div class="shop-card-price">${escapeHtml(product.price)}</div>
+                  <div class="shop-card-price">
+                    <span class="shop-card-price-label">${escapeHtml(getLang() === 'en' ? 'Single item' : '单件预定')}</span>
+                    <strong>${escapeHtml(product.price)}</strong>
+                  </div>
                   <div class="shop-stepper">
                     <button class="shop-step" type="button" data-shop-action="decrease" data-id="${product.id}" ${quantity <= 0 ? 'disabled' : ''}>−</button>
                     <span class="shop-qty">${quantity}</span>
@@ -416,9 +434,13 @@
             </article>
           `;
         }).join('')}
+        </div>
       </div>
       <div class="shop-submit-bar">
-        <div class="shop-submit-summary">${escapeHtml(c.selected)} ${totalQuantity} ${escapeHtml(c.pieces)}</div>
+        <div class="shop-submit-summary">
+          <strong>${escapeHtml(c.selected)} ${totalQuantity} ${escapeHtml(c.pieces)}</strong>
+          <span>${escapeHtml([pickup ? getPickupLabel(pickup) : '', deadlineText].filter(Boolean).join(' · '))}</span>
+        </div>
         <button class="shop-submit-button" type="button" data-shop-action="review">${escapeHtml(c.reviewOrder)}</button>
       </div>
     `;
@@ -440,6 +462,19 @@
     if (!overlay) return;
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
+  }
+
+  async function ensureGuestAuth() {
+    if (state.auth && state.auth.user) return state.auth;
+    const clientId = getSiteClientId();
+    const suffix = clientId.slice(-4).toUpperCase();
+    const nickname = getLang() === 'en' ? `Guest ${suffix}` : `网页顾客 ${suffix}`;
+    const auth = await siteApiRequest('/api/auth/local-login', {
+      method: 'POST',
+      body: { client_id: clientId, nickname }
+    });
+    saveSiteAuth(auth);
+    return auth;
   }
 
   function closeOverlay(overlay, body) {
@@ -551,10 +586,7 @@
 
   async function submitWebOrder() {
     const c = copy();
-    if (!state.auth || !state.auth.user) {
-      renderProfileOverlay();
-      return;
-    }
+    await ensureGuestAuth();
     const items = getSelectedItems();
     if (!items.length) {
       alert(c.emptyCart);
