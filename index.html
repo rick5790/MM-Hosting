@@ -125,13 +125,24 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
 .nav-main{display:flex;justify-content:space-between;align-items:center;padding:0 3rem;height:52px;}
 .nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;min-height:52px;flex:0 0 auto;}
 .nav-logo-mark{width:28px;height:28px;object-fit:contain;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
-.nav-actions{display:flex;align-items:center;gap:.65rem;min-height:52px;flex:0 0 auto;margin-left:auto;}
+.nav-actions{display:flex;align-items:center;gap:.8rem;min-height:52px;flex:0 0 auto;margin-left:auto;}
+.nav-profile{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.06);color:var(--bg);cursor:pointer;box-shadow:0 10px 22px rgba(0,0,0,.14);transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;}
+.nav-profile:hover{background:rgba(245,237,224,.14);border-color:rgba(255,255,255,.14);transform:translateY(-1px);box-shadow:0 14px 26px rgba(0,0,0,.18);}
+.nav-icon-mark{width:22px;height:22px;display:block;}
 .nav-book{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:.68rem 1.5rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:#2a170a;color:var(--bg);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;box-shadow:0 8px 18px rgba(0,0,0,.18);}
 .nav-book:hover{background:#3a2010;border-color:rgba(255,255,255,.12);transform:translateY(-1px);}
-.nav-lang{display:inline-flex;align-items:center;justify-content:center;gap:.38rem;padding:.52rem .9rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.08);color:rgba(245,237,224,.78);font-size:11px;font-weight:600;font-family:inherit;letter-spacing:.06em;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease,color .2s ease;}
-.nav-lang:hover{background:rgba(245,237,224,.14);border-color:rgba(255,255,255,.14);transform:translateY(-1px);}
-.nav-lang .is-active{color:var(--bg);}
-.nav-lang-sep{color:rgba(245,237,224,.32);}
+.nav-book-header{width:52px;min-width:52px;min-height:52px;height:52px;padding:0;border-radius:999px;background:rgba(245,237,224,.06);color:var(--bg);box-shadow:0 10px 22px rgba(0,0,0,.14);}
+.nav-book-header:hover{background:rgba(245,237,224,.14);border-color:rgba(255,255,255,.14);box-shadow:0 14px 26px rgba(0,0,0,.18);}
+.nav-book-header .nav-book-label{display:none;}
+.nav-book-header .nav-book-icon-mark{display:block;width:22px;height:22px;}
+.nav-lang{display:none;}
+.lang-switch-track{position:relative;width:34px;height:18px;border-radius:999px;background:rgba(245,237,224,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);transition:background .2s ease;}
+.lang-switch-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:999px;background:#fff8f0;box-shadow:0 2px 8px rgba(0,0,0,.22);transition:transform .22s ease,background .22s ease;}
+.lang-switch-text{display:inline-flex;align-items:center;gap:.28rem;font-size:10px;line-height:1;}
+.lang-switch-zh,.lang-switch-en{opacity:.54;transition:opacity .2s ease,color .2s ease;}
+.nav-lang:not(.is-en) .lang-switch-zh{opacity:1;color:inherit;}
+.nav-lang.is-en .lang-switch-en{opacity:1;color:inherit;}
+.nav-lang.is-en .lang-switch-thumb{transform:translateX(16px);}
 .mobile-drawer[hidden]{display:none;}
 .mobile-drawer{position:fixed;inset:0;z-index:260;}
 .mobile-drawer-backdrop{position:absolute;inset:0;background:rgba(20,10,4,.36);backdrop-filter:blur(10px);}
@@ -337,13 +348,14 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
 .card.is-active .card-foot{opacity:1;transform:translateY(0);}
 
 .marquee{display:none;}
-.shop-entry{padding:4.5rem 2rem 1.2rem;background:var(--bg);}
-.shop-shell{max-width:1080px;margin:0 auto;padding:2rem 2rem 2.15rem;border-radius:30px;background:linear-gradient(135deg,rgba(248,241,230,.96),rgba(239,225,206,.98));border:1px solid rgba(196,153,106,.2);box-shadow:0 22px 56px rgba(45,31,15,.08);}
-.shop-entry-head{display:flex;align-items:end;justify-content:space-between;gap:1.5rem;margin-bottom:1.35rem;}
-.shop-entry-copy{max-width:680px;}
-.shop-entry-copy .sec-eye,.shop-entry-copy .sec-title,.shop-entry-copy .sec-sub{text-align:left;}
-.shop-entry-copy .sec-sub{margin-bottom:0;max-width:640px;}
-.shop-entry-cta{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:.8rem 1.35rem;border-radius:999px;background:var(--dark);color:var(--bg);text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.04em;box-shadow:0 12px 26px rgba(26,15,5,.18);}
+.shop-entry{padding:4rem 2rem 1.2rem;background:var(--bg);}
+.shop-shell{max-width:1080px;margin:0 auto;padding:2rem 2rem 2.15rem;border-radius:30px;background:linear-gradient(135deg,rgba(248,241,230,.96),rgba(239,225,206,.98));border:1px solid rgba(196,153,106,.2);box-shadow:0 22px 56px rgba(45,31,15,.08);text-align:center;}
+.shop-entry-head{display:flex;flex-direction:column;align-items:center;gap:1.15rem;margin-bottom:1rem;}
+.shop-entry-copy{max-width:720px;}
+.shop-entry-copy .sec-eye,.shop-entry-copy .sec-title,.shop-entry-copy .sec-sub{text-align:center;}
+.shop-entry-copy .sec-sub{margin-bottom:0;max-width:640px;margin-left:auto;margin-right:auto;}
+.shop-entry-cta{display:inline-flex;align-items:center;justify-content:center;width:min(100%,640px);min-height:62px;padding:1rem 1.6rem;border-radius:999px;background:var(--dark);color:var(--bg);text-decoration:none;font-size:15px;font-weight:700;letter-spacing:.04em;box-shadow:0 16px 30px rgba(26,15,5,.18);}
+.shop-entry-cta:hover{background:#3a2010;transform:translateY(-1px);}
 .shop-entry-status{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem;}
 .shop-pill{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:.55rem .95rem;border-radius:999px;background:rgba(255,255,255,.74);border:1px solid rgba(196,153,106,.18);font-size:12px;color:#6c5747;letter-spacing:.04em;}
 .shop-pill.is-open{background:rgba(124,101,97,.92);border-color:rgba(124,101,97,.92);color:#fffaf6;}
@@ -491,12 +503,58 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
 .contact-code-box{width:220px;height:220px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 36px rgba(45,31,15,.12);}
 .contact-code-box img{width:100%;height:100%;object-fit:contain;padding:12px;background:#fff;border-radius:18px;}
 
-footer{background:var(--dark);padding:3rem 3rem 2rem;}
-.ft{display:flex;justify-content:space-between;align-items:flex-start;gap:3rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.06);}
-.ft-brand{font-size:14px;font-weight:500;color:var(--bg);margin-bottom:.4rem;}
-.ft-tag{font-size:12px;color:rgba(245,237,224,.35);line-height:1.7;}
-.ft-credit{display:inline-block;margin-top:.7rem;font-size:11px;color:rgba(245,237,224,.42);text-decoration:none;letter-spacing:.02em;transition:color .2s;}
-.ft-credit:hover{color:var(--accent);}
+footer{background:var(--dark);padding:3.25rem 3rem 2rem;}
+.ft{display:grid;grid-template-columns:minmax(340px,1.5fr) minmax(180px,.72fr) minmax(180px,.72fr);align-items:flex-start;gap:4.5rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.06);}
+.ft-intro{display:flex;flex-direction:column;align-items:flex-start;}
+.ft-brand{font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:2.35rem;font-style:italic;font-weight:500;letter-spacing:.01em;line-height:1;color:var(--bg);margin-bottom:1.15rem;}
+.ft-tag{display:block;max-width:320px;margin:0 0 1rem;font-size:1.05rem;color:rgba(245,237,224,.72);line-height:1.9;}
+.ft-credit{display:block;margin-top:0;font-size:.9rem;color:rgba(245,237,224,.36);text-decoration:none;letter-spacing:.02em;transition:color .2s;line-height:1.75;}
+.ft-credit:hover{color:rgba(245,237,224,.62);}
+.ft-location{margin:0 0 .5rem;font-size:.96rem;color:rgba(245,237,224,.36);line-height:1.75;}
+.ft-social{display:flex;align-items:center;gap:1rem;margin-top:1.35rem;}
+.ft-social-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:999px;
+  border:1px solid rgba(245,237,224,.16);
+  color:rgba(245,237,224,.68);
+  text-decoration:none;
+  transition:border-color .2s ease,color .2s ease,transform .2s ease,background .2s ease;
+}
+.ft-social-link:hover{
+  transform:translateY(-1px);
+  border-color:rgba(245,237,224,.34);
+  color:var(--bg);
+  background:rgba(245,237,224,.04);
+}
+.ft-social-link svg{width:20px;height:20px;display:block;}
+.ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"] svg{display:none;}
+.ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::before{
+  content:'小红书';
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:24px;
+  min-height:16px;
+  padding:2px 4px;
+  border-radius:999px;
+  border:1px solid currentColor;
+  font-size:7px;
+  font-weight:700;
+  line-height:1;
+  letter-spacing:.02em;
+  color:currentColor;
+  text-align:center;
+  white-space:nowrap;
+}
+body[data-lang="en"] .ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::before{
+  content:'Rednote';
+  min-width:30px;
+  font-size:6.6px;
+}
 .ft-col-title{font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.7rem;}
 .ft-col a{display:block;font-size:12px;color:rgba(245,237,224,.4);text-decoration:none;margin-bottom:.4rem;transition:color .2s;}
 .ft-col a:hover{color:var(--bg);}
@@ -615,8 +673,10 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     white-space:nowrap;
   }
   .nav-actions{gap:.5rem;}
+  .nav-profile{width:46px;height:46px;}
   .nav-book{padding:.46rem .92rem;font-size:11px;}
-  .nav-lang{padding:.46rem .74rem;font-size:10px;}
+  .nav-book-header{width:46px;min-width:46px;height:46px;}
+  .nav-lang{display:none;}
 }
 
 @media(max-width:700px){
@@ -701,7 +761,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     gap:.45rem;
     margin-left:0;
   }
+  .nav-profile{width:42px;height:42px;box-shadow:none;}
   .nav-book{padding:.42rem .9rem;font-size:11px;}
+  .nav-book-header{width:42px;min-width:42px;height:42px;box-shadow:none;}
   .nav-lang{display:none;}
   .hero-links{
     flex-wrap:nowrap;
@@ -738,7 +800,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .social-grid{grid-template-columns:1fr;}
   .contact-codes{grid-template-columns:1fr;}
   .hero,.products,.order{padding-left:1.2rem;padding-right:1.2rem;}
-  .ft{flex-direction:column;gap:2rem;}
+  .ft{grid-template-columns:1fr;gap:2rem;}
 }
 
 @media (hover:none), (pointer:coarse){
@@ -790,12 +852,19 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <span>Makkie Mua</span>
   </div>
   <div class="nav-actions">
-    <button class="nav-lang" id="langToggle" type="button" aria-label="Switch language">
-      <span class="nav-lang-zh is-active">中文</span>
-      <span class="nav-lang-sep">/</span>
-      <span class="nav-lang-en">ENG</span>
+    <button class="nav-profile" type="button" data-profile-entry aria-label="我的">
+      <svg class="nav-icon-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 20a6 6 0 0 0-12 0"></path>
+        <circle cx="12" cy="8" r="4"></circle>
+      </svg>
     </button>
-    <button class="nav-book" type="button" data-order-entry>订单入口</button>
+    <button class="nav-book nav-book-header" type="button" data-order-entry aria-label="订单入口">
+      <svg class="nav-book-icon-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 8h10l1 11H6L7 8Z"></path>
+        <path d="M9 8a3 3 0 0 1 6 0"></path>
+      </svg>
+      <span class="nav-book-label">订单入口</span>
+    </button>
   </div>
 </nav>
 
@@ -812,7 +881,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <div class="mobile-drawer-links">
       <a href="collection.html" class="mobile-drawer-link" data-mobile-drawer-link>Collection</a>
       <a href="layers.html" class="mobile-drawer-link" data-mobile-drawer-link>Layers</a>
-      <a href="instagram.html" class="mobile-drawer-link" data-mobile-drawer-link>社交媒体</a>
+      <a href="instagram.html" class="mobile-drawer-link" data-mobile-drawer-link>甜品动态</a>
       <a href="shop.html" class="mobile-drawer-link" data-mobile-drawer-link>Order Entry</a>
       <a href="contact.html" class="mobile-drawer-link" data-mobile-drawer-link>Contact</a>
       <button class="mobile-drawer-link is-language" type="button" data-mobile-lang>中文 / ENG</button>
@@ -829,9 +898,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 <div class="top-tabs">
   <div class="hero-links">
     <a href="index.html" class="btn-chip">主页</a>
-    <a href="collection.html" class="btn-chip">浏览图鉴</a>
+    <a href="collection.html" class="btn-chip">Makkie 图鉴</a>
     <a href="layers.html" class="btn-chip">层层夹心</a>
-    <a href="instagram.html" class="btn-chip">社交媒体</a>
+    <a href="instagram.html" class="btn-chip">甜品动态</a>
     <a href="contact.html" class="btn-chip">联系我们</a>
   </div>
 </div>
@@ -840,17 +909,32 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   <video class="hero-logo" autoplay muted loop playsinline preload="auto" aria-label="Makkie Mua waving logo">
     <source src="assets/video/makkie-waving-clean.webm?v=20260403-143509" type="video/webm">
   </video>
-  <div class="hero-eyebrow">마키 무아 · 独家创意甜品</div>
+  <div class="hero-eyebrow">Makkie Mua · 独家创意甜品</div>
   <img class="hero-wordmark-art" src="assets/images/brand/Makkie_Mua_Text_Original.png" alt="Makkie Mua">
   <p class="hero-sub">每一层都是手作的温度<br>Los Angeles &amp; Orange County</p>
   <div class="hero-links">
     <a href="index.html" class="btn-chip">主页</a>
-    <a href="collection.html" class="btn-chip">浏览图鉴</a>
+    <a href="collection.html" class="btn-chip">Makkie 图鉴</a>
     <a href="layers.html" class="btn-chip">层层夹</a>
-    <a href="instagram.html" class="btn-chip">社交媒体</a>
+    <a href="instagram.html" class="btn-chip">甜品动态</a>
     <a href="contact.html" class="btn-chip">联系我们</a>
   </div>
 </div>
+
+<section class="shop-entry">
+  <div class="shop-shell">
+    <div class="shop-entry-head">
+      <div class="shop-entry-copy">
+        <div class="sec-eye" id="shopEntryEye">订单入口</div>
+        <h2 class="sec-title" id="shopEntryTitle">本周预定入口</h2>
+        <p class="sec-sub" id="shopEntrySub">每周定时开放，请关注我们的社交媒体获取最新信息</p>
+      </div>
+      <button class="shop-entry-cta" id="shopEntryCta" type="button" data-order-entry>进入订单</button>
+    </div>
+    <div class="shop-entry-status" id="shopEntryStatus" style="justify-content:center;">
+    </div>
+  </div>
+</section>
 
 <div class="marquee">
   <div class="marquee-inner">
@@ -883,7 +967,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 <section id="products" class="products">
   <div class="sec-eye">看看里面有什么</div>
   <h2 class="sec-title">探索层层夹心</h2>
-  <p class="sec-sub">每一款都是改良配方，小批量手工现制</p>
+  <p class="sec-sub">看看夹心里有什么</p>
 
   <div class="grid" style="margin-bottom:2px;">
     <div class="card">
@@ -1192,7 +1276,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <div class="social-head">
       <div>
         <div class="sec-eye">Instagram</div>
-        <h2 class="sec-title">最近的甜品动态</h2>
+        <h2 class="sec-title">甜品动态</h2>
       </div>
       <a href="https://www.instagram.com/makkiemua/" class="btn-dark" target="_blank" rel="noreferrer">查看主页</a>
     </div>
@@ -1257,32 +1341,47 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 
 <footer id="footer">
   <div class="ft">
-    <div>
+    <div class="ft-intro">
       <div class="ft-brand">Makkie Mua</div>
-      <div class="ft-tag">마키 무아 · 独家创意甜品<br>Butter off with Makkie© · Los Angeles &amp; Orange County</div>
+      <div class="ft-tag">Butter off with Makkie</div>
+      <div class="ft-location">Los Angeles, Orange County</div>
       <a class="ft-credit" href="https://www.instagram.com/littlejulia_art/" target="_blank" rel="noreferrer">Makkie 艺术设计 by @littlejulia_art</a>
+      <div class="ft-social">
+        <a class="ft-social-link" href="https://www.instagram.com/makkiemua/" target="_blank" rel="noreferrer" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="5.5" stroke="currentColor" stroke-width="1.7"/>
+            <circle cx="12" cy="12" r="4.1" stroke="currentColor" stroke-width="1.7"/>
+            <circle cx="17.2" cy="6.8" r="1.15" fill="currentColor"/>
+          </svg>
+        </a>
+        <a class="ft-social-link" href="https://xhslink.com/m/2ohrymfwufZ" target="_blank" rel="noreferrer" aria-label="Xiaohongshu">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="4.8" fill="#bc8450"/>
+            <rect x="3.35" y="3.35" width="17.3" height="17.3" rx="4.45" stroke="#8e6136" stroke-width=".7"/>
+            <text x="12" y="13.15" text-anchor="middle" fill="#fff8ee" font-size="4.25" font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif" font-weight="700">小红书</text>
+          </svg>
+        </a>
+      </div>
     </div>
     <div>
       <div class="ft-col-title">菜单</div>
       <div class="ft-col">
-        <a href="collection.html">浏览图鉴</a>
+        <a href="index.html">主页</a>
+        <a href="collection.html">Makkie 图鉴</a>
         <a href="layers.html">层层夹心</a>
-        <a href="instagram.html">Instagram </a>
-        <a href="shop.html">订单入口</a>
-        <a href="contact.html">联系我们</a>
+        <a href="instagram.html">甜品动态</a>
+        <a href="shop.html">马上预定</a>
       </div>
     </div>
     <div>
-      <div class="ft-col-title">联系</div>
+      <div class="ft-col-title">关于 Makkie</div>
       <div class="ft-col">
-        <a href="https://www.instagram.com/makkiemua/">Instagram @MakkieMua</a>
-        <a href="#">小红书 @MakkieMua</a>
-        <a href="mailto:makkiemua@gmail.com">邮箱 MakkieMua@gmail.com</a>
-        <a href="tel:4086468740">电话 408-646-8740</a>
+        <a href="contact.html">联系我们</a>
+        <a href="intro.html">Makkie 的故事</a>
       </div>
     </div>
   </div>
-  <div class="ft-copy">© 2026 Makkie Mua · 独家创意甜品 · Southern California</div>
+  <div class="ft-copy">© 2026 Makkie Mua. All Rights Reserved.</div>
 </footer>
 
 <div class="menu-overlay" id="menuOverlay" hidden>
@@ -1341,6 +1440,7 @@ const mobileDrawerCloseButtons = document.querySelectorAll('[data-mobile-drawer-
 const mobileDrawerLinks = document.querySelectorAll('[data-mobile-drawer-link]');
 const mobileLangButtons = document.querySelectorAll('[data-mobile-lang]');
 const orderEntryButtons = document.querySelectorAll('[data-order-entry]');
+const profileEntryButtons = document.querySelectorAll('[data-profile-entry]');
 const shopRoot = document.getElementById('shopRoot');
 const shopEntryStatus = document.getElementById('shopEntryStatus');
 const orderReviewOverlay = document.getElementById('orderReviewOverlay');
@@ -2311,6 +2411,10 @@ orderEntryButtons.forEach((button) => button.addEventListener('click', () => {
   closeMobileDrawer();
   window.location.href = 'shop.html';
 }));
+profileEntryButtons.forEach((button) => button.addEventListener('click', () => {
+  closeMobileDrawer();
+  renderProfileOverlay();
+}));
 
 checkLocalAuth().finally(loadShopData);
 
@@ -2647,12 +2751,13 @@ const bilingualCopy = {
   zh: {
     htmlLang: 'zh',
     toggleAria: '切换到 English',
-    navBook: '订单入口',
+    profileEntry: '我的',
+    navBook: '马上预定',
     shopEntry: {
-      eye: '订单入口',
-      title: '本周预定入口',
-      sub: '和小程序同步读取本周菜单、开放状态与自提信息。预定开启时可直接在网页下单。',
-      cta: '进入订单'
+      eye: '马上预定',
+      title: '本周预定',
+      sub: '每周定时开放，请关注我们的社交媒体获取最新信息',
+      cta: '马上预定'
     },
     seo: {
       title: 'Makkie Mua | 手作创意甜品 | Los Angeles & Orange County',
@@ -2661,12 +2766,12 @@ const bilingualCopy = {
     },
     hero: {
       videoAria: 'Makkie Mua 挥手 logo',
-      eyebrow: '마키 무아 · 独家创意甜品',
+      eyebrow: 'Makkie Mua · 独家创意甜品',
       sub: '每一层都是手作的温度<br>Los Angeles &amp; Orange County',
-      links: ['主页', '浏览图鉴', '层层夹心', '社交媒体', '联系我们']
+      links: ['主页', 'Makkie 图鉴', '层层夹心', '甜品动态', '联系我们']
     },
     menu: {
-      headEye: '浏览图鉴',
+      headEye: 'Makkie 图鉴',
       headTitle: '甜品图鉴',
       cardIcon: '查看图鉴',
       cards: {
@@ -2741,7 +2846,7 @@ const bilingualCopy = {
     products: {
       eye: '看看里面有什么',
       title: '层层夹心',
-      sub: '每一款都是改良配方，小批量手工现制',
+      sub: '看看夹心里有什么',
       cards: [
         { nameHtml: '<span>MakkieMua</span><span>胖曲奇</span>', secondary: '招牌胖曲奇', tags: ['双层饼干', '轻奶油夹心', '招牌品牌款'], footHtml: '招牌饼干夹心 · 轻奶油<br>简洁层次造型' },
         { nameHtml: '戚风三明治', secondary: '轻盈夹心蛋糕', tags: ['戚风蛋糕层', '鲜芒果 · 轻奶油', '戚风底层'], footHtml: '戚风蛋糕 · 新鲜水果<br>轻盈奶油 · 手工现切' },
@@ -2753,7 +2858,7 @@ const bilingualCopy = {
     },
     instagram: {
       profileTag: '公开主页作品精选',
-      title: '最近的甜品动态',
+      title: '甜品动态',
       button: '查看主页',
       openPost: '点开看完整帖子'
     },
@@ -2764,12 +2869,13 @@ const bilingualCopy = {
       labels: ['微信', '小红书作品']
     },
     footer: {
-      tagline: '마키 무아 · 独家创意甜品<br>Butter off with Makkie © · Los Angeles &amp; Orange County',
+      tagline: 'Butter off with Makkie',
       credit: 'Makkie 艺术设计 by @littlejulia_art',
-      sectionTitles: ['菜单', '联系'],
-      menuLinks: ['浏览图鉴', '层层夹心', 'Instagram', '订单入口', '联系我们'],
-      contactLinks: ['Instagram @MakkieMua', '小红书 @MakkieMua', '邮箱 MakkieMua@gmail.com', '电话 408-646-8740'],
-      copy: '© 2026 Makkie Mua · 独家创意甜品 · Southern California'
+      location: 'Los Angeles, Orange County',
+      sectionTitles: ['网站', '关于 Makkie'],
+      menuLinks: ['主页', 'Makkie 图鉴', '层层夹心', '甜品动态', '马上预定'],
+      aboutLinks: ['联系我们', 'Makkie 的故事'],
+      copy: '© 2026 Makkie Mua. All Rights Reserved.'
     },
     overlays: {
       closeMenu: '关闭菜单',
@@ -2781,7 +2887,8 @@ const bilingualCopy = {
   en: {
     htmlLang: 'en',
     toggleAria: 'Switch to 中文',
-    navBook: 'Order Entry',
+    profileEntry: 'Profile',
+      navBook: 'Order Now',
     shopEntry: {
       eye: 'Order Entry',
       title: 'Weekly Ordering',
@@ -2797,7 +2904,7 @@ const bilingualCopy = {
       videoAria: 'Makkie Mua waving logo',
       eyebrow: 'Makkie Mua · Signature Creative Desserts',
       sub: 'Handmade warmth in every layer<br>Los Angeles &amp; Orange County',
-      links: ['Home', 'Browse Collection', 'Explore the Layers', 'Social', 'Contact']
+      links: ['Home', 'Collection', 'Explore the Layers', 'Recent Post', 'Contact']
     },
     menu: {
       headEye: 'Browse Collection',
@@ -2887,7 +2994,7 @@ const bilingualCopy = {
     },
     instagram: {
       profileTag: 'Highlights from the public profile',
-      title: 'Latest Dessert Posts',
+      title: 'Recent Post',
       button: 'View Profile',
       openPost: 'Open full post'
     },
@@ -2898,12 +3005,13 @@ const bilingualCopy = {
       labels: ['WeChat', 'Rednote Highlights']
     },
     footer: {
-      tagline: '마키 무아 · Signature creative desserts<br>Butter off with Makkie © · Los Angeles &amp; Orange County',
+      tagline: 'Butter off with Makkie',
       credit: 'Makkie art direction by @littlejulia_art',
-      sectionTitles: ['Menu', 'Contact'],
-      menuLinks: ['Browse Collection', 'Explore the Layers', 'Instagram', 'Order Entry', 'Contact'],
-      contactLinks: ['Instagram @MakkieMua', 'Rednote @MakkieMua', 'Email MakkieMua@gmail.com', 'Phone 408-646-8740'],
-      copy: '© 2026 Makkie Mua · Signature creative desserts · Southern California'
+      location: 'Los Angeles, Orange County',
+      sectionTitles: ['Shop', 'About Makkie'],
+      menuLinks: ['Home', 'Collection', 'Layers', 'Recent Post', 'Order Now'],
+      aboutLinks: ['Contact', 'Makkie Story'],
+      copy: '© 2026 Makkie Mua. All Rights Reserved.'
     },
     overlays: {
       closeMenu: 'Close menu',
@@ -2991,15 +3099,22 @@ function applyBilingualLanguage(lang) {
   } catch (error) {}
 
   if (bilingualLangToggle) {
-    const zh = bilingualLangToggle.querySelector('.nav-lang-zh');
-    const en = bilingualLangToggle.querySelector('.nav-lang-en');
-    if (zh) zh.classList.toggle('is-active', lang === 'zh');
-    if (en) en.classList.toggle('is-active', lang === 'en');
+    bilingualLangToggle.classList.toggle('is-en', lang === 'en');
     bilingualLangToggle.setAttribute('aria-label', copy.toggleAria);
   }
 
   document.querySelectorAll('.nav-book').forEach((button) => {
-    button.textContent = copy.navBook;
+    const label = button.querySelector('.nav-book-label');
+    if (label) {
+      label.textContent = copy.navBook;
+    } else {
+      button.textContent = copy.navBook;
+    }
+    button.setAttribute('aria-label', copy.navBook);
+  });
+  document.querySelectorAll('[data-profile-entry]').forEach((button) => {
+    button.setAttribute('aria-label', copy.profileEntry);
+    button.setAttribute('title', copy.profileEntry);
   });
   bilingualSetText('#shopEntryEye', copy.shopEntry.eye);
   bilingualSetText('#shopEntryTitle', copy.shopEntry.title);
@@ -3070,6 +3185,10 @@ function applyBilingualLanguage(lang) {
 
   bilingualSetHTML('.ft-tag', copy.footer.tagline);
   bilingualSetText('.ft-credit', copy.footer.credit);
+  bilingualSetText('.ft-location', copy.footer.location);
+  document.querySelectorAll('.ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]').forEach((link) => {
+    link.setAttribute('aria-label', lang === 'en' ? 'Rednote' : '小红书');
+  });
   document.querySelectorAll('.ft-col-title').forEach((title, index) => {
     title.textContent = copy.footer.sectionTitles[index] || title.textContent;
   });
@@ -3082,7 +3201,7 @@ function applyBilingualLanguage(lang) {
   }
   if (footerCols[1]) {
     footerCols[1].querySelectorAll('a').forEach((link, index) => {
-      link.textContent = copy.footer.contactLinks[index] || link.textContent;
+      link.textContent = copy.footer.aboutLinks[index] || link.textContent;
     });
   }
   bilingualSetText('.ft-copy', copy.footer.copy);
