@@ -708,7 +708,13 @@
   function resetCountdown() {
     if (countdownTimer) window.clearInterval(countdownTimer);
     countdownTimer = window.setInterval(() => {
-      if (!state.loading && state.weeklyOrder) renderShop();
+      if (!state.loading && state.weeklyOrder) {
+        updateEntryStatus();
+        const countdownWrap = document.querySelector('[data-shop-countdown]');
+        if (countdownWrap) {
+          countdownWrap.innerHTML = renderCountdown(state.weeklyOrder.order_deadline_at || state.weeklyOrder.end_at || state.weeklyOrder.close_at);
+        }
+      }
     }, 1000);
   }
 
