@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
@@ -113,7 +113,7 @@ gtag('config', 'G-TTK9YKP3GT');
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
 
-nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--dark);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:100;min-height:68px;overflow:visible;}
+nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dark);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:120;min-height:68px;overflow:visible;touch-action:pan-y;transform:translateZ(0);backface-visibility:hidden;}
 .nav-menu{display:none;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.06);color:var(--bg);cursor:pointer;flex:0 0 auto;}
 .nav-menu-lines,.nav-menu-lines::before,.nav-menu-lines::after{display:block;position:relative;width:18px;height:2px;border-radius:999px;background:currentColor;transition:transform .22s ease,opacity .18s ease;}
 .nav-menu-lines::before,.nav-menu-lines::after{content:'';position:absolute;left:0;}
@@ -126,16 +126,17 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
 .nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;min-height:52px;flex:0 0 auto;}
 .nav-logo-mark{width:28px;height:28px;object-fit:contain;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
 .nav-actions{display:flex;align-items:center;gap:.8rem;min-height:52px;flex:0 0 auto;margin-left:auto;}
-.nav-profile{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.06);color:var(--bg);cursor:pointer;box-shadow:0 10px 22px rgba(0,0,0,.14);transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;}
+.nav-profile{display:inline-flex;align-items:center;justify-content:center;flex:0 0 52px;width:52px;min-width:52px;height:52px;min-height:52px;padding:0;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.06);color:var(--bg);cursor:pointer;box-shadow:0 10px 22px rgba(0,0,0,.14);transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;-webkit-appearance:none;appearance:none;}
 .nav-profile:hover{background:rgba(245,237,224,.14);border-color:rgba(255,255,255,.14);transform:translateY(-1px);box-shadow:0 14px 26px rgba(0,0,0,.18);}
 .nav-icon-mark{width:22px;height:22px;display:block;}
 .nav-book{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:.68rem 1.5rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:#2a170a;color:var(--bg);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;box-shadow:0 8px 18px rgba(0,0,0,.18);}
 .nav-book:hover{background:#3a2010;border-color:rgba(255,255,255,.12);transform:translateY(-1px);}
-.nav-book-header{width:52px;min-width:52px;min-height:52px;height:52px;padding:0;border-radius:999px;background:rgba(245,237,224,.06);color:var(--bg);box-shadow:0 10px 22px rgba(0,0,0,.14);}
+.nav-book-header{flex:0 0 52px;width:52px;min-width:52px;min-height:52px;height:52px;padding:0;border-radius:999px;background:rgba(245,237,224,.06);color:var(--bg);box-shadow:0 10px 22px rgba(0,0,0,.14);}
 .nav-book-header:hover{background:rgba(245,237,224,.14);border-color:rgba(255,255,255,.14);box-shadow:0 14px 26px rgba(0,0,0,.18);}
 .nav-book-header .nav-book-label{display:none;}
 .nav-book-header .nav-book-icon-mark{display:block;width:22px;height:22px;}
-.nav-lang{display:none;}
+.nav-lang{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:38px;padding:.42rem .72rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.06);color:var(--bg);font-family:inherit;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.14);transition:background .2s ease,border-color .2s ease,transform .2s ease,color .2s ease;-webkit-appearance:none;appearance:none;}
+.nav-lang:hover{background:rgba(245,237,224,.14);border-color:rgba(255,255,255,.14);transform:translateY(-1px);}
 .lang-switch-track{position:relative;width:34px;height:18px;border-radius:999px;background:rgba(245,237,224,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);transition:background .2s ease;}
 .lang-switch-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:999px;background:#fff8f0;box-shadow:0 2px 8px rgba(0,0,0,.22);transition:transform .22s ease,background .22s ease;}
 .lang-switch-text{display:inline-flex;align-items:center;gap:.28rem;font-size:10px;line-height:1;}
@@ -145,20 +146,23 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
 .nav-lang.is-en .lang-switch-thumb{transform:translateX(16px);}
 .mobile-drawer[hidden]{display:none;}
 .mobile-drawer{position:fixed;inset:0;z-index:260;}
-.mobile-drawer-backdrop{position:absolute;inset:0;background:rgba(20,10,4,.36);backdrop-filter:blur(10px);}
-.mobile-drawer-panel{position:relative;margin-left:auto;width:min(100%,420px);height:100%;background:#fffaf6;color:var(--text);box-shadow:-18px 0 48px rgba(20,10,4,.16);padding:1.15rem 1.1rem 1.6rem;overflow:auto;}
+.mobile-drawer-backdrop{position:absolute;inset:0;background:rgba(20,10,4,.2);backdrop-filter:blur(6px);opacity:0;transition:opacity .22s ease;}
+.mobile-drawer-panel{position:absolute;top:0;left:0;width:min(46vw, 320px);min-width:240px;max-width:100%;height:100dvh;background:#fffaf6;color:var(--text);box-shadow:18px 0 38px rgba(20,10,4,.12);padding:1rem .95rem 1.35rem;overflow:auto;transform:translateX(-100%);opacity:0;transition:transform .24s cubic-bezier(.22,1,.36,1),opacity .2s ease;touch-action:pan-y;overscroll-behavior:contain;}
+.mobile-drawer.is-open .mobile-drawer-backdrop{opacity:1;}
+.mobile-drawer.is-open .mobile-drawer-panel{transform:translateX(0);opacity:1;}
 .mobile-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-bottom:1rem;border-bottom:1px solid rgba(45,31,15,.08);}
 .mobile-drawer-brand{display:flex;align-items:center;gap:.75rem;font-size:1rem;font-weight:600;}
-.mobile-drawer-brand img{width:32px;height:32px;object-fit:contain;}
+.mobile-drawer-brand img{width:34px;height:34px;object-fit:contain;}
 .mobile-drawer-close{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;border:1px solid rgba(45,31,15,.1);background:#fff;color:var(--text);font-size:20px;cursor:pointer;}
 .mobile-drawer-links{display:flex;flex-direction:column;margin-top:.6rem;}
-.mobile-drawer-link{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem .15rem;border-bottom:1px solid rgba(71,51,33,.12);color:inherit;text-decoration:none;font-size:1.08rem;letter-spacing:.08em;text-transform:uppercase;}
+.mobile-drawer-link{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.95rem .15rem;border-bottom:1px solid rgba(71,51,33,.12);color:inherit;text-decoration:none;font-size:.98rem;letter-spacing:.02em;text-transform:none;position:relative;overflow:visible;isolation:isolate;outline:none;}
 .mobile-drawer-link::after{content:'\203A';font-size:1.2rem;color:var(--accent);}
 .mobile-drawer-link.is-language{background:none;border:none;width:100%;font-family:inherit;cursor:pointer;text-align:left;}
+.mobile-drawer-link .btn-chip-goo{inset:-10px;}
 .mobile-drawer-actions{display:flex;flex-direction:column;gap:.75rem;margin-top:1.2rem;}
 .mobile-drawer-actions .nav-book,
 .mobile-drawer-actions .nav-lang{justify-content:center;}
-.mobile-drawer-foot{margin-top:1.4rem;padding-top:1rem;border-top:1px solid rgba(45,31,15,.08);font-size:.9rem;color:var(--muted);line-height:1.6;}
+.mobile-drawer-foot{display:none;}
 
 .top-tabs{
   position:relative;
@@ -349,14 +353,17 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
 
 .marquee{display:none;}
 .shop-entry{padding:4rem 2rem 1.2rem;background:var(--bg);}
-.shop-shell{max-width:1080px;margin:0 auto;padding:2rem 2rem 2.15rem;border-radius:30px;background:linear-gradient(135deg,rgba(248,241,230,.96),rgba(239,225,206,.98));border:1px solid rgba(196,153,106,.2);box-shadow:0 22px 56px rgba(45,31,15,.08);text-align:center;}
-.shop-entry-head{display:flex;flex-direction:column;align-items:center;gap:1.15rem;margin-bottom:1rem;}
-.shop-entry-copy{max-width:720px;}
+.shop-shell{position:relative;display:grid;place-items:center;max-width:1080px;margin:0 auto;padding:2rem 2rem 2.15rem;border-radius:30px;background:linear-gradient(135deg,rgba(248,241,230,.96),rgba(239,225,206,.98));border:1px solid rgba(196,153,106,.2);box-shadow:0 22px 56px rgba(45,31,15,.08);text-align:center;overflow:hidden;isolation:isolate;}
+.shop-silk-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0;opacity:.64;mix-blend-mode:multiply;}
+.shop-shell::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%, rgba(255,255,255,.72), transparent 46%),linear-gradient(180deg,rgba(255,250,244,.32),rgba(245,237,224,.22));pointer-events:none;z-index:0;}
+.shop-entry-head{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;gap:1.15rem;margin:0 auto 1rem;}
+.shop-entry-copy{position:relative;z-index:1;width:min(100%,720px);display:flex;flex-direction:column;align-items:center;margin:0 auto;}
 .shop-entry-copy .sec-eye,.shop-entry-copy .sec-title,.shop-entry-copy .sec-sub{text-align:center;}
-.shop-entry-copy .sec-sub{margin-bottom:0;max-width:640px;margin-left:auto;margin-right:auto;}
-.shop-entry-cta{display:inline-flex;align-items:center;justify-content:center;width:min(100%,640px);min-height:62px;padding:1rem 1.6rem;border-radius:999px;background:var(--dark);color:var(--bg);text-decoration:none;font-size:15px;font-weight:700;letter-spacing:.04em;box-shadow:0 16px 30px rgba(26,15,5,.18);}
+.shop-entry-copy .sec-eye{display:none;}
+.shop-entry-copy .sec-sub{margin-bottom:0;max-width:640px;margin-left:auto;margin-right:auto;color:#5f4633;font-weight:400;}
+.shop-entry-cta{display:inline-flex;align-items:center;justify-content:center;width:min(100%,640px);min-height:62px;margin-top:1.5rem;padding:1rem 1.6rem;border-radius:999px;background:var(--dark);color:var(--bg);text-decoration:none;font-size:15px;font-weight:700;letter-spacing:.04em;box-shadow:0 16px 30px rgba(26,15,5,.18);position:relative;z-index:1;}
 .shop-entry-cta:hover{background:#3a2010;transform:translateY(-1px);}
-.shop-entry-status{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem;}
+.shop-entry-status{display:none;flex-wrap:wrap;gap:.75rem;margin-top:1rem;}
 .shop-pill{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:.55rem .95rem;border-radius:999px;background:rgba(255,255,255,.74);border:1px solid rgba(196,153,106,.18);font-size:12px;color:#6c5747;letter-spacing:.04em;}
 .shop-pill.is-open{background:rgba(124,101,97,.92);border-color:rgba(124,101,97,.92);color:#fffaf6;}
 .shop-pill.is-closed{background:rgba(124,63,53,.1);border-color:rgba(124,63,53,.14);color:#7c3f35;}
@@ -497,7 +504,7 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
 .order-title-line{display:inline;}
 .order-title-line + .order-title-line{margin-left:.35ch;}
 .order .sec-sub{margin-bottom:2.5rem;}
-.contact-codes{display:grid;grid-template-columns:repeat(2,minmax(0,220px));justify-content:center;gap:1.25rem;margin-top:1rem;}
+.contact-codes{display:grid;grid-template-columns:minmax(0,220px);justify-content:center;justify-items:center;gap:1.25rem;width:100%;margin:1rem auto 0;}
 .contact-code{text-align:center;}
 .contact-code-label{font-size:12px;color:var(--muted);margin-bottom:.6rem;letter-spacing:.08em;}
 .contact-code-box{width:220px;height:220px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 36px rgba(45,31,15,.12);}
@@ -506,11 +513,14 @@ nav{display:flex;align-items:center;gap:1.25rem;padding:0 1rem;background:var(--
 footer{background:var(--dark);padding:3.25rem 3rem 2rem;}
 .ft{display:grid;grid-template-columns:minmax(340px,1.5fr) minmax(180px,.72fr) minmax(180px,.72fr);align-items:flex-start;gap:4.5rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.06);}
 .ft-intro{display:flex;flex-direction:column;align-items:flex-start;}
-.ft-brand{font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:2.35rem;font-style:italic;font-weight:500;letter-spacing:.01em;line-height:1;color:var(--bg);margin-bottom:1.15rem;}
+.ft-brand{font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:2.35rem;font-style:normal;font-weight:500;letter-spacing:.01em;line-height:1;color:var(--bg);margin-bottom:1.15rem;}
 .ft-tag{display:block;max-width:320px;margin:0 0 1rem;font-size:1.05rem;color:rgba(245,237,224,.72);line-height:1.9;}
-.ft-credit{display:block;margin-top:0;font-size:.9rem;color:rgba(245,237,224,.36);text-decoration:none;letter-spacing:.02em;transition:color .2s;line-height:1.75;}
+.ft-credit{display:flex;align-items:center;gap:.72rem;margin-top:.35rem;font-size:.9rem;color:rgba(245,237,224,.42);text-decoration:none;letter-spacing:.02em;transition:color .2s;line-height:1.75;}
 .ft-credit:hover{color:rgba(245,237,224,.62);}
-.ft-location{margin:0 0 .5rem;font-size:.96rem;color:rgba(245,237,224,.36);line-height:1.75;}
+.ft-location{display:flex;align-items:center;gap:.72rem;margin:.15rem 0 .15rem;font-size:.96rem;color:rgba(245,237,224,.42);line-height:1.75;}
+.ft-location::before,.ft-credit::before{display:inline-flex;align-items:center;justify-content:center;width:18px;min-width:18px;color:rgba(245,237,224,.72);font-size:14px;line-height:1;}
+.ft-location::before{content:'•';font-size:20px;}
+.ft-credit::before{content:'✦';font-size:13px;}
 .ft-social{display:flex;align-items:center;gap:1rem;margin-top:1.35rem;}
 .ft-social-link{
   display:inline-flex;
@@ -633,6 +643,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .btn-chip-particle{
     animation:none !important;
   }
+  .shop-silk-canvas{display:none;}
 }
 
 @media(max-width:980px){
@@ -673,10 +684,10 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     white-space:nowrap;
   }
   .nav-actions{gap:.5rem;}
-  .nav-profile{width:46px;height:46px;}
+  .nav-profile{flex:0 0 46px;width:46px;min-width:46px;height:46px;min-height:46px;padding:0;}
   .nav-book{padding:.46rem .92rem;font-size:11px;}
   .nav-book-header{width:46px;min-width:46px;height:46px;}
-  .nav-lang{display:none;}
+  .nav-lang{display:inline-flex;}
 }
 
 @media(max-width:700px){
@@ -702,12 +713,14 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   nav{
     display:flex;
     align-items:center;
-    gap:.7rem;
+    gap:.6rem;
     padding:0 .8rem;
     background:var(--dark);
     border-bottom:1px solid rgba(255,255,255,.06);
-    min-height:72px;
+    min-height:94px;
     overflow:visible;
+    position:relative;
+    justify-content:flex-start;
   }
   .nav-menu{
     width:42px;
@@ -750,20 +763,38 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     pointer-events:none;
   }
   .nav-logo{
-    display:flex;
-    margin-right:auto;
-    gap:.42rem;
-    font-size:13px;
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    flex-direction:column;
+    gap:.24rem;
+    min-height:auto;
+    width:max-content;
+    margin:0;
+    text-align:center;
+    font-size:12px;
+    font-weight:600;
+    line-height:1.15;
+    z-index:1;
+    pointer-events:auto;
   }
-  .nav-logo-mark{width:24px;height:24px;}
+  .nav-logo-mark{width:54px;height:54px;}
   .nav-actions{
     display:flex;
-    gap:.45rem;
-    margin-left:0;
+    gap:.35rem;
+    margin-left:auto;
+    margin-right:0;
+    position:relative;
+    z-index:2;
   }
-  .nav-profile{width:42px;height:42px;box-shadow:none;}
+  .nav-menu{position:relative;z-index:2;}
+  .nav-profile{flex:0 0 42px;width:42px;min-width:42px;height:42px;min-height:42px;padding:0;box-shadow:none;}
   .nav-book{padding:.42rem .9rem;font-size:11px;}
-  .nav-book-header{width:42px;min-width:42px;height:42px;box-shadow:none;}
+  .nav-actions .nav-book-header{flex:0 0 42px;width:42px;min-width:42px;height:42px;min-height:42px;padding:0;border-radius:999px;background:rgba(245,237,224,.06);border:1px solid rgba(255,255,255,.08);box-shadow:none;}
+  .nav-actions .nav-book-header:hover{background:rgba(245,237,224,.14);border-color:rgba(255,255,255,.14);}
+  .nav-actions .nav-book-header .nav-book-label{display:none;}
+  .nav-actions .nav-book-header .nav-book-icon-mark{display:block;width:22px;height:22px;}
   .nav-lang{display:none;}
   .hero-links{
     flex-wrap:nowrap;
@@ -829,6 +860,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   0%,100%{filter:brightness(1) saturate(1);}
   50%{filter:brightness(1.08) saturate(1.08);}
 }
+
 </style>
 </head>
 <body>
@@ -852,6 +884,10 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <span>Makkie Mua</span>
   </div>
   <div class="nav-actions">
+    <button class="nav-lang" id="langToggle" type="button" aria-label="切换到 English">
+      <span class="lang-switch-track"><span class="lang-switch-thumb"></span></span>
+      <span class="lang-switch-text"><span class="lang-switch-zh">中</span><span class="lang-switch-en">EN</span></span>
+    </button>
     <button class="nav-profile" type="button" data-profile-entry aria-label="我的">
       <svg class="nav-icon-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M18 20a6 6 0 0 0-12 0"></path>
@@ -879,6 +915,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
       <button class="mobile-drawer-close" type="button" aria-label="Close navigation" data-mobile-drawer-close>×</button>
     </div>
     <div class="mobile-drawer-links">
+      <a href="index.html" class="mobile-drawer-link" data-mobile-drawer-link>主页</a>
       <a href="collection.html" class="mobile-drawer-link" data-mobile-drawer-link>Collection</a>
       <a href="layers.html" class="mobile-drawer-link" data-mobile-drawer-link>Layers</a>
       <a href="instagram.html" class="mobile-drawer-link" data-mobile-drawer-link>甜品动态</a>
@@ -923,13 +960,14 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 
 <section class="shop-entry">
   <div class="shop-shell">
+    <canvas class="shop-silk-canvas" id="shopSilkCanvas" aria-hidden="true"></canvas>
     <div class="shop-entry-head">
       <div class="shop-entry-copy">
         <div class="sec-eye" id="shopEntryEye">订单入口</div>
         <h2 class="sec-title" id="shopEntryTitle">本周预定入口</h2>
         <p class="sec-sub" id="shopEntrySub">每周定时开放，请关注我们的社交媒体获取最新信息</p>
+        <button class="shop-entry-cta" id="shopEntryCta" type="button" data-order-entry>进入订单</button>
       </div>
-      <button class="shop-entry-cta" id="shopEntryCta" type="button" data-order-entry>进入订单</button>
     </div>
     <div class="shop-entry-status" id="shopEntryStatus" style="justify-content:center;">
     </div>
@@ -1270,46 +1308,46 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
       <img src="assets/images/social/instagram-profile.jpg" alt="Instagram profile picture for @makkiemua" loading="lazy">
       <div class="social-profile-copy">
         <strong>@makkiemua</strong>
-        <span>公开主页作品精选</span>
+        <span>看看最近我们有什么动态</span>
       </div>
     </div>
     <div class="social-head">
       <div>
-        <div class="sec-eye">Instagram</div>
+        <div class="sec-eye">看看最近我们有什么动态</div>
         <h2 class="sec-title">甜品动态</h2>
       </div>
       <a href="https://www.instagram.com/makkiemua/" class="btn-dark" target="_blank" rel="noreferrer">查看主页</a>
     </div>
     <div class="social-grid">
+      <a class="ig-card" href="https://www.instagram.com/p/DZ29qH1D6yj/" target="_blank" rel="noreferrer">
+        <img src="assets/images/social/instagram-latest-20260621.jpg" alt="Instagram latest dessert post from June 21, 2026 featuring 黑松露流心巴斯克" loading="lazy">
+        <div class="ig-card-body">
+          <div class="ig-card-date">2026.06.21</div>
+          <div class="ig-card-title">黑松露流心巴斯克</div>
+          <div class="ig-card-link">点开看完整帖子</div>
+        </div>
+      </a>
+      <a class="ig-card" href="https://www.instagram.com/p/DZjklgXFSxx/" target="_blank" rel="noreferrer">
+        <img src="assets/images/social/instagram-latest-20260613a.jpg" alt="Instagram dessert post from June 13, 2026 featuring 绿豆沙巴斯克" loading="lazy">
+        <div class="ig-card-body">
+          <div class="ig-card-date">2026.06.13</div>
+          <div class="ig-card-title">绿豆沙巴斯克</div>
+          <div class="ig-card-link">点开看完整帖子</div>
+        </div>
+      </a>
+      <a class="ig-card" href="https://www.instagram.com/p/DZjkfVmtnLw/" target="_blank" rel="noreferrer">
+        <img src="assets/images/social/instagram-latest-20260613b.jpg" alt="Instagram dessert post from June 13, 2026 featuring 玫瑰荔枝酸奶拿破仑酥" loading="lazy">
+        <div class="ig-card-body">
+          <div class="ig-card-date">2026.06.13</div>
+          <div class="ig-card-title">玫瑰荔枝酸奶拿破仑酥</div>
+          <div class="ig-card-link">点开看完整帖子</div>
+        </div>
+      </a>
       <a class="ig-card" href="https://www.instagram.com/p/DZGBNk7D6LV/" target="_blank" rel="noreferrer">
         <img src="assets/images/social/instagram-latest-20260602.jpg" alt="Instagram latest dessert post from June 2, 2026 featuring 杀糕局 cake" loading="lazy">
         <div class="ig-card-body">
           <div class="ig-card-date">2026.06.02</div>
-          <div class="ig-card-title">&#x6740;&#x7CD5;&#x5C40;</div>
-          <div class="ig-card-link">点开看完整帖子</div>
-        </div>
-      </a>
-      <a class="ig-card" href="https://www.instagram.com/p/DX2UYP2AYGv/" target="_blank" rel="noreferrer">
-        <img src="assets/images/social/instagram-latest-20260502.jpg" alt="Instagram dessert post from May 2, 2026 featuring 芭乐慕斯" loading="lazy">
-        <div class="ig-card-body">
-          <div class="ig-card-date">2026.05.02</div>
-          <div class="ig-card-title">&#x82AD;&#x4E50;&#x6155;&#x65AF;</div>
-          <div class="ig-card-link">点开看完整帖子</div>
-        </div>
-      </a>
-      <a class="ig-card" href="https://www.instagram.com/p/DXdBMrOGcRd/" target="_blank" rel="noreferrer">
-        <img src="assets/images/social/instagram-latest-20260423.jpg" alt="Instagram dessert post from April 23, 2026 featuring 稻米米奶油四重奏戚风三明治" loading="lazy">
-        <div class="ig-card-body">
-          <div class="ig-card-date">2026.04.23</div>
-          <div class="ig-card-title">&#x7A3B;&#x7C73;&#x7C73;&#x5976;&#x6CB9;&#x56DB;&#x91CD;&#x594F;&#x621A;&#x98A8;&#x4E09;&#x660E;&#x6CBB;</div>
-          <div class="ig-card-link">点开看完整帖子</div>
-        </div>
-      </a>
-      <a class="ig-card" href="https://www.instagram.com/p/DXGTVqSFZhJ/" target="_blank" rel="noreferrer">
-        <img src="assets/images/social/instagram-1.jpg" alt="Instagram dessert post from April 14, 2026 featuring 香芋大白兔玫瑰布丁奶糕" loading="lazy">
-        <div class="ig-card-body">
-          <div class="ig-card-date">2026.04.14</div>
-          <div class="ig-card-title">&#x9999;&#x828B;&#x5927;&#x767D;&#x5154;&#x73AB;&#x7470;&#x5E03;&#x4E01;&#x5976;&#x7CD5;</div>
+          <div class="ig-card-title">杀糕局</div>
           <div class="ig-card-link">点开看完整帖子</div>
         </div>
       </a>
@@ -1319,20 +1357,14 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 
 <section id="order" class="order">
   <div class="sec-eye">预订详情须知</div>
-  <h2 class="sec-title"><span class="order-title-line">限量纯手工制作，</span><span class="order-title-line">采用新鲜有机原料</span></h2>
-  <p class="sec-sub">甜品每周轮换 · 为保证新鲜度与食品安全 仅接受提前预订 · 每周更新最新预订链接 ·  详询WeChat/Instrgram</p>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:1.5rem;">
+  <h2 class="sec-title"><span class="order-title-line">限量纯手工制作 ·</span><span class="order-title-line">采用新鲜有机原料</span></h2>
+  <p class="sec-sub">甜品每周限时品种根据当季原料供应决定 · 添加我们的WeChat获得最新动态m</p>
+  <div style="display:flex;flex-direction:column;align-items:center;">
     <div class="contact-codes">
       <div class="contact-code">
         <div class="contact-code-label">微信</div>
         <div class="contact-code-box">
           <img src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua WeChat QR code"/>
-        </div>
-      </div>
-      <div class="contact-code">
-        <div class="contact-code-label">小红书作品</div>
-        <div class="contact-code-box">
-          <img src="assets/images/qr/Makkie Rednote QR Code.jpg" alt="Makkie Mua Rednote QR code"/>
         </div>
       </div>
     </div>
@@ -1342,9 +1374,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 <footer id="footer">
   <div class="ft">
     <div class="ft-intro">
-      <div class="ft-brand">Makkie Mua</div>
+      <div class="ft-brand">𝕄𝕒𝕜𝕜𝕚𝕖 𝕄𝕦𝕒</div>
       <div class="ft-tag">Butter off with Makkie</div>
-      <div class="ft-location">Los Angeles, Orange County</div>
+      <div class="ft-location">Los Angeles &amp; Orange County</div>
       <a class="ft-credit" href="https://www.instagram.com/littlejulia_art/" target="_blank" rel="noreferrer">Makkie 艺术设计 by @littlejulia_art</a>
       <div class="ft-social">
         <a class="ft-social-link" href="https://www.instagram.com/makkiemua/" target="_blank" rel="noreferrer" aria-label="Instagram">
@@ -1449,6 +1481,7 @@ const profileOverlay = document.getElementById('profileOverlay');
 const profileOverlayBody = document.getElementById('profileOverlayBody');
 const adminOverlay = document.getElementById('adminOverlay');
 const adminOverlayBody = document.getElementById('adminOverlayBody');
+let mobileDrawerCloseTimer = null;
 const qrOverlay = document.getElementById('qrOverlay');
 const qrOpenButtons = document.querySelectorAll('[data-qr-open]');
 const qrCloseButtons = document.querySelectorAll('[data-qr-close]');
@@ -2371,7 +2404,11 @@ document.querySelectorAll('[data-admin-close]').forEach((button) => {
 
 function openMobileDrawer() {
   if (!mobileDrawer) return;
+  window.clearTimeout(mobileDrawerCloseTimer);
   mobileDrawer.hidden = false;
+  window.requestAnimationFrame(() => {
+    mobileDrawer.classList.add('is-open');
+  });
   document.body.style.overflow = 'hidden';
   if (navMenuButton) {
     navMenuButton.classList.add('is-open');
@@ -2381,7 +2418,11 @@ function openMobileDrawer() {
 
 function closeMobileDrawer() {
   if (!mobileDrawer) return;
-  mobileDrawer.hidden = true;
+  mobileDrawer.classList.remove('is-open');
+  window.clearTimeout(mobileDrawerCloseTimer);
+  mobileDrawerCloseTimer = window.setTimeout(() => {
+    mobileDrawer.hidden = true;
+  }, 240);
   document.body.style.overflow = '';
   if (navMenuButton) {
     navMenuButton.classList.remove('is-open');
@@ -2420,32 +2461,32 @@ checkLocalAuth().finally(loadShopData);
 
 const latestInstagramPosts = [
   {
+    href: 'https://www.instagram.com/p/DZ29qH1D6yj/',
+    image: 'assets/images/social/instagram-latest-20260621.jpg',
+    alt: 'Instagram latest dessert post from June 21, 2026 featuring 黑松露流心巴斯克',
+    date: '2026.06.21',
+    title: '\u9ed1\u677e\u9732\u6d41\u5fc3\u5df4\u65af\u514b'
+  },
+  {
+    href: 'https://www.instagram.com/p/DZjklgXFSxx/',
+    image: 'assets/images/social/instagram-latest-20260613a.jpg',
+    alt: 'Instagram dessert post from June 13, 2026 featuring 绿豆沙巴斯克',
+    date: '2026.06.13',
+    title: '\u7eff\u8c46\u6c99\u5df4\u65af\u514b'
+  },
+  {
+    href: 'https://www.instagram.com/p/DZjkfVmtnLw/',
+    image: 'assets/images/social/instagram-latest-20260613b.jpg',
+    alt: 'Instagram dessert post from June 13, 2026 featuring 玫瑰荔枝酸奶拿破仑酥',
+    date: '2026.06.13',
+    title: '\u73ab\u7470\u8354\u679d\u9178\u5976\u62ff\u7834\u4ed1\u9165'
+  },
+  {
     href: 'https://www.instagram.com/p/DZGBNk7D6LV/',
     image: 'assets/images/social/instagram-latest-20260602.jpg',
     alt: 'Instagram latest dessert post from June 2, 2026 featuring 杀糕局 cake',
     date: '2026.06.02',
     title: '\u6740\u7cd5\u5c40'
-  },
-  {
-    href: 'https://www.instagram.com/p/DX2UYP2AYGv/',
-    image: 'assets/images/social/instagram-latest-20260502.jpg',
-    alt: 'Instagram dessert post from May 2, 2026 featuring 芭乐慕斯',
-    date: '2026.05.02',
-    title: '\u82ad\u4e50\u6155\u65af'
-  },
-  {
-    href: 'https://www.instagram.com/p/DXdBMrOGcRd/',
-    image: 'assets/images/social/instagram-latest-20260423.jpg',
-    alt: 'Instagram dessert post from April 23, 2026 featuring 稻米米奶油四重奏戚风三明治',
-    date: '2026.04.23',
-    title: '\u7a3b\u7c73\u7c73\u5976\u6cb9\u56db\u91cd\u594f\u621a\u98a8\u4e09\u660e\u6cbb'
-  },
-  {
-    href: 'https://www.instagram.com/p/DXGTVqSFZhJ/',
-    image: 'assets/images/social/instagram-1.jpg',
-    alt: 'Instagram dessert post from April 14, 2026 featuring 香芋大白兔玫瑰布丁奶糕',
-    date: '2026.04.14',
-    title: '\u9999\u828b\u5927\u767d\u5154\u73ab\u7470\u5e03\u4e01\u5976\u7cd5'
   }
 ];
 
@@ -2482,6 +2523,7 @@ const stickyNav = document.querySelector('nav');
 const topTabs = document.querySelector('.top-tabs');
 const navLogo = document.querySelector('.nav-logo');
 const mobileTabsQuery = window.matchMedia('(max-width: 700px)');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let suppressMobileTabsAutoHideUntil = 0;
 let mobileTabsHidden = false;
 let mobileTabsLockUntil = 0;
@@ -2572,6 +2614,155 @@ window.addEventListener('scroll', syncMobileTabsVisibility, { passive: true });
 mobileTabsQuery.addEventListener('change', syncMobileTabsVisibility);
 syncMobileTabsVisibility();
 
+function initShopSilkBackground() {
+  const canvas = document.getElementById('shopSilkCanvas');
+  const shell = document.querySelector('.shop-shell');
+  if (!canvas || !shell || prefersReducedMotion) return;
+
+  const gl = canvas.getContext('webgl', { alpha: true, antialias: false });
+  if (!gl) return;
+
+  const vertexShaderSource = `
+    attribute vec2 aPosition;
+    varying vec2 vUv;
+
+    void main() {
+      vUv = aPosition * 0.5 + 0.5;
+      gl_Position = vec4(aPosition, 0.0, 1.0);
+    }
+  `;
+
+  const fragmentShaderSource = `
+    precision highp float;
+    varying vec2 vUv;
+
+    uniform float uTime;
+    uniform vec3 uColor;
+    uniform float uSpeed;
+    uniform float uScale;
+    uniform float uRotation;
+    uniform float uNoiseIntensity;
+
+    const float e = 2.71828182845904523536;
+
+    float noise(vec2 texCoord) {
+      float G = e;
+      vec2 r = (G * sin(G * texCoord));
+      return fract(r.x * r.y * (1.0 + texCoord.x));
+    }
+
+    vec2 rotateUvs(vec2 uv, float angle) {
+      float c = cos(angle);
+      float s = sin(angle);
+      mat2 rot = mat2(c, -s, s, c);
+      return rot * uv;
+    }
+
+    void main() {
+      float rnd = noise(gl_FragCoord.xy);
+      vec2 centered = vUv - 0.5;
+      vec2 uv = rotateUvs(centered * uScale, uRotation) + 0.5;
+      vec2 tex = uv * uScale;
+      float tOffset = uSpeed * uTime;
+
+      tex.y += 0.03 * sin(8.0 * tex.x - tOffset);
+
+      float pattern = 0.6 +
+        0.4 * sin(5.0 * (tex.x + tex.y +
+          cos(3.0 * tex.x + 5.0 * tex.y) +
+          0.02 * tOffset) +
+          sin(20.0 * (tex.x + tex.y - 0.1 * tOffset)));
+
+      vec3 base = uColor * pattern - vec3(rnd / 15.0 * uNoiseIntensity);
+      vec3 cream = vec3(0.98, 0.93, 0.85);
+      vec3 color = mix(cream, base, 0.58);
+      gl_FragColor = vec4(color, 1.0);
+    }
+  `;
+
+  function compileShader(type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      gl.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  }
+
+  const vertexShader = compileShader(gl.VERTEX_SHADER, vertexShaderSource);
+  const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+  if (!vertexShader || !fragmentShader) return;
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+
+  const positionBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+    gl.STATIC_DRAW
+  );
+
+  const positionLocation = gl.getAttribLocation(program, 'aPosition');
+  const uniforms = {
+    time: gl.getUniformLocation(program, 'uTime'),
+    color: gl.getUniformLocation(program, 'uColor'),
+    speed: gl.getUniformLocation(program, 'uSpeed'),
+    scale: gl.getUniformLocation(program, 'uScale'),
+    rotation: gl.getUniformLocation(program, 'uRotation'),
+    noiseIntensity: gl.getUniformLocation(program, 'uNoiseIntensity')
+  };
+
+  const color = [0xC4 / 255, 0x99 / 255, 0x6A / 255];
+  let startTime = performance.now();
+  let frameId = 0;
+
+  function resize() {
+    const rect = shell.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const width = Math.max(1, Math.floor(rect.width * dpr));
+    const height = Math.max(1, Math.floor(rect.height * dpr));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+      gl.viewport(0, 0, width, height);
+    }
+  }
+
+  function render(now) {
+    resize();
+    gl.useProgram(program);
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.enableVertexAttribArray(positionLocation);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform1f(uniforms.time, (now - startTime) * 0.001);
+    gl.uniform3fv(uniforms.color, color);
+    gl.uniform1f(uniforms.speed, 1.7);
+    gl.uniform1f(uniforms.scale, 0.6);
+    gl.uniform1f(uniforms.rotation, 0.0);
+    gl.uniform1f(uniforms.noiseIntensity, 0.8);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    frameId = window.requestAnimationFrame(render);
+  }
+
+  const resizeObserver = new ResizeObserver(resize);
+  resizeObserver.observe(shell);
+  frameId = window.requestAnimationFrame(render);
+
+  window.addEventListener('pagehide', () => {
+    window.cancelAnimationFrame(frameId);
+    resizeObserver.disconnect();
+  }, { once: true });
+}
+
+initShopSilkBackground();
+
 document.querySelectorAll('.hero-links .btn-chip').forEach((link) => {
   if (!link.querySelector('.btn-chip-label')) {
     const label = document.createElement('span');
@@ -2631,8 +2822,6 @@ document.querySelectorAll('.hero-links .btn-chip').forEach((link) => {
     }
   });
 });
-
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function revealElements(elements, variant, startDelay, stepDelay) {
   const items = Array.from(elements).filter(Boolean);
@@ -2757,7 +2946,7 @@ const bilingualCopy = {
       eye: '马上预定',
       title: '本周预定',
       sub: '每周定时开放，请关注我们的社交媒体获取最新信息',
-      cta: '马上预定'
+      cta: '预定'
     },
     seo: {
       title: 'Makkie Mua | 手作创意甜品 | Los Angeles & Orange County',
@@ -2769,6 +2958,9 @@ const bilingualCopy = {
       eyebrow: 'Makkie Mua · 独家创意甜品',
       sub: '每一层都是手作的温度<br>Los Angeles &amp; Orange County',
       links: ['主页', 'Makkie 图鉴', '层层夹心', '甜品动态', '联系我们']
+    },
+    mobileDrawer: {
+      links: ['主页', 'Makkie 图鉴', '层层夹心', '甜品动态', '订单入口', '联系我们']
     },
     menu: {
       headEye: 'Makkie 图鉴',
@@ -2857,21 +3049,21 @@ const bilingualCopy = {
       ]
     },
     instagram: {
-      profileTag: '公开主页作品精选',
+      profileTag: '看看最近我们有什么动态',
       title: '甜品动态',
       button: '查看主页',
       openPost: '点开看完整帖子'
     },
     order: {
       eye: '预订详情须知',
-      title: '<span class="order-title-line">限量纯手工制作，</span><span class="order-title-line">采用新鲜有机原料</span>',
-      sub: '甜品每周轮换 · 为保证新鲜度与食品安全 仅接受提前预订 · 每周更新最新预订链接 · 详询 WeChat / Instagram',
-      labels: ['微信', '小红书作品']
+      title: '<span class="order-title-line">限量纯手工制作·</span><span class="order-title-line">采用新鲜有机原料</span>',
+      sub: '甜品每周限时品种根据当季原料供应决定 · 添加我们的WeChat获得最新动态',
+      labels: ['微信']
     },
     footer: {
       tagline: 'Butter off with Makkie',
       credit: 'Makkie 艺术设计 by @littlejulia_art',
-      location: 'Los Angeles, Orange County',
+      location: 'Los Angeles & Orange County',
       sectionTitles: ['网站', '关于 Makkie'],
       menuLinks: ['主页', 'Makkie 图鉴', '层层夹心', '甜品动态', '马上预定'],
       aboutLinks: ['联系我们', 'Makkie 的故事'],
@@ -2891,9 +3083,9 @@ const bilingualCopy = {
       navBook: 'Order Now',
     shopEntry: {
       eye: 'Order Entry',
-      title: 'Weekly Ordering',
-      sub: 'This page reads the same weekly menu, open state, and pickup details used by the miniapp.',
-      cta: 'Open Ordering'
+      title: 'Weekly Drop',
+      sub: 'Our weekly preorder opens at a set time, please follow our social media for updates',
+      cta: 'Open Order'
     },
     seo: {
       title: 'Makkie Mua | Handmade Creative Desserts | Los Angeles & Orange County',
@@ -2905,6 +3097,9 @@ const bilingualCopy = {
       eyebrow: 'Makkie Mua · Signature Creative Desserts',
       sub: 'Handmade warmth in every layer<br>Los Angeles &amp; Orange County',
       links: ['Home', 'Collection', 'Explore the Layers', 'Recent Post', 'Contact']
+    },
+    mobileDrawer: {
+      links: ['Home', 'Collection', 'Layers', 'Recent Post', 'Order Now', 'Contact']
     },
     menu: {
       headEye: 'Browse Collection',
@@ -2993,7 +3188,7 @@ const bilingualCopy = {
       ]
     },
     instagram: {
-      profileTag: 'Highlights from the public profile',
+      profileTag: 'See what is new lately',
       title: 'Recent Post',
       button: 'View Profile',
       openPost: 'Open full post'
@@ -3007,7 +3202,7 @@ const bilingualCopy = {
     footer: {
       tagline: 'Butter off with Makkie',
       credit: 'Makkie art direction by @littlejulia_art',
-      location: 'Los Angeles, Orange County',
+      location: 'Los Angeles & Orange County',
       sectionTitles: ['Shop', 'About Makkie'],
       menuLinks: ['Home', 'Collection', 'Layers', 'Recent Post', 'Order Now'],
       aboutLinks: ['Contact', 'Makkie Story'],
@@ -3024,32 +3219,32 @@ const bilingualCopy = {
 
 const bilingualInstagramPosts = [
   {
+    href: 'https://www.instagram.com/p/DZ29qH1D6yj/',
+    image: 'assets/images/social/instagram-latest-20260621.jpg',
+    date: '2026.06.21',
+    title: { zh: '黑松露流心巴斯克', en: 'Black Truffle Lava Basque' },
+    alt: { zh: 'Instagram 2026 年 6 月 21 日甜品帖子：黑松露流心巴斯克', en: 'Instagram dessert post from June 21, 2026 featuring Black Truffle Lava Basque' }
+  },
+  {
+    href: 'https://www.instagram.com/p/DZjklgXFSxx/',
+    image: 'assets/images/social/instagram-latest-20260613a.jpg',
+    date: '2026.06.13',
+    title: { zh: '绿豆沙巴斯克', en: 'Mung Bean Basque' },
+    alt: { zh: 'Instagram 2026 年 6 月 13 日甜品帖子：绿豆沙巴斯克', en: 'Instagram dessert post from June 13, 2026 featuring Mung Bean Basque' }
+  },
+  {
+    href: 'https://www.instagram.com/p/DZjkfVmtnLw/',
+    image: 'assets/images/social/instagram-latest-20260613b.jpg',
+    date: '2026.06.13',
+    title: { zh: '玫瑰荔枝酸奶拿破仑酥', en: 'Rose Lychee Yogurt Mille-Feuille' },
+    alt: { zh: 'Instagram 2026 年 6 月 13 日甜品帖子：玫瑰荔枝酸奶拿破仑酥', en: 'Instagram dessert post from June 13, 2026 featuring Rose Lychee Yogurt Mille-Feuille' }
+  },
+  {
     href: 'https://www.instagram.com/p/DZGBNk7D6LV/',
     image: 'assets/images/social/instagram-latest-20260602.jpg',
     date: '2026.06.02',
     title: { zh: '杀糕局', en: 'LA Cake-Off' },
     alt: { zh: 'Instagram 2026 年 6 月 2 日甜品帖子：杀糕局', en: 'Instagram dessert post from June 2, 2026 featuring LA Cake-Off' }
-  },
-  {
-    href: 'https://www.instagram.com/p/DX2UYP2AYGv/',
-    image: 'assets/images/social/instagram-latest-20260502.jpg',
-    date: '2026.05.02',
-    title: { zh: '芭乐慕斯', en: 'Guava Mousse' },
-    alt: { zh: 'Instagram 2026 年 5 月 2 日甜品帖子：芭乐慕斯', en: 'Instagram dessert post from May 2, 2026 featuring Guava Mousse' }
-  },
-  {
-    href: 'https://www.instagram.com/p/DXdBMrOGcRd/',
-    image: 'assets/images/social/instagram-latest-20260423.jpg',
-    date: '2026.04.23',
-    title: { zh: '稻米米奶油四重奏戚风三明治', en: 'Rice Milk Cream Quartet Chiffon Sandwich' },
-    alt: { zh: 'Instagram 2026 年 4 月 23 日甜品帖子：稻米米奶油四重奏戚风三明治', en: 'Instagram dessert post from April 23, 2026 featuring Rice Milk Cream Quartet Chiffon Sandwich' }
-  },
-  {
-    href: 'https://www.instagram.com/p/DXGTVqSFZhJ/',
-    image: 'assets/images/social/instagram-1.jpg',
-    date: '2026.04.14',
-    title: { zh: '香芋大白兔玫瑰布丁奶糕', en: 'Taro White Rabbit Rose Pudding Milk Cake' },
-    alt: { zh: 'Instagram 2026 年 4 月 14 日甜品帖子：香芋大白兔玫瑰布丁奶糕', en: 'Instagram dessert post from April 14, 2026 featuring Taro White Rabbit Rose Pudding Milk Cake' }
   }
 ];
 
@@ -3130,7 +3325,7 @@ function applyBilingualLanguage(lang) {
     }
   });
   mobileDrawerLinks.forEach((link, index) => {
-    link.textContent = copy.hero.links[index] || link.textContent;
+    link.textContent = copy.mobileDrawer.links[index] || link.textContent;
   });
 
   bilingualSetText('#menu .menu-head .sec-eye', copy.menu.headEye);

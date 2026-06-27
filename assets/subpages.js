@@ -56,10 +56,7 @@
       },
       eye: { zh: 'Makkie Collection', en: 'Makkie Collection' },
       title: { zh: '甜品图鉴', en: 'Dessert Collection' },
-      sub: {
-        zh: '出现过的风味，造型和记忆',
-        en: 'Flavors, forms, and memories that have appeared.'
-      },
+      sub: { zh: '', en: '' },
       actions: []
     },
     layers: {
@@ -75,10 +72,7 @@
       },
       eye: { zh: '看看里面有什么', en: 'What Is Inside' },
       title: { zh: '探索层层夹心', en: 'Explore the Layers' },
-      sub: {
-        zh: '看看夹心里有什么',
-        en: 'A closer look at the internal structure, fillings, and texture rhythm inside each dessert.'
-      },
+      sub: { zh: '', en: '' },
       actions: []
     },
     instagram: {
@@ -92,12 +86,9 @@
           description: 'See the latest public social posts and featured dessert updates from Makkie Mua.'
         }
       },
-      eye: { zh: '甜品动态', en: 'Recent Post' },
-      title: { zh: '最近甜品动态', en: 'Recent Post' },
-      sub: {
-        zh: '最近公开发过的内容都收在这里，点开就能跳到完整帖子。',
-        en: 'Recent public posts live here, with direct links to the full content.'
-      },
+      eye: { zh: '看看最近我们有什么动态', en: 'See What Is New Lately' },
+      title: { zh: '甜品动态', en: 'Recent Post' },
+      sub: { zh: '', en: '' },
       actions: []
     },
     shop: {
@@ -132,10 +123,7 @@
       },
       eye: { zh: '联系我们', en: 'Contact' },
       title: { zh: '联系 Makkie Mua', en: 'Contact Makkie Mua' },
-      sub: {
-        zh: '如何找到我们',
-        en: 'How to find us'
-      },
+      sub: { zh: '', en: '' },
       actions: []
     },
     intro: {
@@ -151,10 +139,7 @@
       },
       eye: { zh: '关于 Makkie', en: 'About Makkie' },
       title: { zh: 'Makkie 的故事', en: 'Our Story' },
-      sub: {
-        zh: 'Butter off with Makkie',
-        en: 'Butter off with Makkie'
-      },
+      sub: { zh: '', en: '' },
       actions: []
     }
   };
@@ -170,7 +155,7 @@
       ],
       tagline: 'Butter off with Makkie',
       credit: 'Makkie 艺术设计 by @littlejulia_art',
-      location: 'Los Angeles, Orange County',
+      location: 'Los Angeles & Orange County',
       copy: '© 2026 Makkie Mua. All Rights Reserved.',
       book: '马上预定',
       profile: '我的',
@@ -187,7 +172,7 @@
       ],
       tagline: 'Butter off with Makkie',
       credit: 'Makkie art direction by @littlejulia_art',
-      location: 'Los Angeles, Orange County',
+      location: 'Los Angeles & Orange County',
       copy: '© 2026 Makkie Mua. All Rights Reserved.',
       book: 'Order Now',
       profile: 'Profile',
@@ -293,28 +278,28 @@
 
   const instagramPosts = [
     {
+      href: 'https://www.instagram.com/p/DZ29qH1D6yj/',
+      image: 'assets/images/social/instagram-latest-20260621.jpg',
+      date: '2026.06.21',
+      title: { zh: '黑松露流心巴斯克', en: 'Black Truffle Lava Basque' }
+    },
+    {
+      href: 'https://www.instagram.com/p/DZjklgXFSxx/',
+      image: 'assets/images/social/instagram-latest-20260613a.jpg',
+      date: '2026.06.13',
+      title: { zh: '绿豆沙巴斯克', en: 'Mung Bean Basque' }
+    },
+    {
+      href: 'https://www.instagram.com/p/DZjkfVmtnLw/',
+      image: 'assets/images/social/instagram-latest-20260613b.jpg',
+      date: '2026.06.13',
+      title: { zh: '玫瑰荔枝酸奶拿破仑酥', en: 'Rose Lychee Yogurt Mille-Feuille' }
+    },
+    {
       href: 'https://www.instagram.com/p/DZGBNk7D6LV/',
       image: 'assets/images/social/instagram-latest-20260602.jpg',
       date: '2026.06.02',
       title: { zh: '杀糕局', en: 'LA Cake-Off' }
-    },
-    {
-      href: 'https://www.instagram.com/p/DX2UYP2AYGv/',
-      image: 'assets/images/social/instagram-latest-20260502.jpg',
-      date: '2026.05.02',
-      title: { zh: '芭乐慕斯', en: 'Guava Mousse' }
-    },
-    {
-      href: 'https://www.instagram.com/p/DXdBMrOGcRd/',
-      image: 'assets/images/social/instagram-latest-20260423.jpg',
-      date: '2026.04.23',
-      title: { zh: '稻米米奶油四重奏戚风三明治', en: 'Rice Milk Cream Quartet Chiffon Sandwich' }
-    },
-    {
-      href: 'https://www.instagram.com/p/DXGTVqSFZhJ/',
-      image: 'assets/images/social/instagram-1.jpg',
-      date: '2026.04.14',
-      title: { zh: '大白兔芋泥奶糕', en: 'Taro White Rabbit Milk Cake' }
     }
   ];
 
@@ -504,7 +489,6 @@
         key: 'wechat',
         label: { zh: '微信', en: 'WeChat' },
         value: 'Makkie Mua',
-        note: { zh: '扫码添加微信，方便聊天和接收更新。', en: 'Scan to add WeChat for chats and updates.' },
         action: { zh: '扫码添加', en: 'Scan to Add' },
         image: 'assets/images/qr/Makkie Wechat QR Code Clean.jpg'
       },
@@ -512,7 +496,6 @@
         key: 'email',
         label: { zh: '邮箱', en: 'Email' },
         value: 'MakkieMua@gmail.com',
-        note: { zh: '需要详细沟通定制或合作，也可以直接发邮件给我们。', en: 'For custom orders or collaborations, feel free to email us directly.' },
         action: { zh: '发送邮件', en: 'Send Email' },
         href: 'mailto:MakkieMua@gmail.com'
       },
@@ -520,7 +503,6 @@
         key: 'phone',
         label: { zh: '电话', en: 'Phone' },
         value: '408-646-8740',
-        note: { zh: '如果你更习惯电话或短信联系，也可以通过这个号码找到我们。', en: 'If phone calls or texts are easier, you can reach us here as well.' },
         action: { zh: '电话 / 短信', en: 'Call / Text' },
         href: 'tel:4086468740'
       }
@@ -528,7 +510,7 @@
   };
   const introContent = {
     kicker: { zh: 'Butter off with Makkie', en: 'Butter off with Makkie' },
-    title: { zh: '你好～ 这里是 Makkie', en: 'Hello, this is Makkie.' },
+    title: { zh: '你好, 这里是 Makkie', en: 'Hello, this is Makkie.' },
     lead: {
       zh: 'Makkie Mua 于 2024 年在美国旧金山创立，是一个全新的甜点品牌。',
       en: 'Founded in San Francisco in 2024, Makkie Mua is a new dessert brand built around handmade care and imaginative flavor.'
@@ -672,11 +654,13 @@
   function renderCollectionPage() {
     const menuGrid = document.getElementById('menuGrid');
     if (!menuGrid) return;
+    const openHint = currentLang === 'en' ? 'Open collection' : '点击展开';
     menuGrid.innerHTML = collectionGroups.map((group) => `
       <button class="menu-card" type="button" data-menu-target="${group.id}">
         <div class="menu-card-heading">
           <div class="menu-card-title">${escapeHtml(t(group.title))}</div>
           <div class="menu-card-sub">${escapeHtml(t(group.subtitle))}</div>
+          <div class="menu-card-hint">${escapeHtml(openHint)}</div>
         </div>
       </button>
     `).join('');
@@ -724,7 +708,7 @@
       const tags = currentLang === 'en' ? card.tags.en : card.tags.zh;
       const copy = currentLang === 'en' ? card.en : card.zh;
       return `
-        <article class="layers-showcase-card">
+        <article class="layers-showcase-card" data-layer-card tabindex="0">
           <div class="layers-showcase-eye">${escapeHtml(card.no)}</div>
           <div class="layers-showcase-name">${escapeHtml(copy.title)}</div>
           <div class="layers-showcase-sub">${escapeHtml(copy.sub)}</div>
@@ -738,6 +722,14 @@
         </article>
       `;
     }).join('');
+  }
+
+  function activateLayerCard(card) {
+    if (!card) return;
+    document.querySelectorAll('[data-layer-card].is-active').forEach((activeCard) => {
+      if (activeCard !== card) activeCard.classList.remove('is-active');
+    });
+    card.classList.toggle('is-active');
   }
 
   function renderInstagramPage() {
@@ -835,7 +827,7 @@
             <div class="contact-qr-copy-main">
               <div class="contact-qr-label">${escapeHtml(t(card.label))}</div>
               <div class="contact-qr-handle">${escapeHtml(card.value)}</div>
-              <div class="contact-qr-note">${escapeHtml(t(card.note))}</div>
+              ${card.note ? `<div class="contact-qr-note">${escapeHtml(t(card.note))}</div>` : ''}
             </div>
             ${card.href ? `<a class="contact-qr-link" href="${escapeHtml(card.href)}" ${card.external ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(t(card.action))}</a>` : `<span class="contact-qr-link is-static">${escapeHtml(t(card.action))}</span>`}
           </div>
@@ -875,7 +867,11 @@
       if (descriptionMeta) descriptionMeta.setAttribute('content', copy.seo[currentLang].description);
       if (pageEye) pageEye.textContent = t(copy.eye);
       if (pageTitle) pageTitle.textContent = t(copy.title);
-      if (pageSub) pageSub.textContent = t(copy.sub);
+      if (pageSub) {
+        const subText = t(copy.sub);
+        pageSub.textContent = subText;
+        pageSub.hidden = !subText;
+      }
       renderActions();
     }
 
@@ -946,6 +942,7 @@
       const orderEntry = event.target.closest('[data-order-entry]');
       const menuTarget = event.target.closest('[data-menu-target]');
       const menuClose = event.target.closest('[data-menu-close]');
+      const layerCard = event.target.closest('[data-layer-card]');
       const desktopLang = event.target.closest('#langToggle');
 
       if (closeTrigger) {
@@ -982,6 +979,11 @@
         return;
       }
 
+      if (layerCard) {
+        activateLayerCard(layerCard);
+        return;
+      }
+
       if (menuTarget) {
         renderCollectionOverlay(menuTarget.dataset.menuTarget);
         return;
@@ -996,6 +998,11 @@
       if (event.key === 'Escape') {
         closeDrawer();
         closeCollectionOverlay();
+        document.querySelectorAll('[data-layer-card].is-active').forEach((card) => card.classList.remove('is-active'));
+      }
+      if ((event.key === 'Enter' || event.key === ' ') && event.target.closest('[data-layer-card]')) {
+        event.preventDefault();
+        activateLayerCard(event.target.closest('[data-layer-card]'));
       }
     });
   }
@@ -1129,7 +1136,6 @@
   applyLanguage(currentLang);
   initReveal();
 })();
-
 
 
 
