@@ -123,8 +123,8 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .nav-menu.is-open .nav-menu-lines::before{top:0;transform:rotate(45deg);}
 .nav-menu.is-open .nav-menu-lines::after{top:0;transform:rotate(-45deg);}
 .nav-main{display:flex;justify-content:space-between;align-items:center;padding:0 3rem;height:52px;}
-.nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;min-height:52px;flex:0 0 auto;}
-.nav-logo-mark{width:28px;height:28px;object-fit:contain;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
+.nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;min-height:52px;flex:0 0 auto;position:relative;isolation:isolate;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0);will-change:transform;}
+.nav-logo-mark{width:28px;height:28px;object-fit:contain;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0);will-change:transform,opacity;}
 .nav-actions{display:flex;align-items:center;gap:.8rem;min-height:52px;flex:0 0 auto;margin-left:auto;}
 .nav-profile{display:inline-flex;align-items:center;justify-content:center;flex:0 0 52px;width:52px;min-width:52px;height:52px;min-height:52px;padding:0;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.06);color:var(--bg);cursor:pointer;box-shadow:0 10px 22px rgba(0,0,0,.14);transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;-webkit-appearance:none;appearance:none;}
 .nav-profile:hover{background:rgba(245,237,224,.14);border-color:rgba(255,255,255,.14);transform:translateY(-1px);box-shadow:0 14px 26px rgba(0,0,0,.18);}
@@ -157,8 +157,42 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .mobile-drawer-links{display:flex;flex-direction:column;margin-top:.6rem;}
 .mobile-drawer-link{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.95rem .15rem;border-bottom:1px solid rgba(71,51,33,.12);color:inherit;text-decoration:none;font-size:.98rem;letter-spacing:.02em;text-transform:none;position:relative;overflow:visible;isolation:isolate;outline:none;}
 .mobile-drawer-link::after{content:'\203A';font-size:1.2rem;color:var(--accent);}
-.mobile-drawer-link.is-language{background:none;border:none;width:100%;font-family:inherit;cursor:pointer;text-align:left;}
-.mobile-drawer-link .btn-chip-goo{inset:-10px;}
+.mobile-drawer-switch-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.8rem;
+  padding:.95rem .15rem;
+  border-bottom:1px solid rgba(71,51,33,.12);
+}
+.mobile-drawer-switch-label{
+  font-size:.95rem;
+  letter-spacing:.02em;
+}
+.mobile-drawer-lang{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  border:none;
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+  padding:0;
+  position:relative;
+  overflow:visible;
+  isolation:isolate;
+  outline:none;
+}
+.mobile-drawer-link .btn-chip-goo,
+.mobile-drawer-lang .btn-chip-goo{
+  inset:-10px;
+}
+.mobile-drawer-link.is-burst .btn-chip-particle,
+.mobile-drawer-lang.is-burst .btn-chip-particle{
+  animation:
+    gooey-particle calc(900ms + var(--particle-variance, 0ms)) cubic-bezier(.22,1,.36,1) 1 both,
+    gooey-pulse calc(620ms + var(--particle-variance, 0ms)) ease-out 1 both;
+}
 .mobile-drawer-actions{display:flex;flex-direction:column;gap:.75rem;margin-top:1.2rem;}
 .mobile-drawer-actions .nav-book,
 .mobile-drawer-actions .nav-lang{justify-content:center;}
@@ -175,6 +209,10 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
   max-height:88px;
   opacity:1;
   transform:translateY(0);
+  contain:paint;
+  isolation:isolate;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
   transition:max-height .32s cubic-bezier(.22,1,.36,1), opacity .24s ease, transform .32s cubic-bezier(.22,1,.36,1), padding .32s cubic-bezier(.22,1,.36,1), border-top-color .32s ease;
 }
 .hero{text-align:center;padding:4.4rem 2rem 4rem;background:var(--bg);}
@@ -766,7 +804,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     position:absolute;
     left:50%;
     top:50%;
-    transform:translate(-50%,-50%);
+    transform:translate3d(-50%,-50%,0);
     flex-direction:column;
     gap:.24rem;
     min-height:auto;
@@ -916,12 +954,17 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     </div>
     <div class="mobile-drawer-links">
       <a href="index.html" class="mobile-drawer-link" data-mobile-drawer-link>主页</a>
-      <a href="collection.html" class="mobile-drawer-link" data-mobile-drawer-link>Collection</a>
-      <a href="layers.html" class="mobile-drawer-link" data-mobile-drawer-link>Layers</a>
+      <a href="collection.html" class="mobile-drawer-link" data-mobile-drawer-link>Makkie 图鉴</a>
+      <a href="layers.html" class="mobile-drawer-link" data-mobile-drawer-link>层层夹心</a>
       <a href="instagram.html" class="mobile-drawer-link" data-mobile-drawer-link>甜品动态</a>
-      <a href="shop.html" class="mobile-drawer-link" data-mobile-drawer-link>Order Entry</a>
-      <a href="contact.html" class="mobile-drawer-link" data-mobile-drawer-link>Contact</a>
-      <button class="mobile-drawer-link is-language" type="button" data-mobile-lang>中文 / ENG</button>
+      <a href="contact.html" class="mobile-drawer-link" data-mobile-drawer-link>联系我们</a>
+      <div class="mobile-drawer-switch-row">
+        <span class="mobile-drawer-switch-label" id="mobileLangLabel">语言</span>
+        <button class="mobile-drawer-lang" type="button" data-mobile-lang aria-label="切换到 English">
+          <span class="lang-switch-track"><span class="lang-switch-thumb"></span></span>
+          <span class="lang-switch-text"><span class="lang-switch-zh">中</span><span class="lang-switch-en">EN</span></span>
+        </button>
+      </div>
     </div>
     <div class="mobile-drawer-actions">
       <button class="nav-book" type="button" data-order-entry>订单入口</button>
@@ -1004,7 +1047,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 
 <section id="products" class="products">
   <div class="sec-eye">看看里面有什么</div>
-  <h2 class="sec-title">探索层层夹心</h2>
+  <h2 class="sec-title">探索夹心</h2>
   <p class="sec-sub">看看夹心里有什么</p>
 
   <div class="grid" style="margin-bottom:2px;">
@@ -1471,6 +1514,7 @@ const mobileDrawer = document.getElementById('mobileDrawer');
 const mobileDrawerCloseButtons = document.querySelectorAll('[data-mobile-drawer-close]');
 const mobileDrawerLinks = document.querySelectorAll('[data-mobile-drawer-link]');
 const mobileLangButtons = document.querySelectorAll('[data-mobile-lang]');
+const mobileLangLabel = document.getElementById('mobileLangLabel');
 const orderEntryButtons = document.querySelectorAll('[data-order-entry]');
 const profileEntryButtons = document.querySelectorAll('[data-profile-entry]');
 const shopRoot = document.getElementById('shopRoot');
@@ -1493,7 +1537,6 @@ const collectionArchiveData = [
   {
     id: 'menu-basque',
     title: { zh: '巴斯克蛋糕', en: 'Basque Cheesecake' },
-    subtitle: { zh: '焦香绵密，一口就上头', en: 'Burnt edge, creamy center, instant obsession' },
     items: [
       { title: { zh: '伯爵茶桂花冻巴斯克', en: 'Earl Grey Osmanthus Jelly Basque' }, fileName: 'collection-02.jpg' },
       { title: { zh: '斑斓芭乐巴斯克', en: 'Pandan Guava Basque' }, fileName: 'collection-12.jpg' },
@@ -1509,7 +1552,6 @@ const collectionArchiveData = [
   {
     id: 'menu-cookie',
     title: { zh: 'Makkie 胖曲奇', en: 'Makkie' },
-    subtitle: { zh: '酥香松软，咬开就有惊喜', en: 'Buttery, soft, and full of surprises' },
     items: [
       { title: { zh: '咸奶茶炒米胖曲奇', en: 'Salted Milk Tea Toasted Rice Makkie' }, fileName: 'collection-04.jpg' },
       { title: { zh: '朗姆酒提子胖曲奇', en: 'Rum Raisin Makkie' }, fileName: 'collection-13.jpg' },
@@ -1523,7 +1565,6 @@ const collectionArchiveData = [
   {
     id: 'menu-chiffon',
     title: { zh: '戚风三明治', en: 'Chiffon Sandwich' },
-    subtitle: { zh: '云朵一样软，奶香慢慢化开', en: 'Cloud-soft cake with slow-melting cream' },
     items: [
       { title: { zh: '伯爵红茶草莓布丁戚风三明治', en: 'Earl Grey Strawberry Pudding Chiffon Sandwich' }, fileName: 'collection-01.jpg' },
       { title: { zh: '稻香米麻薯四重奏戚风三明治', en: 'Rice Aroma Mochi Quartet Chiffon Sandwich' }, fileName: 'collection-08.jpg' },
@@ -1538,7 +1579,6 @@ const collectionArchiveData = [
   {
     id: 'menu-pudding',
     title: { zh: '米布丁', en: 'Rice Pudding' },
-    subtitle: { zh: '滑滑软软，适合慢慢吃', en: 'Silky, chilled, and easy to love' },
     items: [
       { title: { zh: '大红袍奶冻无花果米布丁', en: 'Da Hong Pao Panna Cotta Fig Rice Pudding' }, fileName: 'collection-05.jpg' },
       { title: { zh: '巧克力香蕉米布丁', en: 'Chocolate Banana Rice Pudding' }, fileName: 'collection-06.jpg' },
@@ -1549,7 +1589,6 @@ const collectionArchiveData = [
   {
     id: 'menu-milk-cake',
     title: { zh: '布丁奶糕', en: 'Pudding Milk Cake' },
-    subtitle: { zh: '布丁和奶糕叠在一起，软糯又轻盈', en: 'Pudding and milk cake layered into a soft, airy bite' },
     items: [
       { title: { zh: '桂花柿子酒酿布丁奶糕', en: 'Osmanthus Persimmon Fermented Rice Milk Cake' }, fileName: 'collection-15.jpg' },
       { title: { zh: '甜玉米爆米花布丁奶糕', en: 'Sweet Corn Popcorn Pudding Milk Cake' }, fileName: 'collection-25.jpg' }
@@ -1558,7 +1597,6 @@ const collectionArchiveData = [
   {
     id: 'menu-tart',
     title: { zh: '酥皮与挞挞', en: 'Pastry & Tart' },
-    subtitle: { zh: '酥香层次里，带一点糯一点轻盈', en: 'Flaky layers with a gentle chew and light finish' },
     items: [
       { title: { zh: '伯爵茶米麻薯挞挞', en: 'Earl Grey Rice Mochi Tart' }, fileName: 'collection-03.jpg' },
       { title: { zh: '抹茶米麻薯挞挞', en: 'Matcha Rice Mochi Tart' }, fileName: 'collection-09.jpg' },
@@ -1569,7 +1607,6 @@ const collectionArchiveData = [
   {
     id: 'menu-creative',
     title: { zh: '创意甜品', en: 'Creative Desserts' },
-    subtitle: { zh: '脑洞甜品，第一口就记住', en: 'Memorable ideas from the very first bite' },
     items: [
       { title: { zh: '迪拜糯曲奇', en: 'Dubai Mochi Cookie' }, fileName: 'collection-30.jpg' }
     ]
@@ -2960,7 +2997,7 @@ const bilingualCopy = {
       links: ['主页', 'Makkie 图鉴', '层层夹心', '甜品动态', '联系我们']
     },
     mobileDrawer: {
-      links: ['主页', 'Makkie 图鉴', '层层夹心', '甜品动态', '订单入口', '联系我们']
+      links: ['主页', 'Makkie 图鉴', '层层夹心', '甜品动态', '联系我们']
     },
     menu: {
       headEye: 'Makkie 图鉴',
@@ -3056,7 +3093,7 @@ const bilingualCopy = {
     },
     order: {
       eye: '预订详情须知',
-      title: '<span class="order-title-line">限量纯手工制作·</span><span class="order-title-line">采用新鲜有机原料</span>',
+      title: '<span class="order-title-line">限量纯手工制作</span><span class="order-title-line">采用新鲜有机原料</span>',
       sub: '甜品每周限时品种根据当季原料供应决定 · 添加我们的WeChat获得最新动态',
       labels: ['微信']
     },
@@ -3298,6 +3335,14 @@ function applyBilingualLanguage(lang) {
     bilingualLangToggle.setAttribute('aria-label', copy.toggleAria);
   }
 
+  if (mobileLangLabel) {
+    mobileLangLabel.textContent = lang === 'en' ? 'Language' : '语言';
+  }
+  mobileLangButtons.forEach((button) => {
+    button.classList.toggle('is-en', lang === 'en');
+    button.setAttribute('aria-label', copy.toggleAria);
+  });
+
   document.querySelectorAll('.nav-book').forEach((button) => {
     const label = button.querySelector('.nav-book-label');
     if (label) {
@@ -3406,11 +3451,6 @@ function applyBilingualLanguage(lang) {
   bilingualSetText('.qr-overlay-title', copy.overlays.qrTitle);
   bilingualSetText('.qr-overlay-sub', copy.overlays.qrSub);
   renderShop();
-  if (mobileLangButtons.length) {
-    mobileLangButtons.forEach((button) => {
-      button.textContent = lang === 'en' ? 'ENG / 中文' : '中文 / ENG';
-    });
-  }
 }
 
 bilingualMenuCloseButtons.forEach((button) => {

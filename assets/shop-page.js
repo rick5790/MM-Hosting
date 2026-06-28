@@ -259,8 +259,38 @@
     return localizePickupText(pickup.label);
   }
 
+  function getPickupDetailPreset(pickup) {
+    if (!pickup) return null;
+    const haystack = [
+      pickup.label,
+      pickup.zipcode,
+      pickup.address,
+      pickup.note
+    ].filter(Boolean).join(' ').toLowerCase();
+
+    if (/los angeles|\bla\b|洛杉矶/.test(haystack)) {
+      return {
+        zh: '自提地点：Alloy公寓楼下，靠近4th桥底车库门',
+        en: 'Pickup spot: Under the Alloy apartments, near the garage gate by the 4th St bridge'
+      };
+    }
+
+    if (/irvine|orange county|\boc\b|尔湾/.test(haystack)) {
+      return {
+        zh: '自提地点：Heritage Plaza, Chase 银行停车场靠近ATM机，Tesla充电桩对面',
+        en: 'Pickup spot: Heritage Plaza, in the Chase Bank parking lot near the ATM, across from the Tesla chargers'
+      };
+    }
+
+    return null;
+  }
+
   function getPickupMeta(pickup) {
     if (!pickup) return '';
+    const preset = getPickupDetailPreset(pickup);
+    if (preset) {
+      return getLang() === 'en' ? preset.en : preset.zh;
+    }
     return localizePickupText([pickup.time, pickup.zipcode, pickup.address, pickup.note].filter(Boolean).join(' · '));
   }
 
@@ -392,7 +422,7 @@
           <div class="pickup-current">
             <span class="pickup-current-label">${escapeHtml(c.pickupInfo)}</span>
             <span class="pickup-current-value">${escapeHtml((pickup && getPickupLabel(pickup)) || c.pickupSelect)}</span>
-            <span class="pickup-current-meta">${escapeHtml((pickup && localizePickupText([pickup.time, pickup.zipcode].filter(Boolean).join(' · '))) || '')}</span>
+            <span class="pickup-current-meta">${escapeHtml((pickup && getPickupMeta(pickup)) || '')}</span>
           </div>
           <div class="shop-menu-side">
             <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>

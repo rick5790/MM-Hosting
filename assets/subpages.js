@@ -712,10 +712,12 @@
           <div class="layers-showcase-eye">${escapeHtml(card.no)}</div>
           <div class="layers-showcase-name">${escapeHtml(copy.title)}</div>
           <div class="layers-showcase-sub">${escapeHtml(copy.sub)}</div>
-          <div class="layers-showcase-scene" style="${scene.sceneStyle}">
-            <div class="layers-showcase-stack" style="${scene.stackStyle}">
+          <div class="layers-showcase-scene">
+            <div class="layers-showcase-stack-shell">
+              <div class="layers-showcase-stack">
               ${scene.parts}
               ${tags.map((tag, tagIndex) => `<div class="layers-showcase-tag" style="${scene.tags[tagIndex] || ''}">${escapeHtml(tag)}</div>`).join('')}
+              </div>
             </div>
           </div>
           <div class="layers-showcase-foot">${copy.footHtml}</div>
@@ -768,13 +770,13 @@
     }
     if (key === 'wechat') {
       return `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M9.5 6.5c-3.59 0-6.5 2.46-6.5 5.5 0 1.79 1.01 3.39 2.57 4.39L5 20l3.31-1.66c.39.06.79.09 1.19.09 3.59 0 6.5-2.46 6.5-5.5s-2.91-5.43-6.5-5.43Z"></path>
-          <path d="M14.5 10.5c3.04 0 5.5 1.99 5.5 4.45 0 1.42-.83 2.68-2.13 3.5l.38 2.55-2.62-1.31c-.36.05-.74.08-1.13.08-3.04 0-5.5-1.99-5.5-4.45s2.46-4.82 5.5-4.82Z"></path>
-          <circle cx="7.8" cy="11.8" r=".9" fill="currentColor" stroke="none"></circle>
-          <circle cx="11.2" cy="11.8" r=".9" fill="currentColor" stroke="none"></circle>
-          <circle cx="13.2" cy="14.4" r=".8" fill="currentColor" stroke="none"></circle>
-          <circle cx="16.2" cy="14.4" r=".8" fill="currentColor" stroke="none"></circle>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path fill="currentColor" d="M9.55 5.1c-3.92 0-7.05 2.67-7.05 6.03 0 1.82.94 3.46 2.53 4.56L4.4 19.4l3.42-1.74c.57.11 1.15.17 1.73.17 3.92 0 7.05-2.67 7.05-6.03 0-3.36-3.13-6.7-7.05-6.7Z"></path>
+          <path fill="currentColor" d="M15.12 9.2c-3.27 0-5.88 2.16-5.88 4.92 0 2.75 2.61 4.85 5.88 4.85.46 0 .92-.04 1.37-.13l2.86 1.45-.42-2.82c1.37-.82 2.27-2.15 2.27-3.74 0-2.77-2.61-4.53-5.88-4.53Z" opacity=".92"></path>
+          <circle cx="7.52" cy="11.08" r="1" fill="#FFF8F0"></circle>
+          <circle cx="11.04" cy="11.08" r="1" fill="#FFF8F0"></circle>
+          <circle cx="13.9" cy="13.88" r=".92" fill="#FFF8F0"></circle>
+          <circle cx="17.02" cy="13.88" r=".92" fill="#FFF8F0"></circle>
         </svg>
       `;
     }
@@ -1136,8 +1138,6 @@
   applyLanguage(currentLang);
   initReveal();
 })();
-
-
 
 
 
