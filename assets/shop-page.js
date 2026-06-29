@@ -259,7 +259,7 @@
     return localizePickupText(pickup.label);
   }
 
-  function getPickupDetailPreset(pickup) {
+  function getPickupAddressPreset(pickup) {
     if (!pickup) return null;
     const haystack = [
       pickup.label,
@@ -270,28 +270,75 @@
 
     if (/los angeles|\bla\b|洛杉矶/.test(haystack)) {
       return {
-        zh: '自提地点：Alloy公寓楼下，靠近4th桥底车库门',
-        en: 'Pickup spot: Under the Alloy apartments, near the garage gate by the 4th St bridge'
+        zh: '509 S Santa Fe Ave, Los Angeles, 90013',
+        en: '509 S Santa Fe Ave, Los Angeles, 90013'
       };
     }
 
     if (/irvine|orange county|\boc\b|尔湾/.test(haystack)) {
       return {
-        zh: '自提地点：Heritage Plaza, Chase 银行停车场靠近ATM机，Tesla充电桩对面',
-        en: 'Pickup spot: Heritage Plaza, in the Chase Bank parking lot near the ATM, across from the Tesla chargers'
+        zh: '14282 Culver Dr, Irvine, 92604',
+        en: '14282 Culver Dr, Irvine, 92604'
       };
     }
 
     return null;
   }
 
-  function getPickupMeta(pickup) {
-    if (!pickup) return '';
-    const preset = getPickupDetailPreset(pickup);
-    if (preset) {
-      return getLang() === 'en' ? preset.en : preset.zh;
+  function getPickupInstructionPreset(pickup) {
+    if (!pickup) return null;
+    const haystack = [
+      pickup.label,
+      pickup.zipcode,
+      pickup.address,
+      pickup.note
+    ].filter(Boolean).join(' ').toLowerCase();
+
+    if (/los angeles|\bla\b|洛杉矶/.test(haystack)) {
+      return {
+        zh: '509 S Santa Fe Ave, Los Angeles, 90013，Alloy公寓楼下，靠近4th桥底车库门',
+        en: '509 S Santa Fe Ave, Los Angeles, 90013, Under the Alloy apartments, near the garage gate by the 4th St bridge'
+      };
     }
-    return localizePickupText([pickup.time, pickup.zipcode, pickup.address, pickup.note].filter(Boolean).join(' · '));
+
+    if (/irvine|orange county|\boc\b|尔湾/.test(haystack)) {
+      return {
+        zh: '14282 Culver Dr, Irvine, 92604，Heritage Plaza, Chase 银行停车场靠近ATM机，Tesla充电桩对面',
+        en: '14282 Culver Dr, Irvine, 92604, Heritage Plaza, in the Chase Bank parking lot near the ATM, across from the Tesla chargers'
+      };
+    }
+
+    return null;
+  }
+
+  function cleanPickupText(value) {
+    return String(value || '')
+      .replace(/^Pickup spot:\s*/i, '')
+      .replace(/^自提地点[:：]\s*/i, '')
+      .trim();
+  }
+
+  function getPickupAddress(pickup) {
+    if (!pickup) return '';
+    const preset = getPickupAddressPreset(pickup);
+    if (preset) {
+      return cleanPickupText(getLang() === 'en' ? preset.en : preset.zh);
+    }
+    const fallback = cleanPickupText(localizePickupText(String(pickup.address || pickup.note || pickup.zipcode || pickup.time || '')));
+    if (fallback) return fallback;
+    const looseMatch = localizePickupText([pickup.address, pickup.note, pickup.zipcode, pickup.time, pickup.label, pickup.id].filter(Boolean).join(' ')).toLowerCase();
+    if (/los angeles|\bla\b|洛杉矶/.test(looseMatch)) return '509 S Santa Fe Ave, Los Angeles, 90013';
+    if (/irvine|orange county|\boc\b|尔湾/.test(looseMatch)) return '14282 Culver Dr, Irvine, 92604';
+    return '';
+  }
+
+  function getPickupInstruction(pickup) {
+    if (!pickup) return '';
+    const preset = getPickupInstructionPreset(pickup);
+    if (preset) {
+      return cleanPickupText(getLang() === 'en' ? preset.en : preset.zh);
+    }
+    return cleanPickupText(localizePickupText(String(pickup.note || '')));
   }
 
   function getPickup() {
@@ -412,17 +459,11 @@
     shopRoot.className = '';
     shopRoot.innerHTML = `
       <div class="shop-menu-shell">
-        <div class="shop-menu-hero">
-          <div class="shop-menu-copy">
-            <div class="shop-menu-title">${escapeHtml(c.weeklyMenu)}</div>
-          </div>
-          <div class="shop-menu-status">${escapeHtml(isWeeklyOpen() ? c.open : c.closed)}</div>
-        </div>
         <div class="shop-menu-head">
           <div class="pickup-current">
             <span class="pickup-current-label">${escapeHtml(c.pickupInfo)}</span>
             <span class="pickup-current-value">${escapeHtml((pickup && getPickupLabel(pickup)) || c.pickupSelect)}</span>
-            <span class="pickup-current-meta">${escapeHtml((pickup && getPickupMeta(pickup)) || '')}</span>
+            <span class="pickup-current-meta">${escapeHtml((pickup && getPickupInstruction(pickup)) || '')}</span>
           </div>
           <div class="shop-menu-side">
             <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>
@@ -543,7 +584,7 @@
         ${state.pickups.map((option, index) => `
           <button class="portal-pickup ${index === state.pickupIndex ? 'is-active' : ''}" type="button" data-pickup-action="select" data-index="${index}">
             <div class="portal-pickup-title">${escapeHtml(getPickupLabel(option))}</div>
-            <div class="portal-pickup-meta">${escapeHtml(getPickupMeta(option))}</div>
+            <div class="portal-pickup-meta">${escapeHtml(getPickupAddress(option))}</div>
           </button>
         `).join('')}
       </div>
@@ -588,7 +629,6 @@
       <div class="portal-label">${escapeHtml(c.pickupInfo)}</div>
       <div class="portal-pickup is-active">
         <div class="portal-pickup-title">${escapeHtml(pickup ? getPickupLabel(pickup) : '')}</div>
-        <div class="portal-pickup-meta">${escapeHtml(pickup ? getPickupMeta(pickup) : '')}</div>
       </div>
       <div class="portal-actions" style="margin-top:.9rem;">
         <button class="shop-secondary-button" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>

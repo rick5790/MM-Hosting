@@ -465,8 +465,8 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .portal-pickups{display:grid;gap:.75rem;margin-top:.8rem;}
 .portal-pickup{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);cursor:pointer;}
 .portal-pickup.is-active{background:rgba(124,101,97,.09);border-color:#7c6561;}
-.portal-pickup-title{font-weight:700;}
-.portal-pickup-meta{margin-top:.35rem;color:#8a7467;font-size:13px;line-height:1.65;}
+.portal-pickup-title{font-weight:700;text-align:center;}
+.portal-pickup-meta{margin-top:.22rem;color:#8a7467;font-size:13px;line-height:1.65;text-align:center;}
 .portal-summary{display:flex;flex-direction:column;gap:.65rem;margin-top:1rem;}
 .portal-summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
 .portal-summary-total{font-size:1rem;font-weight:800;color:#2d1f0f;}
@@ -861,8 +861,17 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .order .sec-title{line-height:1.05;}
   .order-title-line{display:block;}
   .order-title-line + .order-title-line{margin-left:0;}
+  .hero{
+    padding:3.5rem 1.2rem 1.4rem;
+  }
+  .hero-sub{
+    margin-bottom:1.2rem;
+  }
   .hero-logo{width:min(80vw,300px);}
   .hero-wordmark{width:min(100%,420px);}
+  .shop-entry{
+    padding:1.25rem 1.2rem 1rem;
+  }
   .social-feed{padding:0 1.2rem 4rem;}
   .social-shell{padding:1.35rem;}
   .social-head{flex-direction:column;align-items:flex-start;}
@@ -1873,6 +1882,49 @@ function getOrderCopy() {
   return orderPortalCopy[getUiLang()];
 }
 
+function getPickupDetailPreset(pickup) {
+  if (!pickup) return null;
+  const haystack = [
+    pickup.label,
+    pickup.zipcode,
+    pickup.address,
+    pickup.note
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  if (/los angeles|\bla\b|洛杉矶/.test(haystack)) {
+    return {
+      zh: '509 S Santa Fe Ave, Los Angeles, 90013',
+      en: '509 S Santa Fe Ave, Los Angeles, 90013'
+    };
+  }
+
+  if (/irvine|orange county|\boc\b|尔湾/.test(haystack)) {
+    return {
+      zh: '14282 Culver Dr, Irvine, 92604',
+      en: '14282 Culver Dr, Irvine, 92604'
+    };
+  }
+
+  return null;
+}
+
+function getPickupGuideText(pickup) {
+  if (!pickup) return '';
+  const preset = getPickupDetailPreset(pickup);
+  if (preset) {
+    return (getUiLang() === 'en' ? preset.en : preset.zh).replace(/^Pickup spot:\s*/i, '').replace(/^自提地点[:：]\s*/i, '').trim();
+  }
+  const fallback = String(pickup.address || pickup.note || pickup.zipcode || pickup.time || '')
+    .replace(/^Pickup spot:\s*/i, '')
+    .replace(/^自提地点[:：]\s*/i, '')
+    .trim();
+  if (fallback) return fallback;
+  const looseMatch = [pickup.address, pickup.note, pickup.zipcode, pickup.time, pickup.label, pickup.id].filter(Boolean).join(' ').toLowerCase();
+  if (/los angeles|\bla\b|洛杉矶/.test(looseMatch)) return '509 S Santa Fe Ave, Los Angeles, 90013';
+  if (/irvine|orange county|\boc\b|尔湾/.test(looseMatch)) return '14282 Culver Dr, Irvine, 92604';
+  return '';
+}
+
 function joinApiUrl(url) {
   if (/^https?:\/\//.test(url)) return url;
   return `${siteApiBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
@@ -1988,17 +2040,16 @@ function isWeeklyOpen() {
 
 function updateShopEntryStatus() {
   if (!shopEntryStatus) return;
-  const copy = getOrderCopy();
   const pickup = getPickup();
   const pills = [];
-  pills.push(`<span class="shop-pill ${isWeeklyOpen() ? 'is-open' : 'is-closed'}">${escapeHtml(isWeeklyOpen() ? copy.open : copy.closed)}</span>`);
   if (siteState.weeklyOrder && siteState.weeklyOrder.deadline_text) {
-    pills.push(`<span class="shop-pill">${escapeHtml(copy.deadlinePrefix + siteState.weeklyOrder.deadline_text)}</span>`);
+    pills.push(`<span class="shop-pill">${escapeHtml(getOrderCopy().deadlinePrefix + siteState.weeklyOrder.deadline_text)}</span>`);
   }
   if (pickup && pickup.label) {
     pills.push(`<span class="shop-pill">${escapeHtml(pickup.label)}</span>`);
   }
   shopEntryStatus.innerHTML = pills.join('');
+  shopEntryStatus.hidden = pills.length === 0;
 }
 
 function renderCountdown(deadlineIso) {
@@ -2062,8 +2113,9 @@ function renderShop() {
     shopRoot.innerHTML = `
       <div class="shop-hero">
         <div class="shop-hero-copy">
-          <div class="shop-kicker">${escapeHtml(copy.weeklyMenu)}</div>
-          <div class="shop-title">${escapeHtml((siteState.weeklyOrder && (siteState.weeklyOrder.title || siteState.weeklyOrder.name)) || copy.weeklyMenu)}</div>
+          ${(siteState.weeklyOrder && (siteState.weeklyOrder.title || siteState.weeklyOrder.name))
+            ? `<div class="shop-title">${escapeHtml(siteState.weeklyOrder.title || siteState.weeklyOrder.name)}</div>`
+            : ''}
           <div class="shop-sub">${escapeHtml(copy.orderClosedCopy)}</div>
         </div>
         <div class="shop-countdown-wrap">
@@ -2076,14 +2128,6 @@ function renderShop() {
 
   shopRoot.className = '';
   shopRoot.innerHTML = `
-    <div class="shop-hero">
-      <div class="shop-hero-copy">
-        <div class="shop-kicker">${escapeHtml(copy.weeklyMenu)}</div>
-        <div class="shop-title">${escapeHtml((siteState.weeklyOrder && (siteState.weeklyOrder.title || siteState.weeklyOrder.name)) || copy.weeklyMenu)}</div>
-        <div class="shop-sub">${escapeHtml((siteState.weeklyOrder && (siteState.weeklyOrder.description || siteState.weeklyOrder.summary)) || copy.orderClosedCopy)}</div>
-      </div>
-      <div class="shop-countdown-wrap">${renderCountdown(siteState.weeklyOrder && (siteState.weeklyOrder.order_deadline_at || siteState.weeklyOrder.end_at || siteState.weeklyOrder.close_at))}</div>
-    </div>
     <div class="shop-toolbar">
       <div class="shop-pickups">
         ${siteState.pickups.map((option, index) => `
@@ -2211,7 +2255,7 @@ function renderOrderReviewOverlay() {
       ${siteState.pickups.map((option, index) => `
         <button class="portal-pickup ${index === siteState.pickupIndex ? 'is-active' : ''}" type="button" data-review-action="pickup" data-index="${index}">
           <div class="portal-pickup-title">${escapeHtml(option.label)}</div>
-          <div class="portal-pickup-meta">${escapeHtml([option.zipcode, option.time, option.address].filter(Boolean).join(' · '))}</div>
+          <div class="portal-pickup-meta">${escapeHtml(getPickupGuideText(option))}</div>
         </button>
       `).join('')}
     </div>

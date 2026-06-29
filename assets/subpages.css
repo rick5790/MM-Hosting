@@ -998,6 +998,11 @@ body[data-page="intro"] .page-hero{
   line-height:1.95;
   color:#4e3b2e;
 }
+.story-body .story-signature{
+  margin-top:.4rem;
+  font-size:clamp(.96rem,1.2vw,1.02rem);
+  color:#7b6556;
+}
 
 .shop{padding:1.2rem 1.5rem 5rem;background:var(--bg);}
 .shop-panel{
@@ -1300,7 +1305,7 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .portal-pickup{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);cursor:pointer;}
 .portal-pickup.is-active{background:rgba(124,101,97,.09);border-color:#7c6561;}
 .portal-pickup-title{font-weight:700;text-align:center;}
-.portal-pickup-meta{margin-top:.35rem;color:#8a7467;font-size:13px;line-height:1.65;text-align:center;}
+.portal-pickup-meta{margin-top:.22rem;color:#8a7467;font-size:13px;line-height:1.65;text-align:center;}
 .portal-summary{display:flex;flex-direction:column;gap:.65rem;margin-top:1rem;}
 .portal-summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
 .portal-summary-total{font-size:1rem;font-weight:800;color:#2d1f0f;}

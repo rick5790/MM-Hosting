@@ -524,6 +524,10 @@
         'We care deeply about making desserts that taste beautiful, but also about carrying the scent of memory, the warmth of handmade work, and a sense of playful creativity into every layer.',
         'From Makkie stuffed cookies and savory chiffon sandwiches to fusion desserts inspired by Chinese flavors, we keep experimenting so familiar tastes can feel softer, finer, and more worth remembering.'
       ]
+    },
+    signature: {
+      zh: ' - Makkie Mua',
+      en: ' - Makkie Mua'
     }
   };
 
@@ -848,9 +852,12 @@
     if (title) title.textContent = t(introContent.title);
     if (lead) lead.textContent = t(introContent.lead);
     if (bodyEl) {
-      bodyEl.innerHTML = introContent.paragraphs[currentLang].map((paragraph) => `
+      bodyEl.innerHTML = `
+        ${introContent.paragraphs[currentLang].map((paragraph) => `
         <p>${escapeHtml(paragraph)}</p>
-      `).join('');
+        `).join('')}
+        <p class="story-signature"><em>${escapeHtml(t(introContent.signature))}</em></p>
+      `;
     }
   }
 
@@ -1138,7 +1145,6 @@
   applyLanguage(currentLang);
   initReveal();
 })();
-
 
 
 
