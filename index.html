@@ -411,6 +411,9 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .shop-error{color:#7c3f35;background:rgba(124,63,53,.08);}
 .shop-hero{display:flex;justify-content:space-between;gap:1.6rem;align-items:flex-start;padding:1.1rem 1.2rem 1.3rem;border-radius:26px;background:linear-gradient(135deg,rgba(255,248,241,.95),rgba(243,231,216,.98));border:1px solid rgba(196,153,106,.14);}
 .shop-hero-copy{max-width:640px;}
+.shop-hero--closed{justify-content:center;align-items:center;text-align:center;}
+.shop-hero--closed .shop-hero-copy{max-width:720px;text-align:center;}
+.shop-hero--closed .shop-countdown-wrap{align-items:center;min-width:auto;}
 .shop-kicker{font-size:11px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;}
 .shop-title{margin-top:.45rem;font-size:clamp(1.8rem,3vw,2.45rem);line-height:1.05;font-weight:700;}
 .shop-sub{margin-top:.75rem;color:#7b6556;font-size:14px;line-height:1.7;}
@@ -689,6 +692,8 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .menu-gallery{grid-template-columns:repeat(3,minmax(0,1fr));}
   .shop-entry-head,
   .shop-hero{flex-direction:column;align-items:flex-start;}
+  .shop-hero--closed{align-items:center;}
+  .shop-hero--closed .shop-countdown-wrap{align-items:center;}
   .shop-countdown-wrap{align-items:flex-start;width:100%;min-width:0;}
 }
 
@@ -1772,7 +1777,8 @@ qrCloseButtons.forEach((button) => {
   button.addEventListener('click', closeQrOverlay);
 });
 
-const siteApiBase = 'https://api.makkiemua.com';
+const siteApiBase = 'https://admin.makkiemua.com';
+const pickupApiBase = 'https://admin.makkiemua.com';
 const siteStorageKeys = {
   auth: 'makkie.web.auth',
   clientId: 'makkie.web.clientId'
@@ -1783,6 +1789,7 @@ const orderPortalCopy = {
     orderEntry: '订单入口',
     open: '本周开放预定',
     closed: '本周暂未开放',
+    closedHint: '请关注我们的社交媒体获得最新更新',
     loading: '正在读取本周菜单...',
     loadFailed: '本周菜单读取失败，请稍后再试。',
     orderNow: '进入订单',
@@ -1799,8 +1806,8 @@ const orderPortalCopy = {
     saveProfile: '保存昵称',
     nickname: '昵称',
     nicknamePlaceholder: '请输入你的昵称',
-    orderNote: '订单备注',
-    orderNotePlaceholder: '口味偏好、取货说明等，可不填',
+    orderNote: '备注',
+    orderNotePlaceholder: '有什么要求可以告诉我们哦～只有Makkie看得到',
     pickupInfo: '自提信息',
     submit: '提交订单',
     close: '关闭',
@@ -1823,6 +1830,7 @@ const orderPortalCopy = {
     orderEntry: 'Order Entry',
     open: 'Weekly preorder is open',
     closed: 'Weekly preorder is closed',
+    closedHint: 'Follow our social media for the latest updates',
     loading: 'Loading weekly menu...',
     loadFailed: 'Failed to load the weekly menu. Please try again later.',
     orderNow: 'Open Ordering',
@@ -1839,8 +1847,8 @@ const orderPortalCopy = {
     saveProfile: 'Save Nickname',
     nickname: 'Nickname',
     nicknamePlaceholder: 'Enter your nickname',
-    orderNote: 'Order Note',
-    orderNotePlaceholder: 'Pickup note or flavor note, optional',
+    orderNote: 'Comment',
+    orderNotePlaceholder: 'Anything we should know? Only Makkie can see this.',
     pickupInfo: 'Pickup Info',
     submit: 'Submit Order',
     close: 'Close',
@@ -1930,6 +1938,11 @@ function joinApiUrl(url) {
   return `${siteApiBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
 }
 
+function joinPickupApiUrl(url) {
+  if (/^https?:\/\//.test(url)) return url;
+  return `${pickupApiBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
+}
+
 function getSiteClientId() {
   let clientId = localStorage.getItem(siteStorageKeys.clientId);
   if (!clientId) {
@@ -1961,6 +1974,22 @@ async function siteApiRequest(url, options = {}) {
     headers: {
       'content-type': 'application/json',
       ...(auth && auth.token ? { authorization: `Bearer ${auth.token}` } : {}),
+      ...(options.headers || {})
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || payload.ok === false) {
+    throw new Error(payload.message || `Request failed (${response.status})`);
+  }
+  return payload.data !== undefined ? payload.data : payload;
+}
+
+async function pickupApiRequest(url, options = {}) {
+  const response = await fetch(joinPickupApiUrl(url), {
+    method: options.method || 'GET',
+    headers: {
+      'content-type': 'application/json',
       ...(options.headers || {})
     },
     body: options.body ? JSON.stringify(options.body) : undefined
@@ -2111,7 +2140,7 @@ function renderShop() {
   if (!isWeeklyOpen()) {
     shopRoot.className = '';
     shopRoot.innerHTML = `
-      <div class="shop-hero">
+      <div class="shop-hero shop-hero--closed">
         <div class="shop-hero-copy">
           ${(siteState.weeklyOrder && (siteState.weeklyOrder.title || siteState.weeklyOrder.name))
             ? `<div class="shop-title">${escapeHtml(siteState.weeklyOrder.title || siteState.weeklyOrder.name)}</div>`
@@ -2119,7 +2148,7 @@ function renderShop() {
           <div class="shop-sub">${escapeHtml(copy.orderClosedCopy)}</div>
         </div>
         <div class="shop-countdown-wrap">
-          <div class="shop-deadline">${escapeHtml(copy.closed)}</div>
+          <div class="shop-deadline">${escapeHtml(copy.closedHint)}</div>
         </div>
       </div>
     `;
@@ -2379,7 +2408,7 @@ async function loadShopData() {
     const [weeklyPayload, productsPayload, pickupPayload] = await Promise.all([
       siteApiRequest('/api/weekly-order'),
       siteApiRequest('/api/products'),
-      siteApiRequest('/api/pickup-locations')
+      pickupApiRequest('/api/pickup-locations')
     ]);
     const weeklyOrder = weeklyPayload && weeklyPayload.weekly_order ? weeklyPayload.weekly_order : weeklyPayload;
     const products = productsPayload && Array.isArray(productsPayload.products) ? productsPayload.products : [];

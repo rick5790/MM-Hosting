@@ -1,0 +1,1 @@
+"""Makkie admin backend package."""

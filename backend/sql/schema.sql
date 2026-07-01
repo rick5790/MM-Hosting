@@ -1,0 +1,115 @@
+CREATE TABLE IF NOT EXISTS customers (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  client_id VARCHAR(120) NOT NULL UNIQUE,
+  nickname VARCHAR(120) NOT NULL,
+  is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS admin_users (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(80) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  display_name VARCHAR(120) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS auth_sessions (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  token VARCHAR(255) NOT NULL UNIQUE,
+  subject_type VARCHAR(20) NOT NULL,
+  subject_id INTEGER NOT NULL,
+  client_id VARCHAR(120) NULL,
+  expires_at DATETIME NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS weekly_orders (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(200) NOT NULL,
+  description TEXT NOT NULL,
+  is_open BOOLEAN NOT NULL DEFAULT FALSE,
+  is_current BOOLEAN NOT NULL DEFAULT TRUE,
+  active_group_id VARCHAR(50) NULL,
+  group_no VARCHAR(50) NULL,
+  deadline_text VARCHAR(120) NULL,
+  order_deadline_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  weekly_order_id INTEGER NULL,
+  category VARCHAR(120) NOT NULL DEFAULT 'Dessert',
+  name VARCHAR(200) NOT NULL,
+  description TEXT NOT NULL,
+  price DECIMAL(10,2) NOT NULL DEFAULT 0,
+  price_text VARCHAR(120) NULL,
+  stock INTEGER NOT NULL DEFAULT 0,
+  per_order_limit INTEGER NULL,
+  image_url TEXT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_products_weekly_order FOREIGN KEY (weekly_order_id) REFERENCES weekly_orders(id)
+);
+
+CREATE TABLE IF NOT EXISTS pickup_locations (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(120) NOT NULL,
+  label VARCHAR(120) NULL,
+  address TEXT NOT NULL,
+  note TEXT NOT NULL,
+  pickup_time VARCHAR(120) NULL,
+  area VARCHAR(120) NULL,
+  zipcode VARCHAR(40) NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  order_no VARCHAR(40) NOT NULL UNIQUE,
+  customer_id INTEGER NULL,
+  client_id VARCHAR(120) NOT NULL,
+  nickname VARCHAR(120) NOT NULL,
+  weekly_order_id INTEGER NULL,
+  pickup_location_id INTEGER NULL,
+  pickup_location_name VARCHAR(120) NULL,
+  pickup_snapshot TEXT NOT NULL,
+  note TEXT NOT NULL,
+  admin_comment TEXT NOT NULL,
+  status VARCHAR(40) NOT NULL DEFAULT 'new',
+  subtotal DECIMAL(10,2) NOT NULL DEFAULT 0,
+  payment_status VARCHAR(40) NOT NULL DEFAULT 'non_paid',
+  payment_method VARCHAR(40) NULL,
+  paid_at DATETIME NULL,
+  payment_note TEXT NOT NULL,
+  payment_marked_by INTEGER NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) REFERENCES customers(id),
+  CONSTRAINT fk_orders_weekly_order FOREIGN KEY (weekly_order_id) REFERENCES weekly_orders(id),
+  CONSTRAINT fk_orders_pickup FOREIGN KEY (pickup_location_id) REFERENCES pickup_locations(id),
+  CONSTRAINT fk_orders_payment_admin FOREIGN KEY (payment_marked_by) REFERENCES admin_users(id)
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  order_id INTEGER NOT NULL,
+  product_id INTEGER NULL,
+  product_name VARCHAR(200) NOT NULL,
+  quantity INTEGER NOT NULL,
+  unit_price DECIMAL(10,2) NOT NULL DEFAULT 0,
+  product_snapshot TEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id),
+  CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(id)
+);

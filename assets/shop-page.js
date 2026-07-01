@@ -19,7 +19,8 @@
     button.textContent = '×';
   });
 
-  const siteApiBase = 'https://api.makkiemua.com';
+  const siteApiBase = 'https://admin.makkiemua.com';
+  const pickupApiBase = 'https://admin.makkiemua.com';
   const siteStorageKeys = {
     auth: 'makkie.web.auth',
     clientId: 'makkie.web.clientId'
@@ -30,6 +31,7 @@
       syncing: '同步中',
       open: '本周开放预定',
       closed: '本周暂未开放',
+      closedHint: '请关注我们的社交媒体获得最新更新',
       loading: '正在读取本周菜单...',
       loadFailed: '本周菜单读取失败，请稍后再试。',
       weeklyMenu: '本周菜单',
@@ -38,6 +40,7 @@
       expired: '本周预定已截止',
       selected: '已选',
       pieces: '件',
+      totalLabel: '总价',
       completeProfile: '先保存昵称',
       nickname: '昵称',
       nicknamePlaceholder: '请输入你的昵称',
@@ -46,16 +49,19 @@
       profileSub: '保存昵称后，提交订单会更顺畅，也方便你之后继续修改或确认。',
       close: '关闭',
       orderNote: '订单备注',
-      orderNotePlaceholder: '口味偏好、取货说明等，可不填',
+      orderComment: '备注',
+      orderCommentEmpty: '暂时没有留言',
+      orderNotePlaceholder: '有什么要求可以告诉我们哦～只有Makkie看得到',
       reviewOrder: '确认订单',
       submit: '提交订单',
       pickupInfo: '自提信息',
+      pickupTime: '自提时间',
       subtotal: '合计',
       emptyCart: '请先选择数量',
       submitSuccess: '订单已提交',
       saveSuccess: '已保存',
       pickupSelect: '选择自提',
-      pickupChange: '更改自提',
+      pickupChange: '更改自提地点',
       pickupIntroTitle: '请选择本周自提地点',
       pickupIntroSub: '',
       pickupConfirm: '进入预定',
@@ -74,6 +80,7 @@
       syncing: 'Syncing',
       open: 'Weekly preorder is open',
       closed: 'Weekly preorder is closed',
+      closedHint: 'Follow our social media for the latest updates',
       loading: 'Loading weekly menu...',
       loadFailed: 'Failed to load the weekly menu. Please try again later.',
       weeklyMenu: 'Weekly Menu',
@@ -82,6 +89,7 @@
       expired: 'This week is closed',
       selected: 'Selected',
       pieces: 'items',
+      totalLabel: 'Total',
       completeProfile: 'Save nickname first',
       nickname: 'Nickname',
       nicknamePlaceholder: 'Enter your nickname',
@@ -90,10 +98,13 @@
       profileSub: 'Saving a nickname makes it easier to submit, update, and confirm your order later.',
       close: 'Close',
       orderNote: 'Order Note',
-      orderNotePlaceholder: 'Pickup note or flavor note, optional',
+      orderComment: 'Comment',
+      orderCommentEmpty: 'No comment yet',
+      orderNotePlaceholder: 'Anything we should know? Only Makkie can see this.',
       reviewOrder: 'Review Order',
       submit: 'Submit Order',
       pickupInfo: 'Pickup Info',
+      pickupTime: 'Pickup Time',
       subtotal: 'Total',
       emptyCart: 'Select at least one item first',
       submitSuccess: 'Order submitted',
@@ -171,6 +182,11 @@
     return `${siteApiBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
   }
 
+  function joinPickupApiUrl(url) {
+    if (/^https?:\/\//.test(url)) return url;
+    return `${pickupApiBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
+  }
+
   function getSiteClientId() {
     let clientId = localStorage.getItem(siteStorageKeys.clientId);
     if (!clientId) {
@@ -187,6 +203,22 @@
       headers: {
         'content-type': 'application/json',
         ...(auth && auth.token ? { authorization: `Bearer ${auth.token}` } : {}),
+        ...(options.headers || {})
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || payload.ok === false) {
+      throw new Error(payload.message || `Request failed (${response.status})`);
+    }
+    return payload.data !== undefined ? payload.data : payload;
+  }
+
+  async function pickupApiRequest(url, options = {}) {
+    const response = await fetch(joinPickupApiUrl(url), {
+      method: options.method || 'GET',
+      headers: {
+        'content-type': 'application/json',
         ...(options.headers || {})
       },
       body: options.body ? JSON.stringify(options.body) : undefined
@@ -296,15 +328,15 @@
 
     if (/los angeles|\bla\b|洛杉矶/.test(haystack)) {
       return {
-        zh: '509 S Santa Fe Ave, Los Angeles, 90013，Alloy公寓楼下，靠近4th桥底车库门',
-        en: '509 S Santa Fe Ave, Los Angeles, 90013, Under the Alloy apartments, near the garage gate by the 4th St bridge'
+        zh: 'Alloy公寓楼下，靠近4th桥底车库门',
+        en: 'Under the Alloy apartments, near the garage gate by the 4th St bridge'
       };
     }
 
     if (/irvine|orange county|\boc\b|尔湾/.test(haystack)) {
       return {
-        zh: '14282 Culver Dr, Irvine, 92604，Heritage Plaza, Chase 银行停车场靠近ATM机，Tesla充电桩对面',
-        en: '14282 Culver Dr, Irvine, 92604, Heritage Plaza, in the Chase Bank parking lot near the ATM, across from the Tesla chargers'
+        zh: 'Heritage Plaza, Chase 银行停车场靠近ATM机，Tesla充电桩对面',
+        en: 'Heritage Plaza, in the Chase Bank parking lot near the ATM, across from the Tesla chargers'
       };
     }
 
@@ -339,6 +371,40 @@
       return cleanPickupText(getLang() === 'en' ? preset.en : preset.zh);
     }
     return cleanPickupText(localizePickupText(String(pickup.note || '')));
+  }
+
+  function isAppleMapsPreferred() {
+    if (typeof navigator === 'undefined') return false;
+    const ua = navigator.userAgent || '';
+    const platform = navigator.platform || '';
+    const touchMac = platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+    return /iPhone|iPad|iPod/i.test(ua) || /Mac/i.test(platform) || touchMac;
+  }
+
+  function getPickupMapUrl(pickup) {
+    if (!pickup) return '';
+    const address = getPickupAddress(pickup);
+    const label = getPickupLabel(pickup);
+    const query = encodeURIComponent([address, label].filter(Boolean).join(' '));
+    if (!query) return '';
+    if (isAppleMapsPreferred()) {
+      return `https://maps.apple.com/?q=${query}`;
+    }
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  }
+
+  function getPickupTimeText(pickup) {
+    if (!pickup) return '';
+    const raw = cleanPickupText(localizePickupText(String(pickup.time || pickup.pickup_time || '')));
+    if (raw) return raw;
+    const haystack = [pickup.label, pickup.address, pickup.note, pickup.zipcode, pickup.id].filter(Boolean).join(' ').toLowerCase();
+    if (/irvine|orange county|\boc\b|尔湾/.test(haystack)) {
+      return getLang() === 'en' ? 'Saturday 12:30 - 13:00' : '周六 12:30 - 13:00';
+    }
+    if (/los angeles|\bla\b|洛杉矶/.test(haystack)) {
+      return getLang() === 'en' ? 'Saturday 14:00 - 14:30' : '周六 14:00 - 14:30';
+    }
+    return '';
   }
 
   function getPickup() {
@@ -447,7 +513,7 @@
             <div class="shop-menu-title">${escapeHtml(c.weeklyMenu)}</div>
             <div class="shop-state-sub">${escapeHtml(c.orderClosedCopy)}</div>
           </div>
-          <div class="shop-state-badge">${escapeHtml(c.closed)}</div>
+          <div class="shop-state-badge">${escapeHtml(c.closedHint)}</div>
         </div>
       `;
       return;
@@ -455,21 +521,10 @@
 
     const totalQuantity = getCartTotalQuantity();
     const pickup = getPickup();
-    const deadlineText = getShopDeadlineText();
+    const totalPrice = getSelectedItems().reduce((sum, item) => sum + (item.unitPrice || 0) * item.quantity, 0);
     shopRoot.className = '';
     shopRoot.innerHTML = `
       <div class="shop-menu-shell">
-        <div class="shop-menu-head">
-          <div class="pickup-current">
-            <span class="pickup-current-label">${escapeHtml(c.pickupInfo)}</span>
-            <span class="pickup-current-value">${escapeHtml((pickup && getPickupLabel(pickup)) || c.pickupSelect)}</span>
-            <span class="pickup-current-meta">${escapeHtml((pickup && getPickupInstruction(pickup)) || '')}</span>
-          </div>
-          <div class="shop-menu-side">
-            <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>
-          </div>
-        </div>
-        <div class="shop-menu-divider"></div>
         <div class="shop-grid shop-grid--catalog">
         ${state.products.map((product) => {
           const quantity = state.cartQuantities[product.id] || 0;
@@ -506,11 +561,35 @@
           `;
         }).join('')}
         </div>
+        <div class="shop-menu-divider"></div>
+        <div class="shop-details-row">
+          <div class="shop-menu-head">
+            <div class="pickup-current">
+              <span class="pickup-current-label">${escapeHtml(c.pickupInfo)}</span>
+              <span class="pickup-current-value">${escapeHtml((pickup && getPickupLabel(pickup)) || c.pickupSelect)}</span>
+              <span class="pickup-current-time">${escapeHtml((pickup && getPickupTimeText(pickup)) || '')}</span>
+              ${(pickup && getPickupMapUrl(pickup))
+                ? `<a class="pickup-current-address pickup-current-address-link" href="${escapeHtml(getPickupMapUrl(pickup))}" target="_blank" rel="noopener noreferrer">${escapeHtml(getPickupAddress(pickup) || '')}</a>`
+                : `<span class="pickup-current-address">${escapeHtml((pickup && getPickupAddress(pickup)) || '')}</span>`
+              }
+              <span class="pickup-current-meta">${escapeHtml((pickup && getPickupInstruction(pickup)) || '')}</span>
+            </div>
+            <div class="shop-menu-side">
+              <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>
+            </div>
+          </div>
+          <div class="shop-comment-card">
+            <label class="shop-comment-field" for="shopOrderNoteInput">
+              <span class="shop-comment-label">${escapeHtml(c.orderComment)}</span>
+              <textarea id="shopOrderNoteInput" class="shop-comment-textarea" placeholder="${escapeHtml(c.orderNotePlaceholder)}" data-shop-note>${escapeHtml(state.note || '')}</textarea>
+            </label>
+          </div>
+        </div>
       </div>
       <div class="shop-submit-bar">
         <div class="shop-submit-summary">
           <strong>${escapeHtml(c.selected)} ${totalQuantity} ${escapeHtml(c.pieces)}</strong>
-          <span>${escapeHtml([pickup ? getPickupLabel(pickup) : '', deadlineText].filter(Boolean).join(' · '))}</span>
+          <span>${escapeHtml(c.totalLabel)} ${escapeHtml(formatMoney(totalPrice))}</span>
         </div>
         <button class="shop-submit-button" type="button" data-shop-action="review">${escapeHtml(c.reviewOrder)}</button>
       </div>
@@ -584,7 +663,7 @@
         ${state.pickups.map((option, index) => `
           <button class="portal-pickup ${index === state.pickupIndex ? 'is-active' : ''}" type="button" data-pickup-action="select" data-index="${index}">
             <div class="portal-pickup-title">${escapeHtml(getPickupLabel(option))}</div>
-            <div class="portal-pickup-meta">${escapeHtml(getPickupAddress(option))}</div>
+            <div class="portal-pickup-meta">${escapeHtml([getPickupTimeText(option), getPickupAddress(option)].filter(Boolean).join(" · "))}</div>
           </button>
         `).join('')}
       </div>
@@ -620,10 +699,10 @@
     orderReviewBody.innerHTML = `
       <div class="portal-title">${escapeHtml(c.reviewOrder)}</div>
       <div class="portal-form">
-        <label class="portal-field">
-          <span class="portal-label">${escapeHtml(c.orderNote)}</span>
-          <textarea id="orderNoteInput" class="portal-textarea" placeholder="${escapeHtml(c.orderNotePlaceholder)}">${escapeHtml(state.note || '')}</textarea>
-        </label>
+        <div class="portal-field">
+          <span class="portal-label">${escapeHtml(c.orderComment)}</span>
+          <div class="portal-note-preview ${state.note && state.note.trim() ? '' : 'is-empty'}">${escapeHtml(state.note && state.note.trim() ? state.note : c.orderCommentEmpty)}</div>
+        </div>
       </div>
       <div class="portal-divider"></div>
       <div class="portal-label">${escapeHtml(c.pickupInfo)}</div>
@@ -662,7 +741,7 @@
       alert(c.emptyCart);
       return;
     }
-    const noteInput = document.getElementById('orderNoteInput');
+    const noteInput = document.getElementById('shopOrderNoteInput');
     if (noteInput) state.note = noteInput.value;
     const pickup = getPickup();
     await siteApiRequest('/api/orders', {
@@ -671,6 +750,7 @@
         pickup_location_id: pickup ? pickup.id : '',
         pickup_location_name: pickup ? pickup.label : '',
         pickup_snapshot: pickup || {},
+        pickup_time: pickup ? getPickupTimeText(pickup) : "",
         note: state.note,
         items: items.map((item) => ({
           product_id: item.productId || item.id,
@@ -739,7 +819,7 @@
       const [weeklyPayload, productsPayload, pickupPayload] = await Promise.all([
         siteApiRequest('/api/weekly-order'),
         siteApiRequest('/api/products'),
-        siteApiRequest('/api/pickup-locations')
+        pickupApiRequest('/api/pickup-locations')
       ]);
       const weeklyOrder = weeklyPayload && weeklyPayload.weekly_order ? weeklyPayload.weekly_order : weeklyPayload;
       const products = productsPayload && Array.isArray(productsPayload.products) ? productsPayload.products : [];
@@ -877,6 +957,12 @@
       closeOverlay(pickupOverlay, pickupOverlayBody);
       closeOverlay(adminOverlay, adminOverlayBody);
     }
+  });
+
+  document.addEventListener('input', (event) => {
+    const noteField = event.target.closest('[data-shop-note]');
+    if (!noteField) return;
+    state.note = noteField.value;
   });
 
   if (navLogo) {
