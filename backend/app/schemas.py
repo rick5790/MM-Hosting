@@ -29,6 +29,20 @@ class LocalCheckIn(BaseModel):
     client_id: str = Field(min_length=4, max_length=120)
 
 
+class GoogleLoginIn(BaseModel):
+    credential: str = Field(min_length=10)
+    client_id: Optional[str] = Field(default=None, max_length=120)
+
+
+class GuestLoginIn(BaseModel):
+    nickname: str = Field(min_length=1, max_length=30)
+    client_id: Optional[str] = Field(default=None, max_length=120)
+
+
+class UserTagIn(BaseModel):
+    tag: str = Field(default="user", max_length=20)
+
+
 class AdminLoginIn(BaseModel):
     username: str = Field(min_length=1, max_length=80)
     password: str = Field(min_length=1, max_length=255)
@@ -39,6 +53,7 @@ class WeeklyOrderPatchIn(BaseModel):
     description: Optional[str] = None
     is_open: Optional[bool] = None
     deadline_text: Optional[str] = None
+    start_at: Optional[datetime] = None
     order_deadline_at: Optional[datetime] = None
     active_group_id: Optional[str] = None
     group_no: Optional[str] = None

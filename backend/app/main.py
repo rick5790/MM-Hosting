@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
+import urllib.parse
+import urllib.request
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Optional
 from uuid import uuid4
 
-from fastapi import Depends, FastAPI, File, Header, HTTPException, Query, UploadFile, status
+from fastapi import Cookie, Depends, FastAPI, File, Header, HTTPException, Query, Response, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -18,9 +21,11 @@ from sqlalchemy.orm import Session, joinedload
 from . import bootstrap
 from .config import settings
 from .database import get_db
-from .models import AdminUser, AuthSession, Customer, Order, OrderItem, PickupLocation, Product, WeeklyOrder
+from .models import AdminUser, AuthSession, CollectionItem, Customer, Order, OrderItem, PickupLocation, Product, WeeklyOrder
 from .schemas import (
     AdminLoginIn,
+    GoogleLoginIn,
+    GuestLoginIn,
     LocalCheckIn,
     LocalLoginIn,
     OrderCommentPatchIn,
@@ -31,6 +36,7 @@ from .schemas import (
     PickupLocationUpsertIn,
     ProductPatchIn,
     ProductUpsertIn,
+    UserTagIn,
     WeeklyOrderPatchIn,
 )
 from .security import generate_token, session_expiry, verify_password
@@ -45,9 +51,11 @@ UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
 PRODUCT_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(title="Makkie Admin API", version="0.2.0")
+# credentials 模式下不能用 "*"：显式列出生产域名，本地任意端口用正则放行。
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://makkiemua.com", "https://www.makkiemua.com"],
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -124,16 +132,23 @@ def create_session(db: Session, *, subject_type: str, subject_id: int, client_id
     return session
 
 
-def serialize_customer_auth(customer: Customer, session: AuthSession) -> dict:
+def serialize_customer_auth(customer: Customer, session: AuthSession, extra: Optional[dict] = None) -> dict:
+    client_id = str(customer.client_id or "")
+    login_type = "google" if client_id.startswith("google:") else "guest"
+    user = {
+        "id": customer.id,
+        "nickname": customer.nickname,
+        "name": customer.nickname,
+        "login_type": login_type,
+        "profile": {"nickname": customer.nickname},
+        "is_admin": customer.is_admin,
+        "isAdmin": customer.is_admin,
+    }
+    if extra:
+        user.update(extra)
     return {
         "token": session.token,
-        "user": {
-            "id": customer.id,
-            "nickname": customer.nickname,
-            "profile": {"nickname": customer.nickname},
-            "is_admin": customer.is_admin,
-            "isAdmin": customer.is_admin,
-        },
+        "user": user,
     }
 
 
@@ -185,6 +200,10 @@ def make_order_no(order_id: int) -> str:
     return f"MM{datetime.utcnow():%y%m%d}{order_id:05d}"
 
 
+def make_default_group_title() -> str:
+    return f"A{datetime.utcnow():%Y%m%d}"
+
+
 def resolve_local_nickname(body: LocalLoginIn) -> str:
     nickname = body.resolved_nickname
     if nickname:
@@ -213,6 +232,58 @@ def serialize_product(product: Product) -> dict:
     payload["limit_per_order"] = payload.get("per_order_limit")
     payload["is_active"] = 1 if payload.get("is_active") else 0
     return payload
+
+
+def slugify(value: str, fallback: str = "collection") -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", (value or "").lower()).strip("-")
+    return slug or fallback
+
+
+def serialize_collection_item(item: CollectionItem) -> dict:
+    payload = model_to_dict(item)
+    payload["title"] = {
+        "zh": payload.get("title_zh") or "",
+        "en": payload.get("title_en") or payload.get("title_zh") or "",
+    }
+    payload["image"] = payload.get("image_url") or ""
+    return payload
+
+
+def group_collection_items(items: list[CollectionItem]) -> list[dict]:
+    groups: dict[str, dict] = {}
+    for item in items:
+        category = item.category or "创意甜品"
+        group_id = f"dynamic-{slugify(category, 'creative')}"
+        if group_id not in groups:
+            groups[group_id] = {
+                "id": group_id,
+                "category": category,
+                "title": {"zh": category, "en": category},
+                "subtitle": {"zh": "后台新增甜品", "en": "New additions from admin"},
+                "items": [],
+            }
+        groups[group_id]["items"].append(serialize_collection_item(item))
+    return list(groups.values())
+
+
+def sync_product_to_collection(db: Session, product: Product) -> Optional[CollectionItem]:
+    if not product.image_url:
+        return None
+    category = product.category or "创意甜品"
+    if category in {"Custom Upload", "Dessert"}:
+        category = "创意甜品"
+    item = None
+    if product.id:
+        item = db.query(CollectionItem).filter(CollectionItem.product_id == product.id).one_or_none()
+    if item is None:
+        item = CollectionItem(product_id=product.id)
+        db.add(item)
+    item.category = category
+    item.title_zh = product.name
+    item.title_en = product.name
+    item.image_url = product.image_url
+    item.is_active = True
+    return item
 
 
 def serialize_pickup(pickup: PickupLocation) -> dict:
@@ -273,6 +344,8 @@ def serialize_order(order: Order) -> dict:
     payload["pickup_snapshot"] = pickup_snapshot
     payload["pickup"] = pickup_payload
     payload["notes"] = payload.get("note") or ""
+    payload["user_id"] = payload.get("customer_id")
+    payload["userUuid"] = payload.get("client_id") or ""
     payload["total_amount"] = total_amount
     payload["orderNumber"] = payload.get("order_no")
     payload["groupOrderNumberText"] = payload.get("order_no")
@@ -302,9 +375,11 @@ def build_customer_summary(db: Session, customer: Customer) -> dict:
     total_spent_value = round(float(total_spent or 0), 2)
     return {
         "id": customer.id,
+        "uuid": customer.client_id,
         "client_id": customer.client_id,
         "nickname": customer.nickname,
         "is_admin": customer.is_admin,
+        "tag": customer.tag or "user",
         "order_count": int(order_count or 0),
         "total_spent": total_spent_value,
         "total_spent_text": format_money(total_spent_value),
@@ -319,6 +394,30 @@ def save_upload(file: UploadFile, directory: Path) -> str:
     with target.open("wb") as output:
         shutil.copyfileobj(file.file, output)
     return filename
+
+
+def create_weekly_order_record(db: Session, payload: dict) -> WeeklyOrder:
+    db.query(WeeklyOrder).filter(WeeklyOrder.is_current.is_(True)).update({"is_current": False})
+    weekly_order = WeeklyOrder(
+        title=payload.get("title") or make_default_group_title(),
+        description=payload.get("description") or "",
+        is_open=bool(payload.get("is_open", False)),
+        is_current=True,
+        deadline_text=payload.get("deadline_text"),
+        start_at=payload.get("start_at"),
+        order_deadline_at=payload.get("order_deadline_at"),
+        active_group_id=payload.get("active_group_id") or None,
+        group_no=payload.get("group_no") or None,
+    )
+    db.add(weekly_order)
+    db.flush()
+    if not weekly_order.active_group_id:
+        weekly_order.active_group_id = str(weekly_order.id)
+    if not weekly_order.group_no:
+        weekly_order.group_no = str(weekly_order.id)
+    db.commit()
+    db.refresh(weekly_order)
+    return weekly_order
 
 
 @app.get("/")
@@ -372,6 +471,136 @@ def local_check(
     return serialize_customer_auth(customer, session)
 
 
+AUTH_COOKIE_NAME = "makkie_token"
+
+
+def set_auth_cookie(response: Response, token: str) -> None:
+    # 本地开发是 http，secure=True 的 cookie 会被浏览器丢弃；
+    # 线上 Node 后端（makkie-web-api）设置的同名 cookie 是 Secure 的。
+    response.set_cookie(
+        AUTH_COOKIE_NAME,
+        token,
+        httponly=True,
+        samesite="lax",
+        max_age=7 * 24 * 60 * 60,
+    )
+
+
+def verify_google_credential(credential: str) -> dict:
+    client_id = getattr(settings, "google_client_id", "")
+    if not client_id or client_id.startswith("REPLACE"):
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="服务器未配置 GOOGLE_CLIENT_ID")
+    url = f"https://oauth2.googleapis.com/tokeninfo?{urllib.parse.urlencode({'id_token': credential})}"
+    try:
+        with urllib.request.urlopen(url, timeout=10) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Google 登录校验失败")
+    if payload.get("aud") != client_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Google credential audience 不匹配")
+    if payload.get("iss") not in ("accounts.google.com", "https://accounts.google.com"):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Google credential 签发方不正确")
+    if not payload.get("sub"):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Google credential 缺少用户标识")
+    return payload
+
+
+def merge_browser_orders(db: Session, browser_client_id: Optional[str], target: Customer) -> int:
+    """把同一浏览器的旧匿名/游客身份下的订单迁移到刚登录的账号。
+
+    让用户「登录后能看到之前下的单」。只改订单归属，保留旧 customer 记录
+    （它可能是 admin 引导身份）。若浏览器 client_id 缺失或就是当前账号则跳过。
+    """
+    src_id = (browser_client_id or "").strip()
+    if not src_id:
+        return 0
+    src = db.query(Customer).filter(Customer.client_id == src_id).one_or_none()
+    if src is None or src.id == target.id:
+        return 0
+    moved = (
+        db.query(Order)
+        .filter(Order.customer_id == src.id)
+        .update({Order.customer_id: target.id}, synchronize_session=False)
+    )
+    db.commit()
+    return moved
+
+
+@app.post("/api/auth/google")
+def google_login(body: GoogleLoginIn, response: Response, db: Session = Depends(get_db)):
+    payload = verify_google_credential(body.credential)
+    google_sub = payload["sub"]
+    email = payload.get("email") or ""
+    name = payload.get("name") or email or "Google 用户"
+    picture = payload.get("picture") or ""
+
+    client_id = f"google:{google_sub}"
+    customer = db.query(Customer).filter(Customer.client_id == client_id).one_or_none()
+    if customer is None:
+        customer = Customer(client_id=client_id, nickname=name, is_admin=False)
+        db.add(customer)
+    elif not customer.nickname:
+        customer.nickname = name
+    db.commit()
+    db.refresh(customer)
+
+    merge_browser_orders(db, body.client_id, customer)
+
+    session = create_session(db, subject_type="customer", subject_id=customer.id, client_id=client_id)
+    set_auth_cookie(response, session.token)
+    return serialize_customer_auth(customer, session, extra={"email": email, "picture": picture, "name": name})
+
+
+@app.post("/api/auth/guest")
+def guest_login(body: GuestLoginIn, response: Response, db: Session = Depends(get_db)):
+    nickname = body.nickname.strip()
+    if not nickname:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="请输入昵称")
+
+    client_id = (body.client_id or "").strip() or f"guest_{uuid4().hex[:12]}"
+    customer = db.query(Customer).filter(Customer.client_id == client_id).one_or_none()
+    is_admin = nickname in settings.admin_bootstrap_nicknames
+    if customer is None:
+        customer = Customer(client_id=client_id, nickname=nickname, is_admin=is_admin)
+        db.add(customer)
+    else:
+        customer.nickname = nickname
+        customer.is_admin = is_admin or customer.is_admin
+    db.commit()
+    db.refresh(customer)
+
+    session = create_session(db, subject_type="customer", subject_id=customer.id, client_id=client_id)
+    set_auth_cookie(response, session.token)
+    return serialize_customer_auth(customer, session)
+
+
+@app.get("/api/me")
+def get_me(
+    db: Session = Depends(get_db),
+    authorization: Optional[str] = Header(default=None),
+    makkie_token: Optional[str] = Cookie(default=None),
+):
+    token = parse_bearer_token(authorization) or makkie_token or ""
+    session = get_session_by_token(db, token)
+    if not session:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="未登录")
+    if session.subject_type == "customer":
+        customer = db.get(Customer, session.subject_id)
+        if customer:
+            return {"ok": True, "user": serialize_customer_auth(customer, session)["user"]}
+    if session.subject_type == "admin":
+        admin = db.get(AdminUser, session.subject_id)
+        if admin:
+            return {"ok": True, "user": serialize_admin_auth(admin, session)["user"]}
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户不存在")
+
+
+@app.post("/api/logout")
+def logout(response: Response):
+    response.delete_cookie(AUTH_COOKIE_NAME)
+    return {"ok": True}
+
+
 @app.post("/api/admin/login")
 def admin_login(body: AdminLoginIn, db: Session = Depends(get_db)):
     admin = db.query(AdminUser).filter(AdminUser.username == body.username).one_or_none()
@@ -397,6 +626,17 @@ def get_products(db: Session = Depends(get_db)):
         .all()
     )
     return {"products": [serialize_product(product) for product in products]}
+
+
+@app.get("/api/collection")
+def get_collection(db: Session = Depends(get_db)):
+    items = (
+        db.query(CollectionItem)
+        .filter(CollectionItem.is_active.is_(True))
+        .order_by(CollectionItem.category.asc(), CollectionItem.sort_order.asc(), CollectionItem.id.asc())
+        .all()
+    )
+    return {"groups": group_collection_items(items), "items": [serialize_collection_item(item) for item in items]}
 
 
 @app.get("/api/pickup-locations")
@@ -498,9 +738,66 @@ def create_order(
     return {"order": serialize_order(persisted_order)}
 
 
+@app.get("/api/orders/user/{user_id}")
+def get_user_orders(
+    user_id: int,
+    db: Session = Depends(get_db),
+    authorization: Optional[str] = Header(default=None),
+):
+    session = get_session_by_token(db, parse_bearer_token(authorization))
+    if not session:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Login required")
+    is_admin = session.subject_type == "admin"
+    if not is_admin and not (session.subject_type == "customer" and session.subject_id == user_id):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot view other users' orders")
+
+    orders = (
+        db.query(Order)
+        .options(joinedload(Order.items))
+        .filter(Order.customer_id == user_id)
+        .order_by(Order.created_at.desc(), Order.id.desc())
+        .all()
+    )
+
+    # Per-group sequence numbers (1, 2, 3 within each weekly group), reset each group.
+    seq_map: dict = {}
+    for group_id in {order.weekly_order_id for order in orders}:
+        siblings = (
+            db.query(Order.id)
+            .filter(Order.weekly_order_id == group_id)
+            .order_by(Order.created_at.asc(), Order.id.asc())
+            .all()
+        )
+        for index, row in enumerate(siblings):
+            seq_map[row.id] = index + 1
+
+    result = []
+    for order in orders:
+        payload = serialize_order(order)
+        payload["group_order_number"] = seq_map.get(order.id)
+        result.append(payload)
+    return {"isAdmin": is_admin, "orders": result}
+
+
 @app.get("/api/admin/weekly-order")
 def admin_get_weekly_order(db: Session = Depends(get_db), _: AdminUser = Depends(get_current_admin)):
     return {"weekly_order": serialize_weekly_order(get_current_weekly_order(db))}
+
+
+@app.get("/api/admin/weekly-orders")
+def admin_list_weekly_orders(db: Session = Depends(get_db), _: AdminUser = Depends(get_current_admin)):
+    weekly_orders = db.query(WeeklyOrder).order_by(WeeklyOrder.created_at.desc(), WeeklyOrder.id.desc()).all()
+    return {"weekly_orders": [serialize_weekly_order(item) for item in weekly_orders]}
+
+
+@app.post("/api/admin/weekly-orders")
+def admin_create_weekly_order(
+    body: WeeklyOrderPatchIn,
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+):
+    weekly_order = create_weekly_order_record(db, schema_payload(body, exclude_unset=True))
+    return {"weekly_order": serialize_weekly_order(weekly_order)}
 
 
 @app.patch("/api/admin/weekly-order")
@@ -627,6 +924,22 @@ def admin_users(db: Session = Depends(get_db), _: AdminUser = Depends(get_curren
     return {"users": [build_customer_summary(db, customer) for customer in customers]}
 
 
+@app.patch("/api/admin/users/{user_id}/tag")
+def admin_update_user_tag(
+    user_id: int,
+    body: UserTagIn,
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(get_current_admin),
+):
+    customer = db.get(Customer, user_id)
+    if customer is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="用户不存在")
+    customer.tag = body.tag if body.tag in ("user", "tester") else "user"
+    db.commit()
+    db.refresh(customer)
+    return {"user": {"id": customer.id, "nickname": customer.nickname, "tag": customer.tag}}
+
+
 @app.get("/api/admin/analytics/members")
 def admin_member_analytics(
     db: Session = Depends(get_db),
@@ -649,6 +962,12 @@ def admin_member_analytics(
 def admin_products(db: Session = Depends(get_db), _: AdminUser = Depends(get_current_admin)):
     products = db.query(Product).order_by(Product.sort_order.asc(), Product.id.asc()).all()
     return {"products": [serialize_product(product) for product in products]}
+
+
+@app.get("/api/admin/collection")
+def admin_collection(db: Session = Depends(get_db), _: AdminUser = Depends(get_current_admin)):
+    items = db.query(CollectionItem).order_by(CollectionItem.category.asc(), CollectionItem.sort_order.asc(), CollectionItem.id.asc()).all()
+    return {"groups": group_collection_items(items), "items": [serialize_collection_item(item) for item in items]}
 
 
 @app.post("/api/admin/products")
@@ -710,6 +1029,7 @@ def admin_upload_product_image(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only image uploads are allowed")
     filename = save_upload(image, PRODUCT_UPLOAD_DIR)
     product.image_url = f"/uploads/products/{filename}"
+    sync_product_to_collection(db, product)
     db.commit()
     db.refresh(product)
     return {"image_url": product.image_url, "product": serialize_product(product)}

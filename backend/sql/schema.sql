@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS weekly_orders (
   active_group_id VARCHAR(50) NULL,
   group_no VARCHAR(50) NULL,
   deadline_text VARCHAR(120) NULL,
+  start_at DATETIME NULL,
   order_deadline_at DATETIME NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -57,6 +58,20 @@ CREATE TABLE IF NOT EXISTS products (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_products_weekly_order FOREIGN KEY (weekly_order_id) REFERENCES weekly_orders(id)
+);
+
+CREATE TABLE IF NOT EXISTS collection_items (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  product_id INTEGER NULL,
+  category VARCHAR(120) NOT NULL DEFAULT '创意甜品',
+  title_zh VARCHAR(200) NOT NULL,
+  title_en VARCHAR(200) NULL,
+  image_url TEXT NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_collection_items_product FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
 CREATE TABLE IF NOT EXISTS pickup_locations (

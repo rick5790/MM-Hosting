@@ -20,6 +20,7 @@ class Customer(Base):
     client_id: Mapped[str] = mapped_column(String(120), unique=True, index=True)
     nickname: Mapped[str] = mapped_column(String(120))
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    tag: Mapped[str] = mapped_column(String(20), default="user")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
@@ -59,6 +60,7 @@ class WeeklyOrder(Base):
     active_group_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     group_no: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     deadline_text: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
+    start_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     order_deadline_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
@@ -85,6 +87,21 @@ class Product(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
     weekly_order: Mapped[Optional[WeeklyOrder]] = relationship("WeeklyOrder", back_populates="products")
+
+
+class CollectionItem(Base):
+    __tablename__ = "collection_items"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_id: Mapped[Optional[int]] = mapped_column(ForeignKey("products.id"), nullable=True, index=True)
+    category: Mapped[str] = mapped_column(String(120), default="创意甜品")
+    title_zh: Mapped[str] = mapped_column(String(200))
+    title_en: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    image_url: Mapped[str] = mapped_column(Text)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
 
 class PickupLocation(Base):

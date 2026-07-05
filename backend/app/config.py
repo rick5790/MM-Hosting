@@ -38,6 +38,7 @@ class Settings:
     admin_bootstrap_nicknames: tuple[str, ...] = tuple(
         _split_csv(os.getenv("ADMIN_BOOTSTRAP_NICKNAMES", ""))
     )
+    google_client_id: str = os.getenv("GOOGLE_CLIENT_ID", "")
     makkie_admin_username: str = os.getenv("MAKKIE_ADMIN_USERNAME", "admin")
     makkie_admin_password: str = os.getenv("MAKKIE_ADMIN_PASSWORD", "change-me")
     makkie_admin_display_name: str = os.getenv("MAKKIE_ADMIN_DISPLAY_NAME", "Makkie Admin")

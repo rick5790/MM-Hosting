@@ -17,11 +17,16 @@ def ensure_runtime_columns(db: Session) -> None:
     if "admin_comment" not in order_columns:
         db.execute(text("ALTER TABLE orders ADD COLUMN admin_comment TEXT NOT NULL DEFAULT ''"))
         db.commit()
+    weekly_order_columns = {column["name"] for column in inspector.get_columns("weekly_orders")}
+    if "start_at" not in weekly_order_columns:
+        db.execute(text("ALTER TABLE weekly_orders ADD COLUMN start_at DATETIME NULL"))
+        db.commit()
 
 
 def ensure_upload_dirs() -> None:
     upload_root = Path(settings.upload_dir)
     (upload_root / "products").mkdir(parents=True, exist_ok=True)
+    (upload_root / "collection").mkdir(parents=True, exist_ok=True)
 
 
 def ensure_bootstrap_records(db: Session) -> None:
