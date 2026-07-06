@@ -2420,14 +2420,16 @@ async function submitWebOrder() {
   const noteInput = document.getElementById('orderNoteInput');
   if (noteInput) siteState.note = noteInput.value;
   const pickup = getPickup();
+  const nickname = siteState.auth && siteState.auth.user ? (siteState.auth.user.profile?.nickname || siteState.auth.user.nickname || '') : '';
   await siteApiRequest('/api/orders', {
     method: 'POST',
     body: {
       pickup_location_id: pickup ? pickup.id : '',
       pickup_location_name: pickup ? pickup.label : '',
       pickup_snapshot: pickup || {},
-      note: siteState.note,
-      items: items.map((item) => ({
+      customer_name: nickname,
+      notes: siteState.note,
+      cart_items: items.map((item) => ({
         product_id: item.productId || item.id,
         product_name: item.title,
         quantity: item.quantity,

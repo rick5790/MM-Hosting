@@ -1,8 +1,8 @@
 (function () {
   const shopRoot = document.getElementById('shopRoot');
   const shopEntryStatus = document.getElementById('shopEntryStatus');
-  const orderReviewOverlay = document.getElementById('orderReviewOverlay');
-  const orderReviewBody = document.getElementById('orderReviewBody');
+  const orderConfirmOverlay = document.getElementById('orderConfirmOverlay');
+  const orderConfirmBody = document.getElementById('orderConfirmBody');
   const profileOverlay = document.getElementById('profileOverlay');
   const profileOverlayBody = document.getElementById('profileOverlayBody');
   const pickupOverlay = document.getElementById('pickupOverlay');
@@ -56,6 +56,24 @@
       orderNotePlaceholder: '有什么要求可以告诉我们哦～只有Makkie看得到',
       reviewOrder: '确认订单',
       submit: '提交订单',
+      confirmSubmitTitle: '确认提交订单',
+      cancelConfirm: '取消确认',
+      confirmSubmit: '确认提交订单',
+      orderItems: '订单内容',
+      total: '总额',
+      payment: '付款方式',
+      currencyWarning: '⚠️ 所有甜品价格均为美元',
+      zelle: 'Zelle',
+      zelleValue: 'makkiemua@gmail.com',
+      venmo: 'Venmo',
+      venmoValue: 'makkiemua',
+      alipay: '支付宝',
+      alipayLine: '实时汇率请询问Makkie微信账号',
+      copy: '复制',
+      copied: '已复制',
+      confirmLine1: '付款后请私信 Makkie Mua 发送付款截图，以便确认订单。',
+      rules: '截单规则',
+      rulesLine: '🍪 秉承不浪费食物的原则 截单后不接受临时取消订单',
       pickupInfo: '自提信息',
       pickupTime: '自提时间',
       subtotal: '合计',
@@ -106,6 +124,24 @@
       orderNotePlaceholder: 'Anything we should know? Only Makkie can see this.',
       reviewOrder: 'Review Order',
       submit: 'Submit Order',
+      confirmSubmitTitle: 'Confirm Order',
+      cancelConfirm: 'Cancel',
+      confirmSubmit: 'Confirm Order',
+      orderItems: 'Order Items',
+      total: 'Total',
+      payment: 'Payment',
+      currencyWarning: '⚠️ All dessert prices are in USD',
+      zelle: 'Zelle',
+      zelleValue: 'makkiemua@gmail.com',
+      venmo: 'Venmo',
+      venmoValue: 'makkiemua',
+      alipay: 'Alipay',
+      alipayLine: 'Please ask Makkie on WeChat for the live exchange rate.',
+      copy: 'Copy',
+      copied: 'Copied',
+      confirmLine1: 'After payment, message Makkie Mua with your payment screenshot to confirm the order.',
+      rules: 'Cancellation Policy',
+      rulesLine: '🍪 To avoid food waste, temporary cancellations are not accepted after the deadline.',
       pickupInfo: 'Pickup Info',
       pickupTime: 'Pickup Time',
       subtotal: 'Total',
@@ -723,7 +759,9 @@
     alert(copy().saveSuccess);
   }
 
-  function renderOrderReviewOverlay() {
+  // 提交前的最终确认页：订单内容、总额、付款方式（Zelle/Venmo/支付宝）、截单规则，
+  // 与小程序 order-notice-panel 保持一致。点“确认提交订单”才真正下单。
+  function renderOrderConfirmOverlay() {
     const c = copy();
     const items = getSelectedItems();
     if (!items.length) {
@@ -731,41 +769,70 @@
       return;
     }
     const pickup = getPickup();
-    orderReviewBody.innerHTML = `
-      <div class="portal-title">${escapeHtml(c.reviewOrder)}</div>
-      <div class="portal-form">
-        <div class="portal-field">
-          <span class="portal-label">${escapeHtml(c.orderComment)}</span>
-          <div class="portal-note-preview ${state.note && state.note.trim() ? '' : 'is-empty'}">${escapeHtml(state.note && state.note.trim() ? state.note : c.orderCommentEmpty)}</div>
+    const total = items.reduce((sum, item) => sum + (item.unitPrice || 0) * item.quantity, 0);
+    const pickupMeta = pickup ? [getPickupTimeText(pickup), getPickupAddress(pickup)].filter(Boolean).join(' · ') : '';
+    orderConfirmBody.innerHTML = `
+      <div class="portal-title">${escapeHtml(c.confirmSubmitTitle)}</div>
+      <div class="confirm-section">
+        <div class="confirm-heading">${escapeHtml(c.orderItems)}</div>
+        <div class="portal-summary">
+          ${items.map((item) => `
+            <div class="portal-summary-row">
+              <span>${escapeHtml(item.title)} × ${item.quantity}</span>
+              <span>${escapeHtml(formatMoney((item.unitPrice || 0) * item.quantity))}</span>
+            </div>
+          `).join('')}
         </div>
       </div>
-      <div class="portal-divider"></div>
-      <div class="portal-label">${escapeHtml(c.pickupInfo)}</div>
-      <div class="portal-pickup is-active">
-        <div class="portal-pickup-title">${escapeHtml(pickup ? getPickupLabel(pickup) : '')}</div>
+      <div class="confirm-section confirm-total-row">
+        <span class="confirm-heading">${escapeHtml(c.total)}</span>
+        <span class="confirm-total">${escapeHtml(formatMoney(total))}</span>
       </div>
-      <div class="portal-actions" style="margin-top:.9rem;">
-        <button class="shop-secondary-button" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>
-      </div>
-      <div class="portal-divider"></div>
-      <div class="portal-summary">
-        ${items.map((item) => `
-          <div class="portal-summary-row">
-            <span>${escapeHtml(item.title)} × ${item.quantity}</span>
-            <span>${escapeHtml(formatMoney((item.unitPrice || 0) * item.quantity))}</span>
+      <div class="confirm-section">
+        <div class="confirm-heading">${escapeHtml(c.payment)}</div>
+        <div class="confirm-currency-warning">${escapeHtml(c.currencyWarning)}</div>
+        <div class="confirm-pay-card">
+          <div class="confirm-pay-info">
+            <div class="confirm-pay-name">${escapeHtml(c.zelle)}</div>
+            <div class="confirm-pay-value">${escapeHtml(c.zelleValue)}</div>
           </div>
-        `).join('')}
-        <div class="portal-summary-row portal-summary-total">
-          <span>${escapeHtml(c.subtotal)}</span>
-          <span>${escapeHtml(formatMoney(items.reduce((sum, item) => sum + (item.unitPrice || 0) * item.quantity, 0)))}</span>
+          <button class="confirm-pay-copy" type="button" data-confirm-copy="${escapeHtml(c.zelleValue)}">${escapeHtml(c.copy)}</button>
         </div>
+        <div class="confirm-pay-card">
+          <div class="confirm-pay-info">
+            <div class="confirm-pay-name">${escapeHtml(c.venmo)}</div>
+            <div class="confirm-pay-value">${escapeHtml(c.venmoValue)}</div>
+          </div>
+          <button class="confirm-pay-copy" type="button" data-confirm-copy="${escapeHtml(c.venmoValue)}">${escapeHtml(c.copy)}</button>
+        </div>
+        <div class="confirm-pay-card">
+          <div class="confirm-pay-info">
+            <div class="confirm-pay-name">${escapeHtml(c.alipay)}</div>
+            <div class="confirm-pay-value">${escapeHtml(c.alipayLine)}</div>
+          </div>
+        </div>
+        <div class="confirm-pay-instruction">${escapeHtml(c.confirmLine1)}</div>
       </div>
-      <div class="portal-actions" style="margin-top:1rem;">
-        <button class="shop-secondary-button" type="button" data-order-review-close>${escapeHtml(c.close)}</button>
-        <button class="shop-submit-button" type="button" data-review-action="submit">${escapeHtml(c.submit)}</button>
+      <div class="confirm-section">
+        <div class="confirm-heading">${escapeHtml(c.rules)}</div>
+        <div class="confirm-rules-line">${escapeHtml(c.rulesLine)}</div>
+      </div>
+      <div class="confirm-section">
+        <div class="confirm-pickup-head">
+          <div class="confirm-heading">${escapeHtml(c.pickupInfo)}</div>
+          <button class="confirm-pickup-change" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>
+        </div>
+        ${pickup ? `
+          <div class="confirm-pickup-line">${escapeHtml(getPickupLabel(pickup))}</div>
+          ${pickupMeta ? `<div class="confirm-pickup-meta">${escapeHtml(pickupMeta)}</div>` : ''}
+        ` : ''}
+      </div>
+      <div class="portal-actions confirm-actions">
+        <button class="shop-secondary-button" type="button" data-order-confirm-close>${escapeHtml(c.cancelConfirm)}</button>
+        <button class="shop-submit-button" type="button" data-confirm-action="submit">${escapeHtml(c.confirmSubmit)}</button>
       </div>
     `;
-    openOverlay(orderReviewOverlay);
+    openOverlay(orderConfirmOverlay);
   }
 
   async function submitWebOrder() {
@@ -779,6 +846,7 @@
     const noteInput = document.getElementById('shopOrderNoteInput');
     if (noteInput) state.note = noteInput.value;
     const pickup = getPickup();
+    const nickname = state.auth && state.auth.user ? (state.auth.user.profile?.nickname || state.auth.user.nickname || '') : '';
     await siteApiRequest('/api/orders', {
       method: 'POST',
       body: {
@@ -786,8 +854,9 @@
         pickup_location_name: pickup ? pickup.label : '',
         pickup_snapshot: pickup || {},
         pickup_time: pickup ? getPickupTimeText(pickup) : "",
-        note: state.note,
-        items: items.map((item) => ({
+        customer_name: nickname,
+        notes: state.note,
+        cart_items: items.map((item) => ({
           product_id: item.productId || item.id,
           product_name: item.title,
           quantity: item.quantity,
@@ -797,9 +866,38 @@
     });
     state.cartQuantities = {};
     state.note = '';
-    closeOverlay(orderReviewOverlay, orderReviewBody);
+    closeOverlay(orderConfirmOverlay, orderConfirmBody);
     renderShop();
     alert(c.submitSuccess);
+  }
+
+  function copyToClipboard(text, button) {
+    if (!text) return;
+    const done = () => {
+      if (!button) return;
+      const original = button.textContent;
+      button.textContent = copy().copied;
+      button.classList.add('is-copied');
+      window.setTimeout(() => {
+        button.textContent = original;
+        button.classList.remove('is-copied');
+      }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+
+  function fallbackCopy(text, done) {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+    document.body.appendChild(area);
+    area.select();
+    try { document.execCommand('copy'); done(); } catch (error) {}
+    document.body.removeChild(area);
   }
 
   function renderAdminOverlay() {
@@ -928,7 +1026,7 @@
         renderPickupOverlay();
         return;
       }
-      renderOrderReviewOverlay();
+      renderOrderConfirmOverlay();
     }
   });
 
@@ -936,17 +1034,22 @@
     const pickupLauncher = event.target.closest('[data-shop-action="pickup-overlay"]');
     const profileAction = event.target.closest('[data-profile-action]');
     const pickupAction = event.target.closest('[data-pickup-action]');
-    const reviewAction = event.target.closest('[data-review-action]');
+    const confirmAction = event.target.closest('[data-confirm-action]');
+    const confirmCopy = event.target.closest('[data-confirm-copy]');
     const adminAction = event.target.closest('[data-admin-action]');
     const profileClose = event.target.closest('[data-profile-close]');
     const pickupClose = event.target.closest('[data-pickup-close]');
-    const reviewClose = event.target.closest('[data-order-review-close]');
+    const confirmClose = event.target.closest('[data-order-confirm-close]');
     const adminClose = event.target.closest('[data-admin-close]');
 
     if (profileClose) closeOverlay(profileOverlay, profileOverlayBody);
     if (pickupClose) closeOverlay(pickupOverlay, pickupOverlayBody);
-    if (reviewClose) closeOverlay(orderReviewOverlay, orderReviewBody);
+    if (confirmClose) closeOverlay(orderConfirmOverlay, orderConfirmBody);
     if (adminClose) closeOverlay(adminOverlay, adminOverlayBody);
+
+    if (confirmCopy) {
+      copyToClipboard(confirmCopy.dataset.confirmCopy, confirmCopy);
+    }
 
     if (pickupLauncher) {
       renderPickupOverlay();
@@ -959,17 +1062,17 @@
         state.pickupIndex = Number(pickupAction.dataset.index) || 0;
         renderPickupOverlay();
         renderShop();
-        if (orderReviewOverlay && !orderReviewOverlay.hidden) renderOrderReviewOverlay();
+        if (orderConfirmOverlay && !orderConfirmOverlay.hidden) renderOrderConfirmOverlay();
       }
       if (pickupAction.dataset.pickupAction === 'confirm') {
         state.pickupConfirmed = true;
         closeOverlay(pickupOverlay, pickupOverlayBody);
         renderShop();
-        if (orderReviewOverlay && !orderReviewOverlay.hidden) renderOrderReviewOverlay();
+        if (orderConfirmOverlay && !orderConfirmOverlay.hidden) renderOrderConfirmOverlay();
       }
     }
-    if (reviewAction) {
-      if (reviewAction.dataset.reviewAction === 'submit') {
+    if (confirmAction) {
+      if (confirmAction.dataset.confirmAction === 'submit') {
         await submitWebOrder().catch((error) => alert(error.message));
       }
     }
@@ -987,7 +1090,7 @@
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-      closeOverlay(orderReviewOverlay, orderReviewBody);
+      closeOverlay(orderConfirmOverlay, orderConfirmBody);
       closeOverlay(profileOverlay, profileOverlayBody);
       closeOverlay(pickupOverlay, pickupOverlayBody);
       closeOverlay(adminOverlay, adminOverlayBody);

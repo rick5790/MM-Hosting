@@ -1318,6 +1318,31 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .portal-summary{display:flex;flex-direction:column;gap:.65rem;margin-top:1rem;}
 .portal-summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
 .portal-summary-total{font-size:1rem;font-weight:800;color:#2d1f0f;}
+
+/* 下单确认页（提交前的最终确认弹窗，样式对齐小程序 order-notice-panel） */
+.confirm-section{margin-top:1.4rem;}
+.confirm-section:first-of-type{margin-top:1.2rem;}
+.confirm-heading{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;margin-bottom:.6rem;}
+.confirm-total-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:1.1rem;border-top:1px solid rgba(45,31,15,.08);}
+.confirm-total-row .confirm-heading{margin-bottom:0;}
+.confirm-total{font-size:1.5rem;font-weight:800;color:#2d1f0f;}
+.confirm-currency-warning{font-size:13px;color:#8a6f42;margin-bottom:.7rem;}
+.confirm-pay-card{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1rem;border-radius:18px;background:rgba(124,101,97,.06);border:1px solid rgba(124,101,97,.1);margin-bottom:.6rem;}
+.confirm-pay-info{min-width:0;}
+.confirm-pay-name{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#9a7d65;}
+.confirm-pay-value{margin-top:.2rem;font-size:15px;font-weight:700;color:#2d1f0f;word-break:break-all;}
+.confirm-pay-copy{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:.45rem 1rem;border-radius:999px;border:none;cursor:pointer;background:#7c6561;color:#fffaf6;font-family:inherit;font-size:13px;font-weight:700;-webkit-appearance:none;appearance:none;transition:background .18s ease;}
+.confirm-pay-copy:hover{background:#6a544f;}
+.confirm-pay-copy.is-copied{background:#5a7c61;}
+.confirm-pay-instruction{margin-top:.5rem;font-size:13px;line-height:1.7;color:#6f5a4c;}
+.confirm-rules-line{font-size:14px;line-height:1.7;color:#5f4c3d;}
+.confirm-pickup-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem;}
+.confirm-pickup-head .confirm-heading{margin-bottom:0;}
+.confirm-pickup-change{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:.35rem .9rem;border-radius:999px;border:1px solid rgba(124,101,97,.2);background:rgba(255,255,255,.9);color:#5f4c3d;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;transition:background .18s ease,border-color .18s ease;}
+.confirm-pickup-change:hover{background:#fff;border-color:#7c6561;}
+.confirm-pickup-line{font-size:15px;font-weight:700;color:#2d1f0f;}
+.confirm-pickup-meta{margin-top:.25rem;font-size:13px;line-height:1.6;color:#8a7467;}
+.confirm-actions{margin-top:1.5rem;}
 .pickup-current{
   display:flex;
   flex-direction:column;
