@@ -248,6 +248,8 @@
 
   function toCloudUrl(value) {
     if (!value) return '';
+    // 老数据里有指向小程序仓库的相对路径（../../orders_asset/...），网页端解析不了，当作没有图片。
+    if (value.startsWith('../')) return '';
     if (/^https?:\/\//.test(value)) return value;
     if (value[0] === '/') return `${siteApiBase}${value}`;
     return `${siteApiBase}/${value}`;

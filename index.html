@@ -1506,6 +1506,19 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   </div>
 </div>
 
+<div class="portal-overlay" id="groupBuyOverlay" hidden>
+  <div class="portal-overlay-backdrop" data-groupbuy-close></div>
+  <div class="portal-panel" role="dialog" aria-modal="true" aria-labelledby="groupBuyOverlayTitle">
+    <button class="portal-close" type="button" aria-label="关闭" data-groupbuy-close>×</button>
+    <div class="portal-title" id="groupBuyOverlayTitle">本周团购正在进行中</div>
+    <div class="portal-sub" id="groupBuyOverlaySub">最新甜品已开放预定，截单前都可以下单。</div>
+    <div class="portal-actions" style="margin-top:1rem;">
+      <button class="shop-secondary-button" type="button" data-groupbuy-close id="groupBuyOverlayLater">先逛逛</button>
+      <button class="shop-submit-button" type="button" data-order-entry id="groupBuyOverlayGo">去下单</button>
+    </div>
+  </div>
+</div>
+
 <div class="qr-overlay" id="qrOverlay" hidden>
   <div class="qr-overlay-backdrop" data-qr-close></div>
   <div class="qr-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="qrOverlayTitle">
@@ -2021,6 +2034,8 @@ function normalizePickupLocation(location, index) {
 
 function toCloudUrl(value) {
   if (!value) return '';
+  // 老数据里有指向小程序仓库的相对路径（../../orders_asset/...），网页端解析不了，当作没有图片。
+  if (value.startsWith('../')) return '';
   if (/^https?:\/\//.test(value)) return value;
   if (value[0] === '/') return `${siteApiBase}${value}`;
   return `${siteApiBase}/${value}`;
@@ -2476,11 +2491,82 @@ async function checkLocalAuth() {
   } catch (error) {}
 }
 
+const shopEntrySubDefault = {
+  zh: '每周定时开放，请关注我们的社交媒体获取最新信息',
+  en: 'Our weekly preorder opens at a set time, please follow our social media for updates'
+};
+
+function getWeeklyDeadlineMs() {
+  const weekly = siteState.weeklyOrder;
+  if (!weekly) return 0;
+  const raw = weekly.order_deadline_at || weekly.end_at || weekly.close_at || '';
+  const ms = Date.parse(raw);
+  return Number.isFinite(ms) ? ms : 0;
+}
+
+function isGroupBuyActive() {
+  const weekly = siteState.weeklyOrder;
+  if (!weekly || !weekly.is_open) return false;
+  const deadlineMs = getWeeklyDeadlineMs();
+  return !deadlineMs || deadlineMs > Date.now();
+}
+
+// 团购进行中时，把“每周定时开放…”替换成截单倒计时；结束后恢复原文案。
+function updateShopEntryCountdown() {
+  const subEl = document.getElementById('shopEntrySub');
+  if (!subEl || siteState.loading) return;
+  const deadlineMs = getWeeklyDeadlineMs();
+  const lang = getUiLang();
+
+  if (!isGroupBuyActive() || !deadlineMs) {
+    if (subEl.dataset.countdownActive === '1') {
+      subEl.dataset.countdownActive = '';
+      subEl.textContent = shopEntrySubDefault[lang];
+    }
+    return;
+  }
+
+  const totalSeconds = Math.max(0, Math.floor((deadlineMs - Date.now()) / 1000));
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = (v) => String(v).padStart(2, '0');
+  subEl.dataset.countdownActive = '1';
+  subEl.textContent = lang === 'en'
+    ? `Weekly group order ends in ${days ? days + 'd ' : ''}${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`
+    : `本周团购结束还有：${days ? days + ' 天 ' : ''}${pad(hours)} 时 ${pad(minutes)} 分 ${pad(seconds)} 秒`;
+}
+
+let groupBuyPopupShown = false;
+function maybeShowGroupBuyPopup() {
+  if (groupBuyPopupShown || !isGroupBuyActive()) return;
+  const overlay = document.getElementById('groupBuyOverlay');
+  if (!overlay) return;
+  groupBuyPopupShown = true;
+  const lang = getUiLang();
+  const title = document.getElementById('groupBuyOverlayTitle');
+  const sub = document.getElementById('groupBuyOverlaySub');
+  const later = document.getElementById('groupBuyOverlayLater');
+  const go = document.getElementById('groupBuyOverlayGo');
+  if (title) title.textContent = lang === 'en' ? 'Weekly group order is live' : '本周团购正在进行中';
+  if (sub) sub.textContent = lang === 'en'
+    ? 'This week\'s desserts are open for preorder — order any time before the deadline.'
+    : '最新甜品已开放预定，截单前都可以下单。';
+  if (later) later.textContent = lang === 'en' ? 'Maybe later' : '先逛逛';
+  if (go) go.textContent = lang === 'en' ? 'Order now' : '去下单';
+  openOverlay(overlay);
+}
+
 function resetShopCountdown() {
   if (shopCountdownTimer) window.clearInterval(shopCountdownTimer);
   shopCountdownTimer = window.setInterval(() => {
-    if (!siteState.loading && siteState.weeklyOrder) renderShop();
+    if (!siteState.loading && siteState.weeklyOrder) {
+      renderShop();
+      updateShopEntryCountdown();
+    }
   }, 1000);
+  updateShopEntryCountdown();
 }
 
 if (shopRoot) {
@@ -2604,7 +2690,14 @@ profileEntryButtons.forEach((button) => button.addEventListener('click', () => {
   renderProfileOverlay();
 }));
 
-checkLocalAuth().finally(loadShopData);
+document.querySelectorAll('[data-groupbuy-close]').forEach((button) => {
+  button.addEventListener('click', () => closeOverlay(document.getElementById('groupBuyOverlay')));
+});
+
+checkLocalAuth().finally(async () => {
+  await loadShopData();
+  maybeShowGroupBuyPopup();
+});
 
 const latestInstagramPosts = [
   {
