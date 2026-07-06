@@ -1180,7 +1180,7 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
   flex-direction:column;
   gap:.7rem;
   padding:1.15rem 1.15rem 1.05rem;
-  min-height:100%;
+  flex:1 1 auto;
 }
 .shop-card-title{
   font-size:1.2rem;
