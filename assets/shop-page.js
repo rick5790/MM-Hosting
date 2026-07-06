@@ -46,7 +46,7 @@
       totalLabel: '总价',
       completeProfile: '先保存昵称',
       nickname: '昵称',
-      nicknamePlaceholder: '请输入你的昵称',
+      nicknamePlaceholder: '请输入昵称或者通过 Google 登录自动提取，方便订单追踪',
       saveProfile: '保存昵称',
       googleLoginFailed: 'Google 登录失败，请重试',
       profileTitle: '请选择登陆方式',
@@ -131,7 +131,7 @@
       totalLabel: 'Total',
       completeProfile: 'Save nickname first',
       nickname: 'Nickname',
-      nicknamePlaceholder: 'Enter your nickname',
+      nicknamePlaceholder: 'Enter a nickname, or sign in with Google to auto-fill — helps track your orders',
       saveProfile: 'Save Nickname',
       googleLoginFailed: 'Google sign-in failed, please try again',
       profileTitle: 'Choose how to sign in',
@@ -750,7 +750,7 @@
       <div class="portal-sub">${escapeHtml(c.profileSub)}</div>
       <div class="portal-google-block" id="googleSignInButton"></div>
       <div class="portal-form">
-        <label class="portal-field">
+        <label class="portal-field portal-field--center">
           <span class="portal-label">${escapeHtml(c.nickname)}</span>
           <input id="profileNicknameInput" class="portal-input" type="text" value="${escapeHtml(nickname)}" placeholder="${escapeHtml(c.nicknamePlaceholder)}">
         </label>
@@ -958,6 +958,9 @@
     const pickup = getPickup();
     const total = items.reduce((sum, item) => sum + (item.unitPrice || 0) * item.quantity, 0);
     const pickupMeta = pickup ? [getPickupTimeText(pickup), getPickupAddress(pickup)].filter(Boolean).join(' · ') : '';
+    const noteInput = document.getElementById('shopOrderNoteInput');
+    if (noteInput) state.note = noteInput.value;
+    const note = (state.note || '').trim();
     orderConfirmBody.innerHTML = `
       <div class="portal-title">${escapeHtml(c.confirmSubmitTitle)}</div>
       <div class="confirm-section">
@@ -1013,6 +1016,7 @@
           <div class="confirm-pickup-line">${escapeHtml(getPickupLabel(pickup))}</div>
           ${pickupMeta ? `<div class="confirm-pickup-meta">${escapeHtml(pickupMeta)}</div>` : ''}
         ` : ''}
+        ${note ? `<div class="confirm-note-line"><span class="confirm-note-label">${escapeHtml(c.orderComment)}</span>${escapeHtml(note)}</div>` : ''}
       </div>
       <div class="portal-actions confirm-actions">
         <button class="shop-secondary-button" type="button" data-order-confirm-close>${escapeHtml(c.cancelConfirm)}</button>
