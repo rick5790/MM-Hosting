@@ -21,6 +21,7 @@
 
   const siteApiBase = 'https://admin.makkiemua.com';
   const pickupApiBase = 'https://admin.makkiemua.com';
+  const GOOGLE_CLIENT_ID = '29827506621-bg1rie6ggvn8csfqsos5hd8lsadkv98n.apps.googleusercontent.com';
   const siteStorageKeys = {
     auth: 'makkie.web.auth',
     clientId: 'makkie.web.clientId'
@@ -45,6 +46,8 @@
       nickname: '昵称',
       nicknamePlaceholder: '请输入你的昵称',
       saveProfile: '保存昵称',
+      orDivider: '或',
+      googleLoginFailed: 'Google 登录失败，请重试',
       profileTitle: '先保存一个下单身份',
       profileSub: '保存昵称后，提交订单会更顺畅，也方便你之后继续修改或确认。',
       close: '关闭',
@@ -94,6 +97,8 @@
       nickname: 'Nickname',
       nicknamePlaceholder: 'Enter your nickname',
       saveProfile: 'Save Nickname',
+      orDivider: 'or',
+      googleLoginFailed: 'Google sign-in failed, please try again',
       profileTitle: 'Save a simple order profile',
       profileSub: 'Saving a nickname makes it easier to submit, update, and confirm your order later.',
       close: 'Close',
@@ -243,6 +248,8 @@
 
   function toCloudUrl(value) {
     if (!value) return '';
+    // 老数据里有指向小程序仓库的相对路径（../../orders_asset/...），网页端解析不了，当作没有图片。
+    if (value.startsWith('../')) return '';
     if (/^https?:\/\//.test(value)) return value;
     if (value[0] === '/') return `${siteApiBase}${value}`;
     return `${siteApiBase}/${value}`;
@@ -640,6 +647,8 @@
     profileOverlayBody.innerHTML = `
       <div class="portal-title">${escapeHtml(c.profileTitle)}</div>
       <div class="portal-sub">${escapeHtml(c.profileSub)}</div>
+      <div class="portal-google-block" id="googleSignInButton"></div>
+      <div class="portal-google-divider">${escapeHtml(c.orDivider)}</div>
       <div class="portal-form">
         <label class="portal-field">
           <span class="portal-label">${escapeHtml(c.nickname)}</span>
@@ -652,6 +661,35 @@
       </div>
     `;
     openOverlay(profileOverlay);
+    renderGoogleButton();
+  }
+
+  function renderGoogleButton() {
+    const container = document.getElementById('googleSignInButton');
+    if (!container || !window.google || !window.google.accounts || !window.google.accounts.id) return;
+    window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
+    container.innerHTML = '';
+    window.google.accounts.id.renderButton(container, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      width: 280,
+      locale: getLang() === 'zh' ? 'zh_CN' : 'en'
+    });
+  }
+
+  async function handleGoogleCredential(response) {
+    try {
+      const auth = await siteApiRequest('/api/auth/google', {
+        method: 'POST',
+        body: { credential: response.credential }
+      });
+      saveSiteAuth(auth);
+      renderShop();
+      closeOverlay(profileOverlay, profileOverlayBody);
+    } catch (error) {
+      alert(error.message || copy().googleLoginFailed);
+    }
   }
 
   function renderPickupOverlay() {

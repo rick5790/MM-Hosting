@@ -1309,6 +1309,9 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .portal-textarea{min-height:120px;resize:vertical;}
 .portal-actions{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:flex-end;margin-top:.2rem;}
 .portal-divider{margin:1rem 0;border-top:1px solid rgba(45,31,15,.08);}
+.portal-google-block{display:flex;justify-content:center;margin-top:1rem;min-height:44px;}
+.portal-google-divider{display:flex;align-items:center;gap:.75rem;margin:1rem 0;color:#9a7d65;font-size:12px;letter-spacing:.05em;text-transform:uppercase;}
+.portal-google-divider::before,.portal-google-divider::after{content:'';flex:1;border-top:1px solid rgba(45,31,15,.08);}
 .portal-pickups{display:grid;gap:.75rem;margin-top:.8rem;}
 .portal-pickup{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);cursor:pointer;}
 .portal-pickup.is-active{background:rgba(124,101,97,.09);border-color:#7c6561;}

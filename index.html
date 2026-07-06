@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="site-version" content="5.1">
+<meta name="site-version" content="5.6">
 <title>Makkie Mua | 手作创意甜品 | Los Angeles &amp; Orange County</title>
 <meta name="description" content="Makkie Mua 是位于 Los Angeles 与 Orange County 的手作创意甜品品牌，提供巴斯克、Makkie 胖曲奇、戚风三明治、米布丁、布丁奶糕等每周预订甜品。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
@@ -401,6 +401,16 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .shop-entry-copy .sec-sub{margin-bottom:0;max-width:640px;margin-left:auto;margin-right:auto;color:#5f4633;font-weight:400;}
 .shop-entry-cta{display:inline-flex;align-items:center;justify-content:center;width:min(100%,640px);min-height:62px;margin-top:1.5rem;padding:1rem 1.6rem;border-radius:999px;background:var(--dark);color:var(--bg);text-decoration:none;font-size:15px;font-weight:700;letter-spacing:.04em;box-shadow:0 16px 30px rgba(26,15,5,.18);position:relative;z-index:1;}
 .shop-entry-cta:hover{background:#3a2010;transform:translateY(-1px);}
+.shop-entry-countdown{position:relative;z-index:1;margin-top:1.2rem;display:flex;flex-direction:column;align-items:center;gap:.75rem;}
+.shop-entry-countdown-title{font-size:14px;font-weight:700;letter-spacing:.14em;color:var(--muted);}
+.shop-entry-countdown-row{display:flex;align-items:flex-start;justify-content:center;gap:.5rem;}
+.shop-entry-cd-unit{display:flex;flex-direction:column;align-items:center;gap:.5rem;}
+.shop-entry-cd-card{position:relative;min-width:76px;padding:.9rem .6rem;border-radius:18px;background:linear-gradient(180deg,#33200f 0%,var(--dark) 52%,#241307 100%);box-shadow:0 16px 28px rgba(26,15,5,.24),inset 0 1px 0 rgba(255,255,255,.09);text-align:center;overflow:hidden;}
+.shop-entry-cd-card::before{content:'';position:absolute;inset:0 0 50% 0;background:rgba(245,237,224,.05);}
+.shop-entry-cd-card::after{content:'';position:absolute;left:7%;right:7%;top:50%;height:1px;background:rgba(245,237,224,.16);}
+.shop-entry-cd-value{position:relative;font-size:2.1rem;font-weight:800;color:var(--bg);font-variant-numeric:tabular-nums;letter-spacing:.05em;line-height:1;}
+.shop-entry-cd-label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;}
+.shop-entry-cd-sep{font-size:1.7rem;font-weight:800;color:var(--accent);padding-top:.95rem;line-height:1;}
 .shop-entry-status{display:none;flex-wrap:wrap;gap:.75rem;margin-top:1rem;}
 .shop-pill{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:.55rem .95rem;border-radius:999px;background:rgba(255,255,255,.74);border:1px solid rgba(196,153,106,.18);font-size:12px;color:#6c5747;letter-spacing:.04em;}
 .shop-pill.is-open{background:rgba(124,101,97,.92);border-color:rgba(124,101,97,.92);color:#fffaf6;}
@@ -742,6 +752,10 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .shop-toolbar,.shop-submit-bar{flex-direction:column;align-items:stretch;}
   .shop-submit-button,.shop-secondary-button,.shop-entry-cta{width:100%;}
   .shop-countdown{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .shop-entry-cd-card{min-width:56px;padding:.7rem .4rem;border-radius:14px;}
+  .shop-entry-cd-value{font-size:1.45rem;}
+  .shop-entry-cd-sep{font-size:1.25rem;padding-top:.75rem;}
+  .shop-entry-countdown-row{gap:.35rem;}
   .portal-overlay{padding:12px;}
   .portal-panel{padding:1rem 1rem 1.2rem;border-radius:22px;}
   .menu-set{padding:3rem 1.2rem;}
@@ -914,6 +928,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 }
 
 </style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -1023,6 +1038,30 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
         <div class="sec-eye" id="shopEntryEye">订单入口</div>
         <h2 class="sec-title" id="shopEntryTitle">本周预定入口</h2>
         <p class="sec-sub" id="shopEntrySub">每周定时开放，请关注我们的社交媒体获取最新信息</p>
+        <div class="shop-entry-countdown" id="shopEntryCountdown" hidden>
+          <div class="shop-entry-countdown-title" id="shopEntryCountdownTitle">本周团购结束还有</div>
+          <div class="shop-entry-countdown-row">
+            <div class="shop-entry-cd-unit" data-cd-unit="days">
+              <div class="shop-entry-cd-card"><span class="shop-entry-cd-value" data-cd-value="days">00</span></div>
+              <div class="shop-entry-cd-label" data-cd-label="days">天</div>
+            </div>
+            <div class="shop-entry-cd-sep" data-cd-unit="days-sep">:</div>
+            <div class="shop-entry-cd-unit">
+              <div class="shop-entry-cd-card"><span class="shop-entry-cd-value" data-cd-value="hours">00</span></div>
+              <div class="shop-entry-cd-label" data-cd-label="hours">时</div>
+            </div>
+            <div class="shop-entry-cd-sep">:</div>
+            <div class="shop-entry-cd-unit">
+              <div class="shop-entry-cd-card"><span class="shop-entry-cd-value" data-cd-value="minutes">00</span></div>
+              <div class="shop-entry-cd-label" data-cd-label="minutes">分</div>
+            </div>
+            <div class="shop-entry-cd-sep">:</div>
+            <div class="shop-entry-cd-unit">
+              <div class="shop-entry-cd-card"><span class="shop-entry-cd-value" data-cd-value="seconds">00</span></div>
+              <div class="shop-entry-cd-label" data-cd-label="seconds">秒</div>
+            </div>
+          </div>
+        </div>
         <button class="shop-entry-cta" id="shopEntryCta" type="button" data-order-entry>进入订单</button>
       </div>
     </div>
@@ -1505,6 +1544,19 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   </div>
 </div>
 
+<div class="portal-overlay" id="groupBuyOverlay" hidden>
+  <div class="portal-overlay-backdrop" data-groupbuy-close></div>
+  <div class="portal-panel" role="dialog" aria-modal="true" aria-labelledby="groupBuyOverlayTitle">
+    <button class="portal-close" type="button" aria-label="关闭" data-groupbuy-close>×</button>
+    <div class="portal-title" id="groupBuyOverlayTitle">本周团购正在进行中</div>
+    <div class="portal-sub" id="groupBuyOverlaySub">最新甜品已开放预定，截单前都可以下单。</div>
+    <div class="portal-actions" style="margin-top:1rem;">
+      <button class="shop-secondary-button" type="button" data-groupbuy-close id="groupBuyOverlayLater">先逛逛</button>
+      <button class="shop-submit-button" type="button" data-order-entry id="groupBuyOverlayGo">去下单</button>
+    </div>
+  </div>
+</div>
+
 <div class="qr-overlay" id="qrOverlay" hidden>
   <div class="qr-overlay-backdrop" data-qr-close></div>
   <div class="qr-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="qrOverlayTitle">
@@ -1779,6 +1831,7 @@ qrCloseButtons.forEach((button) => {
 
 const siteApiBase = 'https://admin.makkiemua.com';
 const pickupApiBase = 'https://admin.makkiemua.com';
+const GOOGLE_CLIENT_ID = '29827506621-bg1rie6ggvn8csfqsos5hd8lsadkv98n.apps.googleusercontent.com';
 const siteStorageKeys = {
   auth: 'makkie.web.auth',
   clientId: 'makkie.web.clientId'
@@ -1804,6 +1857,8 @@ const orderPortalCopy = {
     reviewOrder: '确认订单',
     completeProfile: '填写昵称后下单',
     saveProfile: '保存昵称',
+    orDivider: '或',
+    googleLoginFailed: 'Google 登录失败，请重试',
     nickname: '昵称',
     nicknamePlaceholder: '请输入你的昵称',
     orderNote: '备注',
@@ -1845,6 +1900,8 @@ const orderPortalCopy = {
     reviewOrder: 'Review Order',
     completeProfile: 'Save profile before ordering',
     saveProfile: 'Save Nickname',
+    orDivider: 'or',
+    googleLoginFailed: 'Google sign-in failed, please try again',
     nickname: 'Nickname',
     nicknamePlaceholder: 'Enter your nickname',
     orderNote: 'Comment',
@@ -2015,6 +2072,8 @@ function normalizePickupLocation(location, index) {
 
 function toCloudUrl(value) {
   if (!value) return '';
+  // 老数据里有指向小程序仓库的相对路径（../../orders_asset/...），网页端解析不了，当作没有图片。
+  if (value.startsWith('../')) return '';
   if (/^https?:\/\//.test(value)) return value;
   if (value[0] === '/') return `${siteApiBase}${value}`;
   return `${siteApiBase}/${value}`;
@@ -2238,6 +2297,8 @@ function renderProfileOverlay() {
   profileOverlayBody.innerHTML = `
     <div class="portal-title" id="profileOverlayTitle">${escapeHtml(copy.profileTitle)}</div>
     <div class="portal-sub">${escapeHtml(copy.profileSub)}</div>
+    <div class="portal-google-block" id="googleSignInButton"></div>
+    <div class="portal-google-divider">${escapeHtml(copy.orDivider)}</div>
     <div class="portal-form">
       <label class="portal-field">
         <span class="portal-label">${escapeHtml(copy.nickname)}</span>
@@ -2250,6 +2311,35 @@ function renderProfileOverlay() {
     </div>
   `;
   openOverlay(profileOverlay);
+  renderGoogleButton();
+}
+
+function renderGoogleButton() {
+  const container = document.getElementById('googleSignInButton');
+  if (!container || !window.google || !window.google.accounts || !window.google.accounts.id) return;
+  window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
+  container.innerHTML = '';
+  window.google.accounts.id.renderButton(container, {
+    type: 'standard',
+    theme: 'outline',
+    size: 'large',
+    width: 280,
+    locale: getUiLang() === 'zh' ? 'zh_CN' : 'en'
+  });
+}
+
+async function handleGoogleCredential(response) {
+  try {
+    const auth = await siteApiRequest('/api/auth/google', {
+      method: 'POST',
+      body: { credential: response.credential }
+    });
+    saveSiteAuth(auth);
+    renderShop();
+    closeOverlay(profileOverlay, profileOverlayBody);
+  } catch (error) {
+    alert(error.message || getOrderCopy().googleLoginFailed);
+  }
 }
 
 async function saveProfileFromOverlay() {
@@ -2439,11 +2529,97 @@ async function checkLocalAuth() {
   } catch (error) {}
 }
 
+function getWeeklyDeadlineMs() {
+  const weekly = siteState.weeklyOrder;
+  if (!weekly) return 0;
+  const raw = weekly.order_deadline_at || weekly.end_at || weekly.close_at || '';
+  const ms = Date.parse(raw);
+  return Number.isFinite(ms) ? ms : 0;
+}
+
+function isGroupBuyActive() {
+  const weekly = siteState.weeklyOrder;
+  if (!weekly || !weekly.is_open) return false;
+  const deadlineMs = getWeeklyDeadlineMs();
+  return !deadlineMs || deadlineMs > Date.now();
+}
+
+const shopEntryCdLabels = {
+  zh: { title: '本周团购结束还有', days: '天', hours: '时', minutes: '分', seconds: '秒' },
+  en: { title: 'Weekly group order ends in', days: 'Days', hours: 'Hrs', minutes: 'Mins', seconds: 'Secs' }
+};
+
+// 团购进行中且设了截单时间时，把“每周定时开放…”换成翻页时钟式倒计时；结束后恢复。
+function updateShopEntryCountdown() {
+  const subEl = document.getElementById('shopEntrySub');
+  const widget = document.getElementById('shopEntryCountdown');
+  if (!widget || siteState.loading) return;
+  const deadlineMs = getWeeklyDeadlineMs();
+  const active = isGroupBuyActive() && deadlineMs;
+
+  if (!active) {
+    widget.hidden = true;
+    if (subEl) subEl.hidden = false;
+    return;
+  }
+
+  const lang = getUiLang();
+  const labels = shopEntryCdLabels[lang];
+  const totalSeconds = Math.max(0, Math.floor((deadlineMs - Date.now()) / 1000));
+  const days = Math.floor(totalSeconds / 86400);
+  const values = {
+    days,
+    hours: Math.floor((totalSeconds % 86400) / 3600),
+    minutes: Math.floor((totalSeconds % 3600) / 60),
+    seconds: totalSeconds % 60
+  };
+
+  const title = document.getElementById('shopEntryCountdownTitle');
+  if (title) title.textContent = labels.title;
+  Object.keys(values).forEach((key) => {
+    const valueEl = widget.querySelector(`[data-cd-value="${key}"]`);
+    if (valueEl) valueEl.textContent = String(values[key]).padStart(2, '0');
+    const labelEl = widget.querySelector(`[data-cd-label="${key}"]`);
+    if (labelEl) labelEl.textContent = labels[key];
+  });
+  // 不足一天时收起“天”卡片
+  widget.querySelectorAll('[data-cd-unit^="days"]').forEach((el) => {
+    el.style.display = days > 0 ? '' : 'none';
+  });
+
+  if (subEl) subEl.hidden = true;
+  widget.hidden = false;
+}
+
+let groupBuyPopupShown = false;
+function maybeShowGroupBuyPopup() {
+  if (groupBuyPopupShown || !isGroupBuyActive()) return;
+  const overlay = document.getElementById('groupBuyOverlay');
+  if (!overlay) return;
+  groupBuyPopupShown = true;
+  const lang = getUiLang();
+  const title = document.getElementById('groupBuyOverlayTitle');
+  const sub = document.getElementById('groupBuyOverlaySub');
+  const later = document.getElementById('groupBuyOverlayLater');
+  const go = document.getElementById('groupBuyOverlayGo');
+  if (title) title.textContent = lang === 'en' ? 'Weekly group order is live' : '本周团购正在进行中';
+  if (sub) sub.textContent = lang === 'en'
+    ? 'This week\'s desserts are open for preorder — order any time before the deadline.'
+    : '最新甜品已开放预定，截单前都可以下单。';
+  if (later) later.textContent = lang === 'en' ? 'Maybe later' : '先逛逛';
+  if (go) go.textContent = lang === 'en' ? 'Order now' : '去下单';
+  openOverlay(overlay);
+}
+
 function resetShopCountdown() {
   if (shopCountdownTimer) window.clearInterval(shopCountdownTimer);
   shopCountdownTimer = window.setInterval(() => {
-    if (!siteState.loading && siteState.weeklyOrder) renderShop();
+    if (!siteState.loading && siteState.weeklyOrder) {
+      renderShop();
+      updateShopEntryCountdown();
+    }
   }, 1000);
+  updateShopEntryCountdown();
 }
 
 if (shopRoot) {
@@ -2567,7 +2743,14 @@ profileEntryButtons.forEach((button) => button.addEventListener('click', () => {
   renderProfileOverlay();
 }));
 
-checkLocalAuth().finally(loadShopData);
+document.querySelectorAll('[data-groupbuy-close]').forEach((button) => {
+  button.addEventListener('click', () => closeOverlay(document.getElementById('groupBuyOverlay')));
+});
+
+checkLocalAuth().finally(async () => {
+  await loadShopData();
+  maybeShowGroupBuyPopup();
+});
 
 const latestInstagramPosts = [
   {
