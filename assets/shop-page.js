@@ -779,6 +779,7 @@
     const noteInput = document.getElementById('shopOrderNoteInput');
     if (noteInput) state.note = noteInput.value;
     const pickup = getPickup();
+    const nickname = state.auth && state.auth.user ? (state.auth.user.profile?.nickname || state.auth.user.nickname || '') : '';
     await siteApiRequest('/api/orders', {
       method: 'POST',
       body: {
@@ -786,8 +787,9 @@
         pickup_location_name: pickup ? pickup.label : '',
         pickup_snapshot: pickup || {},
         pickup_time: pickup ? getPickupTimeText(pickup) : "",
-        note: state.note,
-        items: items.map((item) => ({
+        customer_name: nickname,
+        notes: state.note,
+        cart_items: items.map((item) => ({
           product_id: item.productId || item.id,
           product_name: item.title,
           quantity: item.quantity,
