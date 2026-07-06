@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="site-version" content="5.1">
+<meta name="site-version" content="5.6">
 <title>Makkie Mua | 手作创意甜品 | Los Angeles &amp; Orange County</title>
 <meta name="description" content="Makkie Mua 是位于 Los Angeles 与 Orange County 的手作创意甜品品牌，提供巴斯克、Makkie 胖曲奇、戚风三明治、米布丁、布丁奶糕等每周预订甜品。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
@@ -914,6 +914,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 }
 
 </style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -1779,6 +1780,7 @@ qrCloseButtons.forEach((button) => {
 
 const siteApiBase = 'https://admin.makkiemua.com';
 const pickupApiBase = 'https://admin.makkiemua.com';
+const GOOGLE_CLIENT_ID = '29827506621-bg1rie6ggvn8csfqsos5hd8lsadkv98n.apps.googleusercontent.com';
 const siteStorageKeys = {
   auth: 'makkie.web.auth',
   clientId: 'makkie.web.clientId'
@@ -1804,6 +1806,8 @@ const orderPortalCopy = {
     reviewOrder: '确认订单',
     completeProfile: '填写昵称后下单',
     saveProfile: '保存昵称',
+    orDivider: '或',
+    googleLoginFailed: 'Google 登录失败，请重试',
     nickname: '昵称',
     nicknamePlaceholder: '请输入你的昵称',
     orderNote: '备注',
@@ -1845,6 +1849,8 @@ const orderPortalCopy = {
     reviewOrder: 'Review Order',
     completeProfile: 'Save profile before ordering',
     saveProfile: 'Save Nickname',
+    orDivider: 'or',
+    googleLoginFailed: 'Google sign-in failed, please try again',
     nickname: 'Nickname',
     nicknamePlaceholder: 'Enter your nickname',
     orderNote: 'Comment',
@@ -2238,6 +2244,8 @@ function renderProfileOverlay() {
   profileOverlayBody.innerHTML = `
     <div class="portal-title" id="profileOverlayTitle">${escapeHtml(copy.profileTitle)}</div>
     <div class="portal-sub">${escapeHtml(copy.profileSub)}</div>
+    <div class="portal-google-block" id="googleSignInButton"></div>
+    <div class="portal-google-divider">${escapeHtml(copy.orDivider)}</div>
     <div class="portal-form">
       <label class="portal-field">
         <span class="portal-label">${escapeHtml(copy.nickname)}</span>
@@ -2250,6 +2258,35 @@ function renderProfileOverlay() {
     </div>
   `;
   openOverlay(profileOverlay);
+  renderGoogleButton();
+}
+
+function renderGoogleButton() {
+  const container = document.getElementById('googleSignInButton');
+  if (!container || !window.google || !window.google.accounts || !window.google.accounts.id) return;
+  window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
+  container.innerHTML = '';
+  window.google.accounts.id.renderButton(container, {
+    type: 'standard',
+    theme: 'outline',
+    size: 'large',
+    width: 280,
+    locale: getUiLang() === 'zh' ? 'zh_CN' : 'en'
+  });
+}
+
+async function handleGoogleCredential(response) {
+  try {
+    const auth = await siteApiRequest('/api/auth/google', {
+      method: 'POST',
+      body: { credential: response.credential }
+    });
+    saveSiteAuth(auth);
+    renderShop();
+    closeOverlay(profileOverlay, profileOverlayBody);
+  } catch (error) {
+    alert(error.message || getOrderCopy().googleLoginFailed);
+  }
 }
 
 async function saveProfileFromOverlay() {
