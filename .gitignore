@@ -1,0 +1,20 @@
+# Local/backend runtime files should not be published with the static Pages site.
+backend/
+.remote-staging/
+.claude/
+
+# Secrets and local databases.
+.env
+.env.*
+*.db
+*.sqlite
+*.sqlite3
+*credentials*.txt
+
+# Python/runtime artifacts.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# OS/editor noise.
+.DS_Store
