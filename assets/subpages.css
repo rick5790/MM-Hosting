@@ -1343,6 +1343,32 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .confirm-pickup-line{font-size:15px;font-weight:700;color:#2d1f0f;}
 .confirm-pickup-meta{margin-top:.25rem;font-size:13px;line-height:1.6;color:#8a7467;}
 .confirm-actions{margin-top:1.5rem;}
+
+/* 订单已提交 成功页 */
+.order-success-icon{display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin:.4rem auto 1rem;border-radius:999px;background:#5a7c61;color:#fff;font-size:2rem;font-weight:800;}
+
+/* 个人中心 / 我的订单 */
+.profile-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.2rem 0 .4rem;}
+.profile-head-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;}
+.profile-head-name{margin-top:.2rem;font-size:1.4rem;font-weight:800;color:#2d1f0f;}
+.my-orders-group{margin-top:1.2rem;}
+.my-orders-group-title{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;margin-bottom:.6rem;}
+.my-order-card{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);margin-bottom:.65rem;}
+.my-order-top{display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.my-order-num{font-size:13px;font-weight:700;color:#5f4c3d;}
+.my-order-status{flex:0 0 auto;padding:.25rem .7rem;border-radius:999px;font-size:11px;font-weight:800;background:rgba(124,101,97,.14);color:#5f4c3d;}
+.my-order-status--pending{background:rgba(196,140,74,.16);color:#8a5a1f;}
+.my-order-status--paid{background:rgba(90,124,97,.16);color:#3f6248;}
+.my-order-status--making{background:rgba(124,101,97,.16);color:#6a4f45;}
+.my-order-status--ready{background:rgba(72,110,152,.16);color:#2f5175;}
+.my-order-status--completed{background:rgba(90,124,97,.2);color:#33513b;}
+.my-order-status--cancelled{background:rgba(124,63,53,.14);color:#7c3f35;}
+.my-order-items{margin-top:.5rem;font-size:14px;line-height:1.6;color:#4f423b;}
+.my-order-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.55rem;}
+.my-order-pay{font-size:12px;color:#a5744a;}
+.my-order-pay.is-paid{color:#3f6248;}
+.my-order-total{font-size:15px;font-weight:800;color:#2d1f0f;}
+.empty.compact{padding:1rem;border-radius:16px;background:rgba(124,101,97,.05);color:#8a7467;font-size:14px;text-align:center;}
 .pickup-current{
   display:flex;
   flex-direction:column;
