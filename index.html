@@ -391,7 +391,7 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 
 .marquee{display:none;}
 .shop-entry{padding:4rem 2rem 1.2rem;background:var(--bg);}
-.shop-shell{position:relative;display:grid;place-items:center;max-width:1080px;margin:0 auto;padding:2rem 2rem 2.15rem;border-radius:30px;background:linear-gradient(135deg,rgba(248,241,230,.96),rgba(239,225,206,.98));border:1px solid rgba(196,153,106,.2);box-shadow:0 22px 56px rgba(45,31,15,.08);text-align:center;overflow:hidden;isolation:isolate;}
+.shop-shell{position:relative;display:grid;place-items:center;max-width:1080px;margin:0 auto;padding:2rem 2rem 2.15rem;border-radius:30px;background:linear-gradient(135deg,rgba(248,241,230,.96),rgba(239,225,206,.98));border:1px solid rgba(196,153,106,.2);box-shadow:0 22px 56px rgba(45,31,15,.08);text-align:center;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black);mask-image:radial-gradient(white,black);}
 .shop-silk-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0;opacity:.64;mix-blend-mode:multiply;}
 .shop-shell::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%, rgba(255,255,255,.72), transparent 46%),linear-gradient(180deg,rgba(255,250,244,.32),rgba(245,237,224,.22));pointer-events:none;z-index:0;}
 .shop-entry-head{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;gap:1.15rem;margin:0 auto 1rem;}
@@ -441,7 +441,7 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:1.35rem;}
 .shop-card{display:flex;flex-direction:column;overflow:hidden;border-radius:26px;background:#fffaf6;border:1px solid rgba(124,101,97,.1);box-shadow:0 14px 34px rgba(45,31,15,.06);}
 .shop-card-image{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:#efe3d1;}
-.shop-card-body{display:flex;flex-direction:column;gap:.6rem;padding:1rem 1rem 1.05rem;min-height:100%;}
+.shop-card-body{display:flex;flex-direction:column;gap:.6rem;padding:1rem 1rem 1.05rem;flex:1 1 auto;}
 .shop-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;}
 .shop-card-category{font-size:11px;color:#b19273;letter-spacing:.08em;text-transform:uppercase;}
 .shop-card-badge{flex:0 0 auto;padding:.35rem .65rem;border-radius:999px;background:rgba(124,101,97,.08);font-size:11px;color:#7c6561;}
@@ -464,6 +464,8 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .portal-overlay{position:fixed;inset:0;z-index:340;display:grid;place-items:center;padding:24px;}
 .portal-overlay-backdrop{position:absolute;inset:0;background:rgba(20,10,4,.66);backdrop-filter:blur(10px);}
 .portal-panel{position:relative;width:min(100%,740px);max-height:min(88vh,940px);overflow:auto;border-radius:28px;background:#fffaf6;color:var(--text);box-shadow:0 28px 90px rgba(0,0,0,.28);padding:1.2rem 1.2rem 1.4rem;}
+.groupbuy-overlay .portal-overlay-backdrop{background:rgba(20,10,4,.5);backdrop-filter:none;}
+.groupbuy-overlay .portal-panel{width:min(100%,380px);padding:1.5rem 1.4rem 1.6rem;}
 .portal-close{position:sticky;top:0;margin-left:auto;display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;border:1px solid rgba(45,31,15,.1);background:rgba(255,255,255,.92);font-size:18px;color:var(--text);cursor:pointer;z-index:2;}
 .portal-title{font-size:clamp(1.5rem,4vw,2.2rem);line-height:1.05;font-weight:700;text-align:center;}
 .portal-sub{margin-top:.65rem;color:#8a7467;font-size:14px;line-height:1.7;text-align:center;}
@@ -475,10 +477,11 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .portal-note{font-size:12px;color:#8d786b;line-height:1.65;}
 .portal-actions{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:flex-end;margin-top:.2rem;}
 .portal-divider{margin:1rem 0;border-top:1px solid rgba(45,31,15,.08);}
+.portal-google-block{display:flex;justify-content:center;margin-top:1rem;min-height:44px;}
 .portal-pickups{display:grid;gap:.75rem;margin-top:.8rem;}
-.portal-pickup{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);cursor:pointer;}
+.portal-pickup{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);color:#2d1f0f;cursor:pointer;-webkit-appearance:none;appearance:none;}
 .portal-pickup.is-active{background:rgba(124,101,97,.09);border-color:#7c6561;}
-.portal-pickup-title{font-weight:700;text-align:center;}
+.portal-pickup-title{font-weight:700;text-align:center;color:inherit;}
 .portal-pickup-meta{margin-top:.22rem;color:#8a7467;font-size:13px;line-height:1.65;text-align:center;}
 .portal-summary{display:flex;flex-direction:column;gap:.65rem;margin-top:1rem;}
 .portal-summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
@@ -1037,7 +1040,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
       <div class="shop-entry-copy">
         <div class="sec-eye" id="shopEntryEye">订单入口</div>
         <h2 class="sec-title" id="shopEntryTitle">本周预定入口</h2>
-        <p class="sec-sub" id="shopEntrySub">每周定时开放，请关注我们的社交媒体获取最新信息</p>
+        <p class="sec-sub" id="shopEntrySub">请期待下次团购哦，关注我们的社交媒体获得下次通知</p>
         <div class="shop-entry-countdown" id="shopEntryCountdown" hidden>
           <div class="shop-entry-countdown-title" id="shopEntryCountdownTitle">本周团购结束还有</div>
           <div class="shop-entry-countdown-row">
@@ -1544,7 +1547,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   </div>
 </div>
 
-<div class="portal-overlay" id="groupBuyOverlay" hidden>
+<div class="portal-overlay groupbuy-overlay" id="groupBuyOverlay" hidden>
   <div class="portal-overlay-backdrop" data-groupbuy-close></div>
   <div class="portal-panel" role="dialog" aria-modal="true" aria-labelledby="groupBuyOverlayTitle">
     <button class="portal-close" type="button" aria-label="关闭" data-groupbuy-close>×</button>
@@ -1840,7 +1843,7 @@ const orderPortalCopy = {
   zh: {
     syncing: '同步中',
     orderEntry: '订单入口',
-    open: '本周开放预定',
+    open: '本周预定开放中',
     closed: '本周暂未开放',
     closedHint: '请关注我们的社交媒体获得最新更新',
     loading: '正在读取本周菜单...',
@@ -1857,7 +1860,6 @@ const orderPortalCopy = {
     reviewOrder: '确认订单',
     completeProfile: '填写昵称后下单',
     saveProfile: '保存昵称',
-    orDivider: '或',
     googleLoginFailed: 'Google 登录失败，请重试',
     nickname: '昵称',
     nicknamePlaceholder: '请输入你的昵称',
@@ -1868,8 +1870,8 @@ const orderPortalCopy = {
     close: '关闭',
     subtotal: '合计',
     emptyCart: '请先选择数量',
-    profileTitle: '先保存一个下单身份',
-    profileSub: '网页端会像小程序一样先生成本地身份，再把订单提交到同一套后台。',
+    profileTitle: '请选择登陆方式',
+    profileSub: '请尽量保持昵称和微信名一致，方便提货和核对哦～',
     saved: '已保存',
     submitSuccess: '订单已提交',
     adminTitle: '隐藏管理员入口',
@@ -1900,7 +1902,6 @@ const orderPortalCopy = {
     reviewOrder: 'Review Order',
     completeProfile: 'Save profile before ordering',
     saveProfile: 'Save Nickname',
-    orDivider: 'or',
     googleLoginFailed: 'Google sign-in failed, please try again',
     nickname: 'Nickname',
     nicknamePlaceholder: 'Enter your nickname',
@@ -1911,8 +1912,8 @@ const orderPortalCopy = {
     close: 'Close',
     subtotal: 'Total',
     emptyCart: 'Select at least one item first',
-    profileTitle: 'Create a local ordering profile',
-    profileSub: 'Just like the miniapp, the website saves a lightweight local identity before sending orders to the same backend.',
+    profileTitle: 'Choose how to sign in',
+    profileSub: 'Please use the same name as your WeChat so pickup is easy to verify~',
     saved: 'Saved',
     submitSuccess: 'Order submitted',
     adminTitle: 'Hidden Admin Entry',
@@ -2298,7 +2299,6 @@ function renderProfileOverlay() {
     <div class="portal-title" id="profileOverlayTitle">${escapeHtml(copy.profileTitle)}</div>
     <div class="portal-sub">${escapeHtml(copy.profileSub)}</div>
     <div class="portal-google-block" id="googleSignInButton"></div>
-    <div class="portal-google-divider">${escapeHtml(copy.orDivider)}</div>
     <div class="portal-form">
       <label class="portal-field">
         <span class="portal-label">${escapeHtml(copy.nickname)}</span>
@@ -2336,7 +2336,7 @@ async function handleGoogleCredential(response) {
     });
     saveSiteAuth(auth);
     renderShop();
-    closeOverlay(profileOverlay, profileOverlayBody);
+    renderProfileOverlay();
   } catch (error) {
     alert(error.message || getOrderCopy().googleLoginFailed);
   }
@@ -2539,9 +2539,14 @@ function getWeeklyDeadlineMs() {
 
 function isGroupBuyActive() {
   const weekly = siteState.weeklyOrder;
-  if (!weekly || !weekly.is_open) return false;
+  if (!weekly || !weekly.is_open || !siteState.products.length) return false;
+  const nowMs = Date.now();
+  if (weekly.start_at) {
+    const startMs = Date.parse(weekly.start_at);
+    if (Number.isFinite(startMs) && startMs > nowMs) return false;
+  }
   const deadlineMs = getWeeklyDeadlineMs();
-  return !deadlineMs || deadlineMs > Date.now();
+  return !deadlineMs || deadlineMs > nowMs;
 }
 
 const shopEntryCdLabels = {
@@ -2591,12 +2596,17 @@ function updateShopEntryCountdown() {
   widget.hidden = false;
 }
 
-let groupBuyPopupShown = false;
+const groupBuyPopupStorageKey = 'makkie.web.groupBuyPopupShownFor';
 function maybeShowGroupBuyPopup() {
-  if (groupBuyPopupShown || !isGroupBuyActive()) return;
+  if (!isGroupBuyActive()) return;
+  const groupId = String((siteState.weeklyOrder && (siteState.weeklyOrder.active_group_id || siteState.weeklyOrder.group_no)) || '');
+  if (!groupId) return;
+  let shownFor = '';
+  try { shownFor = localStorage.getItem(groupBuyPopupStorageKey) || ''; } catch (error) {}
+  if (shownFor === groupId) return;
   const overlay = document.getElementById('groupBuyOverlay');
   if (!overlay) return;
-  groupBuyPopupShown = true;
+  try { localStorage.setItem(groupBuyPopupStorageKey, groupId); } catch (error) {}
   const lang = getUiLang();
   const title = document.getElementById('groupBuyOverlayTitle');
   const sub = document.getElementById('groupBuyOverlaySub');
@@ -3238,7 +3248,7 @@ const bilingualCopy = {
     shopEntry: {
       eye: '马上预定',
       title: '本周预定',
-      sub: '每周定时开放，请关注我们的社交媒体获取最新信息',
+      sub: '请期待下次团购哦，关注我们的社交媒体获得下次通知',
       cta: '预定'
     },
     seo: {
@@ -3377,7 +3387,7 @@ const bilingualCopy = {
     shopEntry: {
       eye: 'Order Entry',
       title: 'Weekly Drop',
-      sub: 'Our weekly preorder opens at a set time, please follow our social media for updates',
+      sub: 'Stay tuned for our next group order — follow our social media for the next announcement',
       cta: 'Open Order'
     },
     seo: {

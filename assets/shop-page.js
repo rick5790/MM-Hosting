@@ -30,7 +30,7 @@
   const orderCopy = {
     zh: {
       syncing: '同步中',
-      open: '本周开放预定',
+      open: '本周预定开放中',
       closed: '本周暂未开放',
       closedHint: '请关注我们的社交媒体获得最新更新',
       loading: '正在读取本周菜单...',
@@ -46,10 +46,9 @@
       nickname: '昵称',
       nicknamePlaceholder: '请输入你的昵称',
       saveProfile: '保存昵称',
-      orDivider: '或',
       googleLoginFailed: 'Google 登录失败，请重试',
-      profileTitle: '先保存一个下单身份',
-      profileSub: '保存昵称后，提交订单会更顺畅，也方便你之后继续修改或确认。',
+      profileTitle: '请选择登陆方式',
+      profileSub: '请尽量保持昵称和微信名一致，方便提货和核对哦～',
       close: '关闭',
       orderNote: '订单备注',
       orderComment: '备注',
@@ -97,10 +96,9 @@
       nickname: 'Nickname',
       nicknamePlaceholder: 'Enter your nickname',
       saveProfile: 'Save Nickname',
-      orDivider: 'or',
       googleLoginFailed: 'Google sign-in failed, please try again',
-      profileTitle: 'Save a simple order profile',
-      profileSub: 'Saving a nickname makes it easier to submit, update, and confirm your order later.',
+      profileTitle: 'Choose how to sign in',
+      profileSub: 'Please use the same name as your WeChat so pickup is easy to verify~',
       close: 'Close',
       orderNote: 'Order Note',
       orderComment: 'Comment',
@@ -648,7 +646,6 @@
       <div class="portal-title">${escapeHtml(c.profileTitle)}</div>
       <div class="portal-sub">${escapeHtml(c.profileSub)}</div>
       <div class="portal-google-block" id="googleSignInButton"></div>
-      <div class="portal-google-divider">${escapeHtml(c.orDivider)}</div>
       <div class="portal-form">
         <label class="portal-field">
           <span class="portal-label">${escapeHtml(c.nickname)}</span>
@@ -686,7 +683,7 @@
       });
       saveSiteAuth(auth);
       renderShop();
-      closeOverlay(profileOverlay, profileOverlayBody);
+      renderProfileOverlay();
     } catch (error) {
       alert(error.message || copy().googleLoginFailed);
     }
