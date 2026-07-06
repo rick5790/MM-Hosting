@@ -30,7 +30,7 @@
   const orderCopy = {
     zh: {
       syncing: '同步中',
-      open: '本周开放预定',
+      open: '本周预定开放中',
       closed: '本周暂未开放',
       closedHint: '请关注我们的社交媒体获得最新更新',
       loading: '正在读取本周菜单...',
