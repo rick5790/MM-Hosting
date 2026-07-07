@@ -946,7 +946,7 @@ body[data-page="contact"] .page-actions{
   border-radius:20px;
   background:#fff;
 }
-.story-page{padding:0 1.5rem 5.4rem;background:var(--bg);}
+.story-page{padding:0 1.5rem 5.4rem;background:var(--bg);position:relative;}
 .page-main:has(.story-page) .page-hero,
 body[data-page="intro"] .page-hero{
   display:none;
@@ -1002,6 +1002,105 @@ body[data-page="intro"] .page-hero{
   margin-top:.4rem;
   font-size:clamp(.96rem,1.2vw,1.02rem);
   color:#7b6556;
+}
+
+/* =========================================================================
+   Makkie 吉祥物浮动动画（装饰层）— MakkieMascotFloat
+   可复用：把 .makkie-mascot 整段 HTML 放进任意 position:relative 的容器即可。
+   —— 调「速度」：--float-duration（整体绕行 10–14s）、--hop-duration（跳动 ~1.8s）
+   —— 调「大小」：--mascot-size
+   —— 调「路径/幅度」：--tx / --ty（水平/垂直行程倍率），或改 @keyframes makkie-float 的百分比坐标
+   ========================================================================= */
+.makkie-mascot{
+  --mascot-size: clamp(88px, 9vw, 120px); /* 桌面 88–120px */
+  --float-duration: 12s;                  /* 整体绕行时长 10–14s */
+  --hop-duration: 1.8s;                   /* 单次跳动时长 ~1.8s */
+  --tx: 1;                                /* 水平行程倍率（移动端调小） */
+  --ty: 1;                                /* 垂直行程倍率（移动端调小） */
+  position: absolute;
+  right: 4%;                              /* 起点：右下角。改这里挪动整体起点 */
+  bottom: 7%;
+  width: var(--mascot-size);
+  height: var(--mascot-size);
+  z-index: 5;                             /* 高于背景，低于导航(120)与弹窗(340) */
+  pointer-events: none;                   /* 纯装饰，不挡任何点击 */
+  will-change: transform;
+  animation: makkie-float var(--float-duration) ease-in-out infinite;
+}
+.makkie-mascot__hop{
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 92%;              /* 以底部为支点，squash/stretch 更自然 */
+  animation: makkie-hop var(--hop-duration) ease-in-out infinite;
+}
+.makkie-mascot__img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 14px rgba(61, 38, 27, .16));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* 绕行路径：右下角 → 沿右侧上跳 → 飘向下方中间 → 回到起点。
+   translate 用 % 相对吉祥物自身尺寸，天然随尺寸缩放；乘 var(--tx/--ty) 便于移动端缩小行程。 */
+@keyframes makkie-float{
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  18%  { transform: translate(calc(2% * var(--tx)),    calc(-150% * var(--ty))) rotate(3deg); }
+  38%  { transform: translate(calc(-8% * var(--tx)),   calc(-225% * var(--ty))) rotate(-2deg); }
+  56%  { transform: translate(calc(-145% * var(--tx)), calc(-165% * var(--ty))) rotate(2deg); }
+  72%  { transform: translate(calc(-245% * var(--tx)), calc(-70% * var(--ty)))  rotate(-3deg); }
+  88%  { transform: translate(calc(-110% * var(--tx)), calc(-14% * var(--ty)))  rotate(2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* 跳动 + 轻微 squash & stretch */
+@keyframes makkie-hop{
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  14%      { transform: translateY(0) scale(1.08, .92); }    /* 起跳前压扁 */
+  40%      { transform: translateY(-14px) scale(.95, 1.05); } /* 空中拉长 */
+  68%      { transform: translateY(0) scale(1.07, .93); }     /* 落地压扁 */
+  84%      { transform: translateY(-4px) scale(.99, 1.01); }  /* 小回弹 */
+}
+
+/* 极简微光/碎屑：2–3 颗，柔和闪烁 */
+.makkie-mascot__spark{
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 225, .95), rgba(214, 178, 132, .35) 60%, transparent 70%);
+  opacity: 0;
+  animation: makkie-spark 3.4s ease-in-out infinite;
+}
+.makkie-mascot__spark--1{ top: 8%;  left: -6%;  animation-delay: 0s; }
+.makkie-mascot__spark--2{ top: 46%; right: -10%; width: 5px; height: 5px; animation-delay: 1.1s; }
+.makkie-mascot__spark--3{ bottom: 10%; left: 12%; width: 4px; height: 4px; animation-delay: 2.2s; }
+@keyframes makkie-spark{
+  0%, 100% { opacity: 0; transform: scale(.6); }
+  50%      { opacity: .9; transform: scale(1); }
+}
+
+/* 移动端：58–76px，缩小行程，避免遮挡标题/正文 */
+@media (max-width: 640px){
+  .makkie-mascot{
+    --mascot-size: clamp(58px, 16vw, 76px);
+    --tx: .55;
+    --ty: .5;
+    right: 3%;
+    bottom: 5%;
+  }
+}
+
+/* 尊重「减少动态」：停止移动/跳动/闪烁，仅保留静态装饰图 */
+@media (prefers-reduced-motion: reduce){
+  .makkie-mascot,
+  .makkie-mascot__hop,
+  .makkie-mascot__spark{
+    animation: none !important;
+  }
+  .makkie-mascot__spark{ opacity: 0; }
 }
 
 .shop{padding:1.2rem 1.5rem 5rem;background:var(--bg);}

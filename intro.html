@@ -65,6 +65,17 @@
       <div class="story-divider"></div>
       <div class="story-body" id="introBody"></div>
     </div>
+    <!-- Makkie 吉祥物浮动动画（MakkieMascotFloat）：纯装饰层，不改动上面的文案/排版。
+         想复用就把这一整块 <div class="makkie-mascot"> 复制到任意 position:relative 的容器里。
+         图片放在 assets/images/brand/Makkie_Original_Logo.png（透明 PNG）。 -->
+    <div class="makkie-mascot" aria-hidden="true">
+      <span class="makkie-mascot__spark makkie-mascot__spark--1"></span>
+      <span class="makkie-mascot__spark makkie-mascot__spark--2"></span>
+      <span class="makkie-mascot__spark makkie-mascot__spark--3"></span>
+      <div class="makkie-mascot__hop">
+        <img class="makkie-mascot__img" src="assets/images/brand/Makkie_Original_Logo.png" alt="" draggable="false">
+      </div>
+    </div>
   </section>
 </main>
 
