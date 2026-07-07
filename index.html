@@ -218,13 +218,15 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .hero{text-align:center;padding:4.4rem 2rem 4rem;background:var(--bg);}
 .hero-logo{
   width:min(68vw,360px);
+  aspect-ratio:1/1;
   display:block;
   margin:0 auto 1.1rem;
   background:transparent;
   mix-blend-mode:multiply;
   object-fit:cover;
   object-position:center;
-  clip-path:inset(0 18% 0 18%);
+  border-radius:50%;
+  overflow:hidden;
   filter:drop-shadow(0 16px 24px rgba(61,38,27,.10));
 }
 .hero-wordmark{
@@ -467,6 +469,59 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .groupbuy-overlay .portal-overlay-backdrop{background:rgba(20,10,4,.5);backdrop-filter:none;}
 .groupbuy-overlay .portal-panel{width:min(100%,380px);padding:1.5rem 1.4rem 1.6rem;}
 .portal-close{position:sticky;top:0;margin-left:auto;display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;border:1px solid rgba(45,31,15,.1);background:rgba(255,255,255,.92);font-size:18px;color:var(--text);cursor:pointer;z-index:2;}
+/* 我的订单弹窗（与 shop-page.js / subpages.css 一致：上下结构 + 富订单卡 + 取消 + 历史 view） */
+#profileOverlay .portal-panel{width:min(100%,560px);max-height:min(88vh,940px);overflow:auto;}
+.shop-secondary-button--compact{min-height:44px;padding:.62rem 1rem;}
+.profile-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.2rem 0 .4rem;}
+.profile-head-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;}
+.profile-head-name{margin-top:.2rem;font-size:1.4rem;font-weight:800;color:#2d1f0f;}
+.profile-stack{display:flex;flex-direction:column;gap:1rem;}
+.profile-stack .portal-divider{margin:.2rem 0;}
+.profile-history-entry{display:flex;align-items:center;justify-content:space-between;gap:.6rem;width:100%;padding:.8rem 1rem;border-radius:16px;border:1px solid rgba(124,101,97,.16);background:rgba(255,255,255,.7);color:#5f4c3d;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+.profile-history-entry:hover{background:rgba(124,101,97,.08);}
+.profile-history-arrow{font-size:18px;color:#9a7d65;line-height:1;}
+.profile-main-title{font-size:1.15rem;font-weight:800;color:#2d1f0f;}
+.profile-history-head{display:flex;align-items:center;gap:.9rem;}
+.profile-history-title{font-size:1.3rem;font-weight:800;color:#2d1f0f;}
+.my-orders-list{display:flex;flex-direction:column;gap:.8rem;}
+.my-order-card{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);}
+.my-order-card--rich{padding:1rem 1.1rem;background:rgba(124,101,97,.05);}
+.my-order-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+.my-order-status{flex:0 0 auto;padding:.25rem .7rem;border-radius:999px;font-size:11px;font-weight:800;background:rgba(124,101,97,.14);color:#5f4c3d;}
+.my-order-status--pending{background:rgba(196,140,74,.16);color:#8a5a1f;}
+.my-order-status--paid{background:rgba(90,124,97,.16);color:#3f6248;}
+.my-order-status--making{background:rgba(124,101,97,.16);color:#6a4f45;}
+.my-order-status--ready{background:rgba(72,110,152,.16);color:#2f5175;}
+.my-order-status--completed{background:rgba(90,124,97,.2);color:#33513b;}
+.my-order-status--cancelled{background:rgba(124,63,53,.14);color:#7c3f35;}
+.my-order-date{display:flex;flex-direction:column;gap:.15rem;}
+.my-order-date-label{font-size:11px;letter-spacing:.06em;color:#9a7d65;}
+.my-order-date-value{font-size:1.15rem;font-weight:800;color:#2d1f0f;line-height:1.1;}
+.my-order-badges{display:flex;align-items:center;gap:.4rem;flex:0 0 auto;}
+.my-order-num-badge{padding:.25rem .6rem;border-radius:999px;font-size:11px;font-weight:800;background:rgba(124,101,97,.14);color:#5f4c3d;}
+.my-order-who{margin-top:.7rem;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;}
+.my-order-who-name{font-size:15px;font-weight:800;color:#2d1f0f;}
+.my-order-who-id{font-size:12px;color:#9a7d65;letter-spacing:.03em;}
+.my-order-lines{margin-top:.7rem;display:flex;flex-direction:column;gap:.35rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
+.my-order-line{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
+.my-order-line-name{min-width:0;}
+.my-order-line-price{flex:0 0 auto;font-weight:700;color:#2d1f0f;}
+.my-order-pickup{margin-top:.7rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
+.my-order-pickup-name{font-size:14px;font-weight:800;color:#3f342c;}
+.my-order-pickup-line{font-size:12px;color:#8a7467;line-height:1.5;margin-top:.1rem;}
+.my-order-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.8rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
+.my-order-pay{font-size:12px;color:#a5744a;}
+.my-order-pay.is-paid{color:#3f6248;}
+.my-order-total{font-size:1.15rem;font-weight:800;color:#2d1f0f;}
+.my-order-cancel-row{margin-top:.8rem;display:flex;justify-content:flex-end;}
+.my-order-cancel-btn{padding:.5rem 1rem;border-radius:999px;border:1px solid rgba(124,63,53,.28);background:transparent;color:#9a4737;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+.my-order-cancel-btn:hover{background:rgba(124,63,53,.08);}
+.my-order-cancel-confirm{margin-top:.8rem;padding:.8rem .9rem;border-radius:14px;background:rgba(154,71,55,.08);border:1px solid rgba(154,71,55,.2);}
+.my-order-cancel-warn{font-size:13px;line-height:1.5;color:#7c3f35;}
+.my-order-cancel-actions{margin-top:.7rem;display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap;}
+.my-order-cancel-yes{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.55rem 1.1rem;border-radius:999px;border:none;background:#9a4737;color:#fffaf6;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.my-order-cancel-yes[disabled]{opacity:.6;cursor:default;}
+.empty.compact{padding:1rem;border-radius:16px;background:rgba(124,101,97,.05);color:#8a7467;font-size:14px;text-align:center;}
 .portal-title{font-size:clamp(1.5rem,4vw,2.2rem);line-height:1.05;font-weight:700;text-align:center;}
 .portal-sub{margin-top:.65rem;color:#8a7467;font-size:14px;line-height:1.7;text-align:center;}
 .portal-form{display:flex;flex-direction:column;gap:1rem;margin-top:1.4rem;}
@@ -1021,8 +1076,8 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   <video class="hero-logo" autoplay muted loop playsinline preload="auto" aria-label="Makkie Mua waving logo">
     <source src="assets/video/makkie-waving-clean.webm?v=20260403-143509" type="video/webm">
   </video>
-  <div class="hero-eyebrow">Makkie Mua · 独家创意甜品</div>
   <img class="hero-wordmark-art" src="assets/images/brand/Makkie_Mua_Text_Original.png" alt="Makkie Mua">
+  <div class="hero-eyebrow">Makkie Mua · 独家创意甜品</div>
   <p class="hero-sub">每一层都是手作的温度<br>Los Angeles &amp; Orange County</p>
   <div class="hero-links">
     <a href="index.html" class="btn-chip">主页</a>
@@ -1455,9 +1510,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 </section>
 
 <section id="order" class="order">
-  <div class="sec-eye">预订详情须知</div>
+  <div class="sec-eye" style="display:none;"></div>
   <h2 class="sec-title"><span class="order-title-line">限量纯手工制作 ·</span><span class="order-title-line">采用新鲜有机原料</span></h2>
-  <p class="sec-sub">甜品每周限时品种根据当季原料供应决定 · 添加我们的WeChat获得最新动态m</p>
+  <p class="sec-sub">添加我们的WeChat获得最新动态</p>
   <div style="display:flex;flex-direction:column;align-items:center;">
     <div class="contact-codes">
       <div class="contact-code">
@@ -1872,6 +1927,30 @@ const orderPortalCopy = {
     close: '关闭',
     subtotal: '合计',
     emptyCart: '请先选择数量',
+    myOrders: '我的订单',
+    thisWeekOrders: '本周订单',
+    historyOrders: '历史订单',
+    noThisWeekOrders: '本周还没有订单',
+    historyEmpty: '还没有历史订单',
+    viewHistory: '查看历史订单',
+    backToOrders: '返回',
+    orderDateLabel: '下单日期',
+    idLabel: 'ID',
+    orderNumberLabel: '订单号',
+    loggedInAs: '当前昵称',
+    editNickname: '修改昵称',
+    ordersLoading: '正在读取订单...',
+    ordersFailed: '订单读取失败，请稍后再试。',
+    noOrders: '还没有订单',
+    paymentPaid: '已确认收款',
+    paymentUnpaid: '待确认付款',
+    cancelOrder: '取消订单',
+    cancelWarn: '取消后会释放该订单占用的库存，确定要取消吗？',
+    cancelConfirmYes: '确认取消',
+    cancelKeep: '暂不取消',
+    cancelSuccess: '订单已取消，库存已释放。',
+    cancelFailed: '取消失败，请稍后再试。',
+    statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '待取货', completed: '已完成', cancelled: '已取消' },
     profileTitle: '请选择登陆方式',
     profileSub: '请尽量保持昵称和微信名一致，方便提货和核对哦～',
     saved: '已保存',
@@ -1914,6 +1993,30 @@ const orderPortalCopy = {
     close: 'Close',
     subtotal: 'Total',
     emptyCart: 'Select at least one item first',
+    myOrders: 'My Orders',
+    thisWeekOrders: 'This Week',
+    historyOrders: 'Order History',
+    noThisWeekOrders: 'No orders this week yet',
+    historyEmpty: 'No past orders yet',
+    viewHistory: 'View Order History',
+    backToOrders: 'Back',
+    orderDateLabel: 'Ordered',
+    idLabel: 'ID',
+    orderNumberLabel: 'Order',
+    loggedInAs: 'Nickname',
+    editNickname: 'Edit Nickname',
+    ordersLoading: 'Loading orders...',
+    ordersFailed: 'Failed to load orders. Please try again later.',
+    noOrders: 'No orders yet',
+    paymentPaid: 'Payment confirmed',
+    paymentUnpaid: 'Awaiting payment',
+    cancelOrder: 'Cancel Order',
+    cancelWarn: 'Cancelling will release the stock reserved for this order. Are you sure?',
+    cancelConfirmYes: 'Yes, cancel',
+    cancelKeep: 'Keep order',
+    cancelSuccess: 'Order cancelled. The stock has been released.',
+    cancelFailed: 'Failed to cancel. Please try again later.',
+    statusLabels: { pending: 'Pending', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', cancelled: 'Cancelled' },
     profileTitle: 'Choose how to sign in',
     profileSub: 'Please use the same name as your WeChat so pickup is easy to verify~',
     saved: 'Saved',
@@ -1936,7 +2039,14 @@ const siteState = {
   pickupIndex: 0,
   note: '',
   error: '',
-  loading: true
+  loading: true,
+  profileEditMode: false,
+  profileView: 'main',
+  cancelPromptId: null,
+  cancelBusyId: null,
+  myOrders: null,
+  myOrdersLoading: false,
+  myOrdersError: ''
 };
 let shopCountdownTimer = null;
 let adminTapCount = 0;
@@ -2294,9 +2404,32 @@ function openOverlay(overlay) {
   document.body.style.overflow = 'hidden';
 }
 
+function getSavedNickname() {
+  const u = siteState.auth && siteState.auth.user;
+  if (!u) return '';
+  return (u.profile && u.profile.nickname) || u.nickname || '';
+}
+
 function renderProfileOverlay() {
+  // 每次打开都从主界面开始，清掉未完成的取消确认。
+  siteState.profileView = 'main';
+  siteState.cancelPromptId = null;
+  siteState.cancelBusyId = null;
+  const nickname = getSavedNickname();
+  if (nickname && !siteState.profileEditMode) {
+    renderProfileLoggedIn();
+    openOverlay(profileOverlay);
+    loadMyOrders();
+    return;
+  }
+  renderProfileLoginForm();
+  openOverlay(profileOverlay);
+  renderGoogleButton();
+}
+
+function renderProfileLoginForm() {
   const copy = getOrderCopy();
-  const nickname = siteState.auth && siteState.auth.user ? (siteState.auth.user.profile?.nickname || siteState.auth.user.nickname || '') : '';
+  const nickname = getSavedNickname();
   profileOverlayBody.innerHTML = `
     <div class="portal-title" id="profileOverlayTitle">${escapeHtml(copy.profileTitle)}</div>
     <div class="portal-sub">${escapeHtml(copy.profileSub)}</div>
@@ -2312,8 +2445,197 @@ function renderProfileOverlay() {
       </div>
     </div>
   `;
-  openOverlay(profileOverlay);
-  renderGoogleButton();
+}
+
+// —— 我的订单弹窗（与 shop-page.js 保持一致的上下结构 + 取消 + 历史 view）——
+function renderProfileLoggedIn() {
+  const c = getOrderCopy();
+  const nickname = getSavedNickname();
+
+  if (siteState.profileView === 'history') {
+    profileOverlayBody.innerHTML = `
+      <div class="profile-history-head">
+        <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-view="main">‹ ${escapeHtml(c.backToOrders)}</button>
+        <div class="profile-history-title">${escapeHtml(c.historyOrders)}</div>
+      </div>
+      <div class="portal-divider"></div>
+      <div id="myOrdersSection">${renderMyOrdersSection()}</div>
+    `;
+    return;
+  }
+
+  profileOverlayBody.innerHTML = `
+    <div class="profile-stack">
+      <div class="profile-head">
+        <div>
+          <div class="profile-head-label">${escapeHtml(c.loggedInAs)}</div>
+          <div class="profile-head-name">${escapeHtml(nickname)}</div>
+        </div>
+        <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
+      </div>
+      <button class="profile-history-entry" type="button" data-profile-view="history">
+        <span>${escapeHtml(c.viewHistory)}</span>
+        <span class="profile-history-arrow">›</span>
+      </button>
+      <div class="portal-divider"></div>
+      <div class="profile-main-title">${escapeHtml(c.myOrders)} · ${escapeHtml(c.thisWeekOrders)}</div>
+      <div id="myOrdersSection">${renderMyOrdersSection()}</div>
+    </div>
+  `;
+}
+
+function getOrderStatusInfo(order) {
+  const c = getOrderCopy();
+  const status = String(order.status || 'pending');
+  const label = (c.statusLabels && c.statusLabels[status]) || status;
+  return { status, label };
+}
+
+function formatOrderDate(value) {
+  if (!value) return '';
+  const date = new Date(String(value).replace(' ', 'T'));
+  if (Number.isNaN(date.getTime())) return String(value);
+  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+}
+
+const PICKUP_WEEKDAY_EN = {
+  '星期一': 'Monday', '星期二': 'Tuesday', '星期三': 'Wednesday', '星期四': 'Thursday',
+  '星期五': 'Friday', '星期六': 'Saturday', '星期日': 'Sunday', '星期天': 'Sunday',
+  '周一': 'Monday', '周二': 'Tuesday', '周三': 'Wednesday', '周四': 'Thursday',
+  '周五': 'Friday', '周六': 'Saturday', '周日': 'Sunday', '周天': 'Sunday'
+};
+function localizePickupTime(value) {
+  let text = String(value || '');
+  if (getUiLang() !== 'en') return text;
+  Object.keys(PICKUP_WEEKDAY_EN).forEach((zh) => {
+    if (text.indexOf(zh) !== -1) text = text.split(zh).join(PICKUP_WEEKDAY_EN[zh]);
+  });
+  return text;
+}
+
+function renderOrderCard(order, allowCancel) {
+  const c = getOrderCopy();
+  const info = getOrderStatusInfo(order);
+  const paid = String(order.payment_status || order.paymentStatus || 'non_paid') === 'paid';
+  const num = order.groupOrderNumberText || (order.orderNumber ? `${order.orderNumber}` : `${order.id}`);
+  const dateText = formatOrderDate(order.created_at || order.createdAt);
+  const nickname = order.userNickname || order.customer_name || getSavedNickname();
+  const idText = order.userUuid || '';
+  const pickup = order.pickup || {};
+  const totalText = (order.total && order.total.text) || formatMoney(order.total_amount || 0);
+  const cancellable = allowCancel && String(order.status || '') === 'pending';
+  const prompting = cancellable && Number(siteState.cancelPromptId) === Number(order.id);
+  const busy = Number(siteState.cancelBusyId) === Number(order.id);
+
+  const itemsHtml = (order.items || []).map((it) => `
+    <div class="my-order-line">
+      <span class="my-order-line-name">${escapeHtml(it.title || '')} × ${escapeHtml(it.quantity || 0)}</span>
+      <span class="my-order-line-price">${escapeHtml(it.subtotalText || formatMoney(it.subtotal || 0))}</span>
+    </div>`).join('');
+
+  const pickupHtml = (pickup.name || pickup.time || pickup.address) ? `
+    <div class="my-order-pickup">
+      ${pickup.name ? `<div class="my-order-pickup-name">${escapeHtml(pickup.name)}</div>` : ''}
+      ${pickup.time ? `<div class="my-order-pickup-line">${escapeHtml(localizePickupTime(pickup.time))}</div>` : ''}
+      ${pickup.address ? `<div class="my-order-pickup-line">${escapeHtml(pickup.address)}</div>` : ''}
+    </div>` : '';
+
+  const cancelHtml = !cancellable ? '' : (prompting ? `
+    <div class="my-order-cancel-confirm">
+      <div class="my-order-cancel-warn">${escapeHtml(c.cancelWarn)}</div>
+      <div class="my-order-cancel-actions">
+        <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-order-cancel-dismiss>${escapeHtml(c.cancelKeep)}</button>
+        <button class="my-order-cancel-yes" type="button" data-order-cancel-confirm="${escapeHtml(order.id)}" ${busy ? 'disabled' : ''}>${escapeHtml(busy ? c.ordersLoading : c.cancelConfirmYes)}</button>
+      </div>
+    </div>` : `
+    <div class="my-order-cancel-row">
+      <button class="my-order-cancel-btn" type="button" data-order-cancel="${escapeHtml(order.id)}">${escapeHtml(c.cancelOrder)}</button>
+    </div>`);
+
+  return `
+    <div class="my-order-card my-order-card--rich">
+      <div class="my-order-top">
+        <div class="my-order-date">
+          <span class="my-order-date-label">${escapeHtml(c.orderDateLabel)}</span>
+          <strong class="my-order-date-value">${escapeHtml(dateText)}</strong>
+        </div>
+        <div class="my-order-badges">
+          <span class="my-order-num-badge">${escapeHtml(num)}</span>
+          <span class="my-order-status my-order-status--${escapeHtml(info.status)}">${escapeHtml(info.label)}</span>
+        </div>
+      </div>
+      <div class="my-order-who">
+        <span class="my-order-who-name">${escapeHtml(nickname)}</span>
+        ${idText ? `<span class="my-order-who-id">${escapeHtml(c.idLabel)} ${escapeHtml(idText)}</span>` : ''}
+      </div>
+      <div class="my-order-lines">${itemsHtml}</div>
+      ${pickupHtml}
+      <div class="my-order-foot">
+        <span class="my-order-pay ${paid ? 'is-paid' : ''}">${escapeHtml(paid ? c.paymentPaid : c.paymentUnpaid)}</span>
+        <span class="my-order-total">${escapeHtml(totalText)}</span>
+      </div>
+      ${cancelHtml}
+    </div>
+  `;
+}
+
+function renderMyOrdersSection() {
+  const c = getOrderCopy();
+  if (siteState.myOrdersLoading) return `<div class="empty compact">${escapeHtml(c.ordersLoading)}</div>`;
+  if (siteState.myOrdersError) return `<div class="empty compact">${escapeHtml(siteState.myOrdersError)}</div>`;
+  const orders = Array.isArray(siteState.myOrders) ? siteState.myOrders : [];
+
+  const activeGroup = String((siteState.weeklyOrder && (siteState.weeklyOrder.active_group_id || siteState.weeklyOrder.group_no)) || '');
+  const isThisWeek = (order) => activeGroup && String(order.group_id || order.groupId || '') === activeGroup;
+
+  if (siteState.profileView === 'history') {
+    const history = orders.filter((order) => !isThisWeek(order));
+    if (!history.length) return `<div class="empty compact">${escapeHtml(c.historyEmpty)}</div>`;
+    return `<div class="my-orders-list">${history.map((order) => renderOrderCard(order, false)).join('')}</div>`;
+  }
+
+  const live = orders.filter(isThisWeek);
+  if (!live.length) return `<div class="empty compact">${escapeHtml(c.noThisWeekOrders)}</div>`;
+  return `<div class="my-orders-list">${live.map((order) => renderOrderCard(order, true)).join('')}</div>`;
+}
+
+function refreshMyOrdersSection() {
+  const el = document.getElementById('myOrdersSection');
+  if (el) el.innerHTML = renderMyOrdersSection();
+}
+
+async function loadMyOrders() {
+  if (!siteState.auth || !siteState.auth.user) return;
+  siteState.myOrdersLoading = true;
+  siteState.myOrdersError = '';
+  refreshMyOrdersSection();
+  try {
+    const data = await siteApiRequest(`/api/orders/user/${siteState.auth.user.id}`);
+    siteState.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+  } catch (error) {
+    siteState.myOrdersError = error.message || getOrderCopy().ordersFailed;
+  } finally {
+    siteState.myOrdersLoading = false;
+    refreshMyOrdersSection();
+  }
+}
+
+async function cancelMyOrder(orderId) {
+  const c = getOrderCopy();
+  siteState.cancelBusyId = Number(orderId);
+  refreshMyOrdersSection();
+  try {
+    await siteApiRequest(`/api/orders/${orderId}/cancel`, { method: 'PATCH' });
+    siteState.cancelPromptId = null;
+    siteState.cancelBusyId = null;
+    await loadMyOrders();
+    await loadShopData();
+  } catch (error) {
+    siteState.cancelBusyId = null;
+    siteState.cancelPromptId = null;
+    refreshMyOrdersSection();
+    alert(error.message || c.cancelFailed);
+  }
 }
 
 function renderGoogleButton() {
@@ -2356,6 +2678,8 @@ async function saveProfileFromOverlay() {
     }
   });
   saveSiteAuth(auth);
+  siteState.profileEditMode = false;
+  siteState.profileView = 'main';
   closeOverlay(profileOverlay, profileOverlayBody);
   renderShop();
 }
@@ -2442,7 +2766,8 @@ async function submitWebOrder() {
   siteState.cartQuantities = {};
   siteState.note = '';
   closeOverlay(orderReviewOverlay, orderReviewBody);
-  renderShop();
+  // 重新拉取产品，让库存立即反映刚下的这单（否则显示的是下单前的旧库存）。
+  await loadShopData();
   alert(copy.submitSuccess);
 }
 
@@ -2668,8 +2993,34 @@ document.addEventListener('click', async (event) => {
   const profileAction = event.target.closest('[data-profile-action]');
   const reviewAction = event.target.closest('[data-review-action]');
   const adminAction = event.target.closest('[data-admin-action]');
+  const profileView = event.target.closest('[data-profile-view]');
+  const orderCancel = event.target.closest('[data-order-cancel]');
+  const orderCancelConfirm = event.target.closest('[data-order-cancel-confirm]');
+  const orderCancelDismiss = event.target.closest('[data-order-cancel-dismiss]');
   if (profileAction) {
-    await saveProfileFromOverlay().catch((error) => alert(error.message));
+    if (profileAction.dataset.profileAction === 'edit') {
+      siteState.profileEditMode = true;
+      renderProfileOverlay();
+      renderGoogleButton();
+    } else {
+      await saveProfileFromOverlay().catch((error) => alert(error.message));
+    }
+  }
+  if (profileView) {
+    siteState.profileView = profileView.dataset.profileView === 'history' ? 'history' : 'main';
+    siteState.cancelPromptId = null;
+    renderProfileLoggedIn();
+  }
+  if (orderCancelDismiss) {
+    siteState.cancelPromptId = null;
+    refreshMyOrdersSection();
+  }
+  if (orderCancel) {
+    siteState.cancelPromptId = Number(orderCancel.dataset.orderCancel);
+    refreshMyOrdersSection();
+  }
+  if (orderCancelConfirm) {
+    await cancelMyOrder(Number(orderCancelConfirm.dataset.orderCancelConfirm));
   }
   if (reviewAction) {
     if (reviewAction.dataset.reviewAction === 'pickup') {
@@ -2696,7 +3047,11 @@ document.querySelectorAll('[data-order-review-close]').forEach((button) => {
   button.addEventListener('click', () => closeOverlay(orderReviewOverlay, orderReviewBody));
 });
 document.querySelectorAll('[data-profile-close]').forEach((button) => {
-  button.addEventListener('click', () => closeOverlay(profileOverlay, profileOverlayBody));
+  button.addEventListener('click', () => {
+    siteState.profileEditMode = false;
+    siteState.profileView = 'main';
+    closeOverlay(profileOverlay, profileOverlayBody);
+  });
 });
 document.querySelectorAll('[data-admin-close]').forEach((button) => {
   button.addEventListener('click', () => closeOverlay(adminOverlay, adminOverlayBody));
@@ -3200,6 +3555,8 @@ document.addEventListener('keydown', (event) => {
     closeOverlay(orderReviewOverlay, orderReviewBody);
   }
   if (event.key === 'Escape' && profileOverlay && !profileOverlay.hidden) {
+    siteState.profileEditMode = false;
+    siteState.profileView = 'main';
     closeOverlay(profileOverlay, profileOverlayBody);
   }
   if (event.key === 'Escape' && adminOverlay && !adminOverlay.hidden) {
@@ -3362,9 +3719,9 @@ const bilingualCopy = {
       openPost: '点开看完整帖子'
     },
     order: {
-      eye: '预订详情须知',
+      eye: '',
       title: '<span class="order-title-line">限量纯手工制作</span><span class="order-title-line">采用新鲜有机原料</span>',
-      sub: '甜品每周限时品种根据当季原料供应决定 · 添加我们的WeChat获得最新动态',
+      sub: '添加我们的WeChat获得最新动态',
       labels: ['微信']
     },
     footer: {
@@ -3501,7 +3858,7 @@ const bilingualCopy = {
       openPost: 'Open full post'
     },
     order: {
-      eye: 'Booking Details',
+      eye: '',
       title: '<span class="order-title-line">Small-batch handmade desserts</span><span class="order-title-line">made with fresh premium ingredients</span>',
       sub: 'The lineup rotates weekly. To protect freshness and food safety, all orders are preorder only. The latest booking link updates every week. Message us on WeChat or Instagram.',
       labels: ['WeChat', 'Rednote Highlights']

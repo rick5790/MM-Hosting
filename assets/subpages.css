@@ -946,7 +946,7 @@ body[data-page="contact"] .page-actions{
   border-radius:20px;
   background:#fff;
 }
-.story-page{padding:0 1.5rem 5.4rem;background:var(--bg);}
+.story-page{padding:0 1.5rem 5.4rem;background:var(--bg);position:relative;}
 .page-main:has(.story-page) .page-hero,
 body[data-page="intro"] .page-hero{
   display:none;
@@ -1002,6 +1002,105 @@ body[data-page="intro"] .page-hero{
   margin-top:.4rem;
   font-size:clamp(.96rem,1.2vw,1.02rem);
   color:#7b6556;
+}
+
+/* =========================================================================
+   Makkie 吉祥物浮动动画（装饰层）— MakkieMascotFloat
+   可复用：把 .makkie-mascot 整段 HTML 放进任意 position:relative 的容器即可。
+   —— 调「速度」：--float-duration（整体绕行 10–14s）、--hop-duration（跳动 ~1.8s）
+   —— 调「大小」：--mascot-size
+   —— 调「路径/幅度」：--tx / --ty（水平/垂直行程倍率），或改 @keyframes makkie-float 的百分比坐标
+   ========================================================================= */
+.makkie-mascot{
+  --mascot-size: clamp(88px, 9vw, 120px); /* 桌面 88–120px */
+  --float-duration: 12s;                  /* 整体绕行时长 10–14s */
+  --hop-duration: 1.8s;                   /* 单次跳动时长 ~1.8s */
+  --tx: 1;                                /* 水平行程倍率（移动端调小） */
+  --ty: 1;                                /* 垂直行程倍率（移动端调小） */
+  position: absolute;
+  right: 4%;                              /* 起点：右下角。改这里挪动整体起点 */
+  bottom: 7%;
+  width: var(--mascot-size);
+  height: var(--mascot-size);
+  z-index: 5;                             /* 高于背景，低于导航(120)与弹窗(340) */
+  pointer-events: none;                   /* 纯装饰，不挡任何点击 */
+  will-change: transform;
+  animation: makkie-float var(--float-duration) ease-in-out infinite;
+}
+.makkie-mascot__hop{
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 92%;              /* 以底部为支点，squash/stretch 更自然 */
+  animation: makkie-hop var(--hop-duration) ease-in-out infinite;
+}
+.makkie-mascot__img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 14px rgba(61, 38, 27, .16));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* 绕行路径：右下角 → 沿右侧上跳 → 飘向下方中间 → 回到起点。
+   translate 用 % 相对吉祥物自身尺寸，天然随尺寸缩放；乘 var(--tx/--ty) 便于移动端缩小行程。 */
+@keyframes makkie-float{
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  18%  { transform: translate(calc(2% * var(--tx)),    calc(-150% * var(--ty))) rotate(3deg); }
+  38%  { transform: translate(calc(-8% * var(--tx)),   calc(-225% * var(--ty))) rotate(-2deg); }
+  56%  { transform: translate(calc(-145% * var(--tx)), calc(-165% * var(--ty))) rotate(2deg); }
+  72%  { transform: translate(calc(-245% * var(--tx)), calc(-70% * var(--ty)))  rotate(-3deg); }
+  88%  { transform: translate(calc(-110% * var(--tx)), calc(-14% * var(--ty)))  rotate(2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* 跳动 + 轻微 squash & stretch */
+@keyframes makkie-hop{
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  14%      { transform: translateY(0) scale(1.08, .92); }    /* 起跳前压扁 */
+  40%      { transform: translateY(-14px) scale(.95, 1.05); } /* 空中拉长 */
+  68%      { transform: translateY(0) scale(1.07, .93); }     /* 落地压扁 */
+  84%      { transform: translateY(-4px) scale(.99, 1.01); }  /* 小回弹 */
+}
+
+/* 极简微光/碎屑：2–3 颗，柔和闪烁 */
+.makkie-mascot__spark{
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 225, .95), rgba(214, 178, 132, .35) 60%, transparent 70%);
+  opacity: 0;
+  animation: makkie-spark 3.4s ease-in-out infinite;
+}
+.makkie-mascot__spark--1{ top: 8%;  left: -6%;  animation-delay: 0s; }
+.makkie-mascot__spark--2{ top: 46%; right: -10%; width: 5px; height: 5px; animation-delay: 1.1s; }
+.makkie-mascot__spark--3{ bottom: 10%; left: 12%; width: 4px; height: 4px; animation-delay: 2.2s; }
+@keyframes makkie-spark{
+  0%, 100% { opacity: 0; transform: scale(.6); }
+  50%      { opacity: .9; transform: scale(1); }
+}
+
+/* 移动端：58–76px，缩小行程，避免遮挡标题/正文 */
+@media (max-width: 640px){
+  .makkie-mascot{
+    --mascot-size: clamp(58px, 16vw, 76px);
+    --tx: .55;
+    --ty: .5;
+    right: 3%;
+    bottom: 5%;
+  }
+}
+
+/* 尊重「减少动态」：停止移动/跳动/闪烁，仅保留静态装饰图 */
+@media (prefers-reduced-motion: reduce){
+  .makkie-mascot,
+  .makkie-mascot__hop,
+  .makkie-mascot__spark{
+    animation: none !important;
+  }
+  .makkie-mascot__spark{ opacity: 0; }
 }
 
 .shop{padding:1.2rem 1.5rem 5rem;background:var(--bg);}
@@ -1372,6 +1471,66 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .my-order-pay{font-size:12px;color:#a5744a;}
 .my-order-pay.is-paid{color:#3f6248;}
 .my-order-total{font-size:15px;font-weight:800;color:#2d1f0f;}
+
+/* 微信二维码弹窗（联系页）：点「扫码添加」弹出，长按可保存 */
+.qr-pop-overlay{position:fixed;inset:0;z-index:400;display:none;place-items:center;padding:24px;}
+.qr-pop-overlay.is-open{display:grid;}
+.qr-pop-backdrop{position:absolute;inset:0;background:rgba(20,10,4,.66);backdrop-filter:blur(8px);}
+.qr-pop-panel{position:relative;width:min(100%,360px);border-radius:26px;background:#fffaf6;color:#2d1f0f;box-shadow:0 28px 90px rgba(0,0,0,.3);padding:1.7rem 1.4rem 1.5rem;text-align:center;}
+.qr-pop-close{position:absolute;top:12px;right:12px;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:999px;border:1px solid rgba(45,31,15,.1);background:rgba(255,255,255,.9);font-size:20px;color:#2d1f0f;cursor:pointer;}
+.qr-pop-label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9a7d65;margin-bottom:.9rem;}
+.qr-pop-figure{width:min(100%,240px);margin:0 auto;padding:12px;border-radius:20px;background:#fff;border:1px solid rgba(45,31,15,.08);box-shadow:0 14px 36px rgba(45,31,15,.1);}
+.qr-pop-img{display:block;width:100%;height:auto;border-radius:12px;-webkit-touch-callout:default;}
+.qr-pop-hint{margin-top:1rem;font-size:13px;line-height:1.6;color:#8a7467;}
+
+/* 我的订单：两栏布局 + 历史订单单独 view（5.12） */
+#profileOverlay .portal-panel{width:min(100%,560px);}
+/* 我的订单：上下结构（垂直堆叠） */
+.profile-stack{display:flex;flex-direction:column;gap:1rem;}
+.profile-history-entry{display:flex;align-items:center;justify-content:space-between;gap:.6rem;width:100%;padding:.8rem 1rem;border-radius:16px;border:1px solid rgba(124,101,97,.16);background:rgba(255,255,255,.7);color:#5f4c3d;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+.profile-history-entry:hover{background:rgba(124,101,97,.08);}
+.profile-history-arrow{font-size:18px;color:#9a7d65;line-height:1;}
+.profile-stack .portal-divider{margin:.2rem 0;}
+.profile-main-title{font-size:1.15rem;font-weight:800;color:#2d1f0f;}
+.profile-history-head{display:flex;align-items:center;gap:.9rem;}
+.profile-history-title{font-size:1.3rem;font-weight:800;color:#2d1f0f;}
+.my-orders-list{display:flex;flex-direction:column;gap:.8rem;}
+
+/* 学习图1的订单卡 */
+.my-order-card--rich{padding:1rem 1.1rem;background:rgba(124,101,97,.05);margin-bottom:0;}
+.my-order-card--rich .my-order-top{align-items:flex-start;}
+.my-order-date{display:flex;flex-direction:column;gap:.15rem;}
+.my-order-date-label{font-size:11px;letter-spacing:.06em;color:#9a7d65;}
+.my-order-date-value{font-size:1.15rem;font-weight:800;color:#2d1f0f;line-height:1.1;}
+.my-order-badges{display:flex;align-items:center;gap:.4rem;flex:0 0 auto;}
+.my-order-num-badge{padding:.25rem .6rem;border-radius:999px;font-size:11px;font-weight:800;background:rgba(124,101,97,.14);color:#5f4c3d;}
+.my-order-who{margin-top:.7rem;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;}
+.my-order-who-name{font-size:15px;font-weight:800;color:#2d1f0f;}
+.my-order-who-id{font-size:12px;color:#9a7d65;letter-spacing:.03em;}
+.my-order-lines{margin-top:.7rem;display:flex;flex-direction:column;gap:.35rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
+.my-order-line{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
+.my-order-line-name{min-width:0;}
+.my-order-line-price{flex:0 0 auto;font-weight:700;color:#2d1f0f;}
+.my-order-pickup{margin-top:.7rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
+.my-order-pickup-name{font-size:14px;font-weight:800;color:#3f342c;}
+.my-order-pickup-line{font-size:12px;color:#8a7467;line-height:1.5;margin-top:.1rem;}
+.my-order-card--rich .my-order-foot{margin-top:.8rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
+.my-order-card--rich .my-order-total{font-size:1.15rem;}
+
+/* 取消订单 */
+.my-order-cancel-row{margin-top:.8rem;display:flex;justify-content:flex-end;}
+.my-order-cancel-btn{padding:.5rem 1rem;border-radius:999px;border:1px solid rgba(124,63,53,.28);background:transparent;color:#9a4737;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+.my-order-cancel-btn:hover{background:rgba(124,63,53,.08);}
+.my-order-cancel-confirm{margin-top:.8rem;padding:.8rem .9rem;border-radius:14px;background:rgba(154,71,55,.08);border:1px solid rgba(154,71,55,.2);}
+.my-order-cancel-warn{font-size:13px;line-height:1.5;color:#7c3f35;}
+.my-order-cancel-actions{margin-top:.7rem;display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap;}
+.my-order-cancel-yes{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.55rem 1.1rem;border-radius:999px;border:none;background:#9a4737;color:#fffaf6;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.my-order-cancel-yes[disabled]{opacity:.6;cursor:default;}
+
+@media (max-width:640px){
+  .my-order-who{gap:.4rem;}
+}
+
 .empty.compact{padding:1rem;border-radius:16px;background:rgba(124,101,97,.05);color:#8a7467;font-size:14px;text-align:center;}
 .pickup-current{
   display:flex;
@@ -1793,6 +1952,9 @@ body[data-lang="en"] .ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::
 }
 
 /* 法律条款页（隐私政策 / 电商条款）——中英切换跟随 body[data-lang] */
+/* 法律页直接显示，不做渐入：长页面上 reveal 容易卡住，导致条款像“丢失”。 */
+body[data-page="privacy"] .reveal,
+body[data-page="terms"] .reveal{opacity:1;transform:none;filter:none;transition:none;}
 .legal-en{display:none;}
 body[data-lang="en"] .legal-zh{display:none;}
 body[data-lang="en"] .legal-en{display:block;}

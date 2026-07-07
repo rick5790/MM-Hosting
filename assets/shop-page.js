@@ -91,6 +91,18 @@
       thisWeekOrders: '本周订单',
       historyOrders: '历史订单',
       noOrders: '还没有订单',
+      noThisWeekOrders: '本周还没有订单',
+      historyEmpty: '还没有历史订单',
+      viewHistory: '查看历史订单',
+      backToOrders: '返回',
+      orderDateLabel: '下单日期',
+      idLabel: 'ID',
+      cancelOrder: '取消订单',
+      cancelWarn: '取消后会释放该订单占用的库存，确定要取消吗？',
+      cancelConfirmYes: '确认取消',
+      cancelKeep: '暂不取消',
+      cancelSuccess: '订单已取消，库存已释放。',
+      cancelFailed: '取消失败，请稍后再试。',
       ordersLoading: '正在读取订单...',
       ordersFailed: '订单读取失败，请稍后再试。',
       editNickname: '修改昵称',
@@ -176,6 +188,18 @@
       thisWeekOrders: 'This Week',
       historyOrders: 'Order History',
       noOrders: 'No orders yet',
+      noThisWeekOrders: 'No orders this week yet',
+      historyEmpty: 'No past orders yet',
+      viewHistory: 'View Order History',
+      backToOrders: 'Back',
+      orderDateLabel: 'Ordered',
+      idLabel: 'ID',
+      cancelOrder: 'Cancel Order',
+      cancelWarn: 'Cancelling will release the stock reserved for this order. Are you sure?',
+      cancelConfirmYes: 'Yes, cancel',
+      cancelKeep: 'Keep order',
+      cancelSuccess: 'Order cancelled. The stock has been released.',
+      cancelFailed: 'Failed to cancel. Please try again later.',
       ordersLoading: 'Loading orders...',
       ordersFailed: 'Failed to load orders. Please try again later.',
       editNickname: 'Edit Nickname',
@@ -215,6 +239,9 @@
     loading: true,
     pendingSubmit: false,
     profileEditMode: false,
+    profileView: 'main',
+    cancelPromptId: null,
+    cancelBusyId: null,
     myOrders: null,
     myOrdersLoading: false,
     myOrdersError: ''
@@ -368,6 +395,22 @@
       .replace(/Irvine/gi, '尔湾');
   }
 
+  // 英文模式下把后台存的中文星期翻成英文（如“周六 12:30 - 13:00” → “Saturday 12:30 - 13:00”）。
+  const PICKUP_WEEKDAY_EN = {
+    '星期一': 'Monday', '星期二': 'Tuesday', '星期三': 'Wednesday', '星期四': 'Thursday',
+    '星期五': 'Friday', '星期六': 'Saturday', '星期日': 'Sunday', '星期天': 'Sunday',
+    '周一': 'Monday', '周二': 'Tuesday', '周三': 'Wednesday', '周四': 'Thursday',
+    '周五': 'Friday', '周六': 'Saturday', '周日': 'Sunday', '周天': 'Sunday'
+  };
+  function localizePickupTime(value) {
+    let text = String(value || '');
+    if (getLang() !== 'en') return text;
+    Object.keys(PICKUP_WEEKDAY_EN).forEach((zh) => {
+      if (text.indexOf(zh) !== -1) text = text.split(zh).join(PICKUP_WEEKDAY_EN[zh]);
+    });
+    return text;
+  }
+
   function getPickupLabel(pickup) {
     if (!pickup) return '';
     return localizePickupText(pickup.label);
@@ -477,7 +520,7 @@
 
   function getPickupTimeText(pickup) {
     if (!pickup) return '';
-    const raw = cleanPickupText(localizePickupText(String(pickup.time || pickup.pickup_time || '')));
+    const raw = cleanPickupText(localizePickupTime(localizePickupText(String(pickup.time || pickup.pickup_time || ''))));
     if (raw) return raw;
     const haystack = [pickup.label, pickup.address, pickup.note, pickup.zipcode, pickup.id].filter(Boolean).join(' ').toLowerCase();
     if (/irvine|orange county|\boc\b|尔湾/.test(haystack)) {
@@ -730,6 +773,10 @@
 
   function renderProfileOverlay() {
     const nickname = getSavedNickname();
+    // 每次打开都从主界面开始，清掉未完成的取消确认。
+    state.profileView = 'main';
+    state.cancelPromptId = null;
+    state.cancelBusyId = null;
     // 已登录（有昵称）且不在改昵称模式：显示“我的订单”；否则显示登录/昵称表单。
     if (nickname && !state.profileEditMode) {
       renderProfileLoggedIn();
@@ -765,17 +812,38 @@
   function renderProfileLoggedIn() {
     const c = copy();
     const nickname = getSavedNickname();
-    profileOverlayBody.innerHTML = `
-      <div class="profile-head">
-        <div>
-          <div class="profile-head-label">${escapeHtml(c.loggedInAs)}</div>
-          <div class="profile-head-name">${escapeHtml(nickname)}</div>
+
+    // 历史订单单独 view：从主界面点「查看历史订单」进入，可返回。
+    if (state.profileView === 'history') {
+      profileOverlayBody.innerHTML = `
+        <div class="profile-history-head">
+          <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-view="main">‹ ${escapeHtml(c.backToOrders)}</button>
+          <div class="profile-history-title">${escapeHtml(c.historyOrders)}</div>
         </div>
-        <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
+        <div class="portal-divider"></div>
+        <div id="myOrdersSection">${renderMyOrdersSection()}</div>
+      `;
+      return;
+    }
+
+    // 上下结构：昵称 → 查看历史订单 → 本周订单列表（从上到下堆叠）。
+    profileOverlayBody.innerHTML = `
+      <div class="profile-stack">
+        <div class="profile-head">
+          <div>
+            <div class="profile-head-label">${escapeHtml(c.loggedInAs)}</div>
+            <div class="profile-head-name">${escapeHtml(nickname)}</div>
+          </div>
+          <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
+        </div>
+        <button class="profile-history-entry" type="button" data-profile-view="history">
+          <span>${escapeHtml(c.viewHistory)}</span>
+          <span class="profile-history-arrow">›</span>
+        </button>
+        <div class="portal-divider"></div>
+        <div class="profile-main-title">${escapeHtml(c.myOrders)} · ${escapeHtml(c.thisWeekOrders)}</div>
+        <div id="myOrdersSection">${renderMyOrdersSection()}</div>
       </div>
-      <div class="portal-divider"></div>
-      <div class="portal-title" style="text-align:left;font-size:1.3rem;">${escapeHtml(c.myOrders)}</div>
-      <div id="myOrdersSection">${renderMyOrdersSection()}</div>
     `;
   }
 
@@ -786,51 +854,120 @@
     return { status, label };
   }
 
+  function formatOrderDate(value) {
+    if (!value) return '';
+    const date = new Date(String(value).replace(' ', 'T'));
+    if (Number.isNaN(date.getTime())) return String(value);
+    return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+  }
+
+  // 学习图1（小程序订单卡）：下单日期、单号/状态、昵称+ID、逐项金额、自提点、合计。
+  function renderOrderCard(order, allowCancel) {
+    const c = copy();
+    const info = getOrderStatusInfo(order);
+    const paid = String(order.payment_status || order.paymentStatus || 'non_paid') === 'paid';
+    const num = order.groupOrderNumberText || (order.orderNumber ? `${order.orderNumber}` : `${order.id}`);
+    const dateText = formatOrderDate(order.created_at || order.createdAt);
+    const nickname = order.userNickname || order.customer_name || getSavedNickname();
+    const idText = order.userUuid || '';
+    const pickup = order.pickup || {};
+    const totalText = (order.total && order.total.text) || formatMoney(order.total_amount || 0);
+    const cancellable = allowCancel && String(order.status || '') === 'pending';
+    const prompting = cancellable && Number(state.cancelPromptId) === Number(order.id);
+    const busy = Number(state.cancelBusyId) === Number(order.id);
+
+    const itemsHtml = (order.items || []).map((it) => `
+      <div class="my-order-line">
+        <span class="my-order-line-name">${escapeHtml(it.title || '')} × ${escapeHtml(it.quantity || 0)}</span>
+        <span class="my-order-line-price">${escapeHtml(it.subtotalText || formatMoney(it.subtotal || 0))}</span>
+      </div>`).join('');
+
+    const pickupHtml = (pickup.name || pickup.time || pickup.address) ? `
+      <div class="my-order-pickup">
+        ${pickup.name ? `<div class="my-order-pickup-name">${escapeHtml(pickup.name)}</div>` : ''}
+        ${pickup.time ? `<div class="my-order-pickup-line">${escapeHtml(localizePickupTime(pickup.time))}</div>` : ''}
+        ${pickup.address ? `<div class="my-order-pickup-line">${escapeHtml(pickup.address)}</div>` : ''}
+      </div>` : '';
+
+    const cancelHtml = !cancellable ? '' : (prompting ? `
+      <div class="my-order-cancel-confirm">
+        <div class="my-order-cancel-warn">${escapeHtml(c.cancelWarn)}</div>
+        <div class="my-order-cancel-actions">
+          <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-order-cancel-dismiss>${escapeHtml(c.cancelKeep)}</button>
+          <button class="my-order-cancel-yes" type="button" data-order-cancel-confirm="${escapeHtml(order.id)}" ${busy ? 'disabled' : ''}>${escapeHtml(busy ? c.ordersLoading : c.cancelConfirmYes)}</button>
+        </div>
+      </div>` : `
+      <div class="my-order-cancel-row">
+        <button class="my-order-cancel-btn" type="button" data-order-cancel="${escapeHtml(order.id)}">${escapeHtml(c.cancelOrder)}</button>
+      </div>`);
+
+    return `
+      <div class="my-order-card my-order-card--rich">
+        <div class="my-order-top">
+          <div class="my-order-date">
+            <span class="my-order-date-label">${escapeHtml(c.orderDateLabel)}</span>
+            <strong class="my-order-date-value">${escapeHtml(dateText)}</strong>
+          </div>
+          <div class="my-order-badges">
+            <span class="my-order-num-badge">${escapeHtml(num)}</span>
+            <span class="my-order-status my-order-status--${escapeHtml(info.status)}">${escapeHtml(info.label)}</span>
+          </div>
+        </div>
+        <div class="my-order-who">
+          <span class="my-order-who-name">${escapeHtml(nickname)}</span>
+          ${idText ? `<span class="my-order-who-id">${escapeHtml(c.idLabel)} ${escapeHtml(idText)}</span>` : ''}
+        </div>
+        <div class="my-order-lines">${itemsHtml}</div>
+        ${pickupHtml}
+        <div class="my-order-foot">
+          <span class="my-order-pay ${paid ? 'is-paid' : ''}">${escapeHtml(paid ? c.paymentPaid : c.paymentUnpaid)}</span>
+          <span class="my-order-total">${escapeHtml(totalText)}</span>
+        </div>
+        ${cancelHtml}
+      </div>
+    `;
+  }
+
   function renderMyOrdersSection() {
     const c = copy();
     if (state.myOrdersLoading) return `<div class="empty compact">${escapeHtml(c.ordersLoading)}</div>`;
     if (state.myOrdersError) return `<div class="empty compact">${escapeHtml(state.myOrdersError)}</div>`;
     const orders = Array.isArray(state.myOrders) ? state.myOrders : [];
-    if (!orders.length) return `<div class="empty compact">${escapeHtml(c.noOrders)}</div>`;
 
     const activeGroup = String((state.weeklyOrder && (state.weeklyOrder.active_group_id || state.weeklyOrder.group_no)) || '');
     const isThisWeek = (order) => activeGroup && String(order.group_id || order.groupId || '') === activeGroup;
+
+    if (state.profileView === 'history') {
+      const history = orders.filter((order) => !isThisWeek(order));
+      if (!history.length) return `<div class="empty compact">${escapeHtml(c.historyEmpty)}</div>`;
+      return `<div class="my-orders-list">${history.map((order) => renderOrderCard(order, false)).join('')}</div>`;
+    }
+
     const live = orders.filter(isThisWeek);
-    const history = orders.filter((order) => !isThisWeek(order));
+    if (!live.length) return `<div class="empty compact">${escapeHtml(c.noThisWeekOrders)}</div>`;
+    return `<div class="my-orders-list">${live.map((order) => renderOrderCard(order, true)).join('')}</div>`;
+  }
 
-    const card = (order) => {
-      const info = getOrderStatusInfo(order);
-      const paid = String(order.payment_status || order.paymentStatus || 'non_paid') === 'paid';
-      const num = order.groupOrderNumberText || order.orderNumber || order.id;
-      const itemsText = (order.items || []).map((it) => `${it.title} × ${it.quantity}`).join('、');
-      const totalText = (order.total && order.total.text) || formatMoney(order.total_amount || 0);
-      return `
-        <div class="my-order-card">
-          <div class="my-order-top">
-            <span class="my-order-num">${escapeHtml(c.orderNumberLabel)} ${escapeHtml(num)}</span>
-            <span class="my-order-status my-order-status--${escapeHtml(info.status)}">${escapeHtml(info.label)}</span>
-          </div>
-          <div class="my-order-items">${escapeHtml(itemsText)}</div>
-          <div class="my-order-foot">
-            <span class="my-order-pay ${paid ? 'is-paid' : ''}">${escapeHtml(paid ? c.paymentPaid : c.paymentUnpaid)}</span>
-            <span class="my-order-total">${escapeHtml(totalText)}</span>
-          </div>
-        </div>
-      `;
-    };
+  function refreshMyOrdersSection() {
+    const el = document.getElementById('myOrdersSection');
+    if (el) el.innerHTML = renderMyOrdersSection();
+  }
 
-    return `
-      ${live.length ? `
-        <div class="my-orders-group">
-          <div class="my-orders-group-title">${escapeHtml(c.thisWeekOrders)}</div>
-          ${live.map(card).join('')}
-        </div>` : ''}
-      ${history.length ? `
-        <div class="my-orders-group">
-          <div class="my-orders-group-title">${escapeHtml(c.historyOrders)}</div>
-          ${history.map(card).join('')}
-        </div>` : ''}
-    `;
+  async function cancelMyOrder(orderId) {
+    const c = copy();
+    state.cancelBusyId = Number(orderId);
+    refreshMyOrdersSection();
+    try {
+      await siteApiRequest(`/api/orders/${orderId}/cancel`, { method: 'PATCH' });
+      state.cancelPromptId = null;
+      state.cancelBusyId = null;
+      await loadMyOrders();
+    } catch (error) {
+      state.cancelBusyId = null;
+      state.cancelPromptId = null;
+      refreshMyOrdersSection();
+      alert(error.message || c.cancelFailed);
+    }
   }
 
   async function loadMyOrders() {
@@ -1070,7 +1207,8 @@
     state.cartQuantities = {};
     state.note = '';
     closeOverlay(orderConfirmOverlay, orderConfirmBody);
-    renderShop();
+    // 重新拉取产品，让库存立即反映刚下的这单（否则显示的是下单前的旧库存）。
+    await loadShopData();
     renderOrderSuccessOverlay();
   }
 
@@ -1246,9 +1384,14 @@
     const successClose = event.target.closest('[data-order-success-close]');
     const successOrders = event.target.closest('[data-order-success-orders]');
     const adminClose = event.target.closest('[data-admin-close]');
+    const profileView = event.target.closest('[data-profile-view]');
+    const orderCancel = event.target.closest('[data-order-cancel]');
+    const orderCancelConfirm = event.target.closest('[data-order-cancel-confirm]');
+    const orderCancelDismiss = event.target.closest('[data-order-cancel-dismiss]');
 
     if (profileClose) {
       state.profileEditMode = false;
+      state.profileView = 'main';
       closeOverlay(profileOverlay, profileOverlayBody);
     }
     if (pickupClose) closeOverlay(pickupOverlay, pickupOverlayBody);
@@ -1277,6 +1420,22 @@
       } else {
         await saveProfileFromOverlay().catch((error) => alert(error.message));
       }
+    }
+    if (profileView) {
+      state.profileView = profileView.dataset.profileView === 'history' ? 'history' : 'main';
+      state.cancelPromptId = null;
+      renderProfileLoggedIn();
+    }
+    if (orderCancelDismiss) {
+      state.cancelPromptId = null;
+      refreshMyOrdersSection();
+    }
+    if (orderCancel) {
+      state.cancelPromptId = Number(orderCancel.dataset.orderCancel);
+      refreshMyOrdersSection();
+    }
+    if (orderCancelConfirm) {
+      await cancelMyOrder(Number(orderCancelConfirm.dataset.orderCancelConfirm));
     }
     if (pickupAction) {
       if (pickupAction.dataset.pickupAction === 'select') {
