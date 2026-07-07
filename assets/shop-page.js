@@ -826,25 +826,23 @@
       return;
     }
 
+    // 上下结构：昵称 → 查看历史订单 → 本周订单列表（从上到下堆叠）。
     profileOverlayBody.innerHTML = `
-      <div class="profile-layout">
-        <aside class="profile-side">
-          <div class="profile-head">
-            <div>
-              <div class="profile-head-label">${escapeHtml(c.loggedInAs)}</div>
-              <div class="profile-head-name">${escapeHtml(nickname)}</div>
-            </div>
-            <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
+      <div class="profile-stack">
+        <div class="profile-head">
+          <div>
+            <div class="profile-head-label">${escapeHtml(c.loggedInAs)}</div>
+            <div class="profile-head-name">${escapeHtml(nickname)}</div>
           </div>
-          <button class="profile-history-entry" type="button" data-profile-view="history">
-            <span>${escapeHtml(c.viewHistory)}</span>
-            <span class="profile-history-arrow">›</span>
-          </button>
-        </aside>
-        <section class="profile-main">
-          <div class="profile-main-title">${escapeHtml(c.myOrders)} · ${escapeHtml(c.thisWeekOrders)}</div>
-          <div id="myOrdersSection">${renderMyOrdersSection()}</div>
-        </section>
+          <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
+        </div>
+        <button class="profile-history-entry" type="button" data-profile-view="history">
+          <span>${escapeHtml(c.viewHistory)}</span>
+          <span class="profile-history-arrow">›</span>
+        </button>
+        <div class="portal-divider"></div>
+        <div class="profile-main-title">${escapeHtml(c.myOrders)} · ${escapeHtml(c.thisWeekOrders)}</div>
+        <div id="myOrdersSection">${renderMyOrdersSection()}</div>
       </div>
     `;
   }
@@ -1209,7 +1207,8 @@
     state.cartQuantities = {};
     state.note = '';
     closeOverlay(orderConfirmOverlay, orderConfirmBody);
-    renderShop();
+    // 重新拉取产品，让库存立即反映刚下的这单（否则显示的是下单前的旧库存）。
+    await loadShopData();
     renderOrderSuccessOverlay();
   }
 

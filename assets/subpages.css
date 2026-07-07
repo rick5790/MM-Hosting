@@ -1484,14 +1484,14 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .qr-pop-hint{margin-top:1rem;font-size:13px;line-height:1.6;color:#8a7467;}
 
 /* 我的订单：两栏布局 + 历史订单单独 view（5.12） */
-#profileOverlay .portal-panel{width:min(100%,880px);}
-.profile-layout{display:grid;grid-template-columns:minmax(190px,236px) 1fr;gap:1.4rem;align-items:start;}
-.profile-side{display:flex;flex-direction:column;gap:1rem;}
+#profileOverlay .portal-panel{width:min(100%,560px);}
+/* 我的订单：上下结构（垂直堆叠） */
+.profile-stack{display:flex;flex-direction:column;gap:1rem;}
 .profile-history-entry{display:flex;align-items:center;justify-content:space-between;gap:.6rem;width:100%;padding:.8rem 1rem;border-radius:16px;border:1px solid rgba(124,101,97,.16);background:rgba(255,255,255,.7);color:#5f4c3d;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
 .profile-history-entry:hover{background:rgba(124,101,97,.08);}
 .profile-history-arrow{font-size:18px;color:#9a7d65;line-height:1;}
-.profile-main{min-width:0;}
-.profile-main-title{font-size:1.15rem;font-weight:800;color:#2d1f0f;margin-bottom:.9rem;}
+.profile-stack .portal-divider{margin:.2rem 0;}
+.profile-main-title{font-size:1.15rem;font-weight:800;color:#2d1f0f;}
 .profile-history-head{display:flex;align-items:center;gap:.9rem;}
 .profile-history-title{font-size:1.3rem;font-weight:800;color:#2d1f0f;}
 .my-orders-list{display:flex;flex-direction:column;gap:.8rem;}
@@ -1528,7 +1528,6 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .my-order-cancel-yes[disabled]{opacity:.6;cursor:default;}
 
 @media (max-width:640px){
-  .profile-layout{grid-template-columns:1fr;gap:1rem;}
   .my-order-who{gap:.4rem;}
 }
 
