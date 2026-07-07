@@ -817,7 +817,7 @@
     if (state.profileView === 'history') {
       profileOverlayBody.innerHTML = `
         <div class="profile-history-head">
-          <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-view="main">‹ ${escapeHtml(c.backToOrders)}</button>
+          <button class="profile-history-back" type="button" data-profile-view="main" aria-label="${escapeHtml(c.backToOrders)}">‹</button>
           <div class="profile-history-title">${escapeHtml(c.historyOrders)}</div>
         </div>
         <div class="portal-divider"></div>
@@ -841,7 +841,7 @@
           <span class="profile-history-arrow">›</span>
         </button>
         <div class="portal-divider"></div>
-        <div class="profile-main-title">${escapeHtml(c.myOrders)} · ${escapeHtml(c.thisWeekOrders)}</div>
+        <div class="profile-main-title">${escapeHtml(c.thisWeekOrders)}</div>
         <div id="myOrdersSection">${renderMyOrdersSection()}</div>
       </div>
     `;
@@ -869,7 +869,6 @@
     const num = order.groupOrderNumberText || (order.orderNumber ? `${order.orderNumber}` : `${order.id}`);
     const dateText = formatOrderDate(order.created_at || order.createdAt);
     const nickname = order.userNickname || order.customer_name || getSavedNickname();
-    const idText = order.userUuid || '';
     const pickup = order.pickup || {};
     const totalText = (order.total && order.total.text) || formatMoney(order.total_amount || 0);
     const cancellable = allowCancel && String(order.status || '') === 'pending';
@@ -913,10 +912,9 @@
             <span class="my-order-status my-order-status--${escapeHtml(info.status)}">${escapeHtml(info.label)}</span>
           </div>
         </div>
-        <div class="my-order-who">
-          <span class="my-order-who-name">${escapeHtml(nickname)}</span>
-          ${idText ? `<span class="my-order-who-id">${escapeHtml(c.idLabel)} ${escapeHtml(idText)}</span>` : ''}
-        </div>
+      <div class="my-order-who">
+        <span class="my-order-who-name">${escapeHtml(nickname)}</span>
+      </div>
         <div class="my-order-lines">${itemsHtml}</div>
         ${pickupHtml}
         <div class="my-order-foot">

@@ -468,6 +468,12 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .portal-panel{position:relative;width:min(100%,740px);max-height:min(88vh,940px);overflow:auto;border-radius:28px;background:#fffaf6;color:var(--text);box-shadow:0 28px 90px rgba(0,0,0,.28);padding:1.2rem 1.2rem 1.4rem;}
 .groupbuy-overlay .portal-overlay-backdrop{background:rgba(20,10,4,.5);backdrop-filter:none;}
 .groupbuy-overlay .portal-panel{width:min(100%,380px);padding:1.5rem 1.4rem 1.6rem;}
+.groupbuy-overlay .portal-title{color:#5c3820;}
+.groupbuy-overlay .portal-sub:empty{display:none;}
+.groupbuy-overlay .portal-actions{justify-content:center;}
+.groupbuy-overlay .shop-secondary-button,
+.groupbuy-overlay .shop-submit-button{width:auto;min-width:7.5rem;color:#7c6561;}
+.groupbuy-overlay .shop-submit-button{color:#fffaf6;}
 .portal-close{position:sticky;top:0;margin-left:auto;display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;border:1px solid rgba(45,31,15,.1);background:rgba(255,255,255,.92);font-size:18px;color:var(--text);cursor:pointer;z-index:2;}
 /* 我的订单弹窗（与 shop-page.js / subpages.css 一致：上下结构 + 富订单卡 + 取消 + 历史 view） */
 #profileOverlay .portal-panel{width:min(100%,560px);max-height:min(88vh,940px);overflow:auto;}
@@ -480,8 +486,10 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .profile-history-entry{display:flex;align-items:center;justify-content:space-between;gap:.6rem;width:100%;padding:.8rem 1rem;border-radius:16px;border:1px solid rgba(124,101,97,.16);background:rgba(255,255,255,.7);color:#5f4c3d;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
 .profile-history-entry:hover{background:rgba(124,101,97,.08);}
 .profile-history-arrow{font-size:18px;color:#9a7d65;line-height:1;}
-.profile-main-title{font-size:1.15rem;font-weight:800;color:#2d1f0f;}
-.profile-history-head{display:flex;align-items:center;gap:.9rem;}
+.profile-main-title{font-size:1.15rem;font-weight:800;color:#2d1f0f;text-align:center;}
+.profile-history-head{position:relative;display:flex;align-items:center;justify-content:center;gap:.9rem;min-height:44px;}
+.profile-history-back{position:absolute;left:0;top:0;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;border:1px solid rgba(124,101,97,.14);background:rgba(255,255,255,.76);color:#7c6561;font-family:inherit;font-size:24px;font-weight:800;line-height:1;cursor:pointer;}
+.profile-history-back:hover{background:rgba(124,101,97,.08);}
 .profile-history-title{font-size:1.3rem;font-weight:800;color:#2d1f0f;}
 .my-orders-list{display:flex;flex-direction:column;gap:.8rem;}
 .my-order-card{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);}
@@ -501,7 +509,7 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .my-order-num-badge{padding:.25rem .6rem;border-radius:999px;font-size:11px;font-weight:800;background:rgba(124,101,97,.14);color:#5f4c3d;}
 .my-order-who{margin-top:.7rem;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;}
 .my-order-who-name{font-size:15px;font-weight:800;color:#2d1f0f;}
-.my-order-who-id{font-size:12px;color:#9a7d65;letter-spacing:.03em;}
+.my-order-who-id{display:none;}
 .my-order-lines{margin-top:.7rem;display:flex;flex-direction:column;gap:.35rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
 .my-order-line{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
 .my-order-line-name{min-width:0;}
@@ -528,6 +536,8 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .portal-field{display:flex;flex-direction:column;gap:.45rem;}
 .portal-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;}
 .portal-input,.portal-textarea{width:100%;padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.14);background:#fff;color:#2d1f0f;font:inherit;}
+.portal-field--center{align-items:center;text-align:center;}
+.portal-field--center .portal-input{text-align:center;}
 .portal-textarea{min-height:120px;resize:vertical;}
 .portal-note{font-size:12px;color:#8d786b;line-height:1.65;}
 .portal-actions{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:flex-end;margin-top:.2rem;}
@@ -816,6 +826,16 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .shop-entry-countdown-row{gap:.35rem;}
   .portal-overlay{padding:12px;}
   .portal-panel{padding:1rem 1rem 1.2rem;border-radius:22px;}
+  #profileOverlay .portal-panel{width:min(100%,420px);}
+  .profile-head{display:grid;grid-template-columns:1fr;justify-items:center;text-align:center;gap:.7rem;padding:.2rem 0 .2rem;}
+  .profile-head-name{font-size:1.12rem;line-height:1.18;overflow-wrap:anywhere;}
+  .profile-head .shop-secondary-button{width:auto;min-width:150px;min-height:40px;padding:.52rem 1rem;font-size:12px;}
+  .profile-main-title{text-align:center;font-size:1.08rem;}
+  .profile-history-head{margin-top:.1rem;}
+  .profile-history-title{font-size:1.35rem;text-align:center;line-height:1.12;}
+  .groupbuy-overlay .portal-actions{flex-direction:row;align-items:center;justify-content:center;}
+  .groupbuy-overlay .shop-secondary-button,
+  .groupbuy-overlay .shop-submit-button{width:auto;min-width:7.2rem;}
   .menu-set{padding:3rem 1.2rem;}
   .menu-shell{padding:1.4rem;}
   .menu-overlay{padding:14px;}
@@ -1077,7 +1097,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <source src="assets/video/makkie-waving-clean.webm?v=20260403-143509" type="video/webm">
   </video>
   <img class="hero-wordmark-art" src="assets/images/brand/Makkie_Mua_Text_Original.png" alt="Makkie Mua">
-  <div class="hero-eyebrow">Makkie Mua · 独家创意甜品</div>
+  <div class="hero-eyebrow">独家创意甜品</div>
   <p class="hero-sub">每一层都是手作的温度<br>Los Angeles &amp; Orange County</p>
   <div class="hero-links">
     <a href="index.html" class="btn-chip">主页</a>
@@ -1609,7 +1629,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   <div class="portal-panel" role="dialog" aria-modal="true" aria-labelledby="groupBuyOverlayTitle">
     <button class="portal-close" type="button" aria-label="关闭" data-groupbuy-close>×</button>
     <div class="portal-title" id="groupBuyOverlayTitle">本周团购正在进行中</div>
-    <div class="portal-sub" id="groupBuyOverlaySub">最新甜品已开放预定，截单前都可以下单。</div>
+    <div class="portal-sub" id="groupBuyOverlaySub"></div>
     <div class="portal-actions" style="margin-top:1rem;">
       <button class="shop-secondary-button" type="button" data-groupbuy-close id="groupBuyOverlayLater">先逛逛</button>
       <button class="shop-submit-button" type="button" data-order-entry id="groupBuyOverlayGo">去下单</button>
@@ -2435,7 +2455,7 @@ function renderProfileLoginForm() {
     <div class="portal-sub">${escapeHtml(copy.profileSub)}</div>
     <div class="portal-google-block" id="googleSignInButton"></div>
     <div class="portal-form">
-      <label class="portal-field">
+      <label class="portal-field portal-field--center">
         <span class="portal-label">${escapeHtml(copy.nickname)}</span>
         <input id="profileNicknameInput" class="portal-input" type="text" value="${escapeHtml(nickname)}" placeholder="${escapeHtml(copy.nicknamePlaceholder)}">
       </label>
@@ -2455,7 +2475,7 @@ function renderProfileLoggedIn() {
   if (siteState.profileView === 'history') {
     profileOverlayBody.innerHTML = `
       <div class="profile-history-head">
-        <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-view="main">‹ ${escapeHtml(c.backToOrders)}</button>
+        <button class="profile-history-back" type="button" data-profile-view="main" aria-label="${escapeHtml(c.backToOrders)}">‹</button>
         <div class="profile-history-title">${escapeHtml(c.historyOrders)}</div>
       </div>
       <div class="portal-divider"></div>
@@ -2478,7 +2498,7 @@ function renderProfileLoggedIn() {
         <span class="profile-history-arrow">›</span>
       </button>
       <div class="portal-divider"></div>
-      <div class="profile-main-title">${escapeHtml(c.myOrders)} · ${escapeHtml(c.thisWeekOrders)}</div>
+      <div class="profile-main-title">${escapeHtml(c.thisWeekOrders)}</div>
       <div id="myOrdersSection">${renderMyOrdersSection()}</div>
     </div>
   `;
@@ -2520,7 +2540,6 @@ function renderOrderCard(order, allowCancel) {
   const num = order.groupOrderNumberText || (order.orderNumber ? `${order.orderNumber}` : `${order.id}`);
   const dateText = formatOrderDate(order.created_at || order.createdAt);
   const nickname = order.userNickname || order.customer_name || getSavedNickname();
-  const idText = order.userUuid || '';
   const pickup = order.pickup || {};
   const totalText = (order.total && order.total.text) || formatMoney(order.total_amount || 0);
   const cancellable = allowCancel && String(order.status || '') === 'pending';
@@ -2566,7 +2585,6 @@ function renderOrderCard(order, allowCancel) {
       </div>
       <div class="my-order-who">
         <span class="my-order-who-name">${escapeHtml(nickname)}</span>
-        ${idText ? `<span class="my-order-who-id">${escapeHtml(c.idLabel)} ${escapeHtml(idText)}</span>` : ''}
       </div>
       <div class="my-order-lines">${itemsHtml}</div>
       ${pickupHtml}
@@ -2942,9 +2960,7 @@ function maybeShowGroupBuyPopup() {
   const later = document.getElementById('groupBuyOverlayLater');
   const go = document.getElementById('groupBuyOverlayGo');
   if (title) title.textContent = lang === 'en' ? 'Weekly group order is live' : '本周团购正在进行中';
-  if (sub) sub.textContent = lang === 'en'
-    ? 'This week\'s desserts are open for preorder — order any time before the deadline.'
-    : '最新甜品已开放预定，截单前都可以下单。';
+  if (sub) sub.textContent = '';
   if (later) later.textContent = lang === 'en' ? 'Maybe later' : '先逛逛';
   if (go) go.textContent = lang === 'en' ? 'Order now' : '去下单';
   openOverlay(overlay);
@@ -3619,7 +3635,7 @@ const bilingualCopy = {
     },
     hero: {
       videoAria: 'Makkie Mua 挥手 logo',
-      eyebrow: 'Makkie Mua · 独家创意甜品',
+      eyebrow: '独家创意甜品',
       sub: '每一层都是手作的温度<br>Los Angeles &amp; Orange County',
       links: ['主页', 'Makkie 图鉴', '层层夹心', '甜品动态', '联系我们']
     },
@@ -3758,7 +3774,7 @@ const bilingualCopy = {
     },
     hero: {
       videoAria: 'Makkie Mua waving logo',
-      eyebrow: 'Makkie Mua · Signature Creative Desserts',
+      eyebrow: 'Signature Creative Desserts',
       sub: 'Handmade warmth in every layer<br>Los Angeles &amp; Orange County',
       links: ['Home', 'Collection', 'Explore the Layers', 'Recent Post', 'Contact']
     },
