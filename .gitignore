@@ -18,3 +18,9 @@ __pycache__/
 
 # OS/editor noise.
 .DS_Store
+
+# Node deps (never commit)
+node_modules/
+
+# Backend lives in its own repo (Makkie-Backend), not here.
+lightsail-backend/
