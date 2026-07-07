@@ -1491,8 +1491,10 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .profile-history-entry:hover{background:rgba(124,101,97,.08);}
 .profile-history-arrow{font-size:18px;color:#9a7d65;line-height:1;}
 .profile-stack .portal-divider{margin:.2rem 0;}
-.profile-main-title{font-size:1.15rem;font-weight:800;color:#2d1f0f;}
-.profile-history-head{display:flex;align-items:center;gap:.9rem;}
+.profile-main-title{font-size:1.15rem;font-weight:800;color:#2d1f0f;text-align:center;}
+.profile-history-head{position:relative;display:flex;align-items:center;justify-content:center;gap:.9rem;min-height:44px;}
+.profile-history-back{position:absolute;left:0;top:0;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;border:1px solid rgba(124,101,97,.14);background:rgba(255,255,255,.76);color:#7c6561;font-family:inherit;font-size:24px;font-weight:800;line-height:1;cursor:pointer;}
+.profile-history-back:hover{background:rgba(124,101,97,.08);}
 .profile-history-title{font-size:1.3rem;font-weight:800;color:#2d1f0f;}
 .my-orders-list{display:flex;flex-direction:column;gap:.8rem;}
 
@@ -1506,7 +1508,7 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .my-order-num-badge{padding:.25rem .6rem;border-radius:999px;font-size:11px;font-weight:800;background:rgba(124,101,97,.14);color:#5f4c3d;}
 .my-order-who{margin-top:.7rem;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;}
 .my-order-who-name{font-size:15px;font-weight:800;color:#2d1f0f;}
-.my-order-who-id{font-size:12px;color:#9a7d65;letter-spacing:.03em;}
+.my-order-who-id{display:none;}
 .my-order-lines{margin-top:.7rem;display:flex;flex-direction:column;gap:.35rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
 .my-order-line{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
 .my-order-line-name{min-width:0;}
@@ -1528,6 +1530,13 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .my-order-cancel-yes[disabled]{opacity:.6;cursor:default;}
 
 @media (max-width:640px){
+  #profileOverlay .portal-panel{width:min(100%,420px);}
+  .profile-head{display:grid;grid-template-columns:1fr;justify-items:center;text-align:center;gap:.7rem;padding:.2rem 0 .2rem;}
+  .profile-head-name{font-size:1.12rem;line-height:1.18;overflow-wrap:anywhere;}
+  .profile-head .shop-secondary-button{width:auto;min-width:150px;min-height:40px;padding:.52rem 1rem;font-size:12px;}
+  .profile-main-title{text-align:center;font-size:1.08rem;}
+  .profile-history-head{margin-top:.1rem;}
+  .profile-history-title{font-size:1.35rem;text-align:center;line-height:1.12;}
   .my-order-who{gap:.4rem;}
 }
 
