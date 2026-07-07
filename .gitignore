@@ -21,3 +21,6 @@ __pycache__/
 
 # Node deps (never commit)
 node_modules/
+
+# Backend lives in its own repo (Makkie-Backend), not here.
+lightsail-backend/
