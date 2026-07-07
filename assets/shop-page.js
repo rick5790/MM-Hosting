@@ -932,8 +932,14 @@
     if (state.myOrdersError) return `<div class="empty compact">${escapeHtml(state.myOrdersError)}</div>`;
     const orders = Array.isArray(state.myOrders) ? state.myOrders : [];
 
-    const activeGroup = String((state.weeklyOrder && (state.weeklyOrder.active_group_id || state.weeklyOrder.group_no)) || '');
-    const isThisWeek = (order) => activeGroup && String(order.group_id || order.groupId || '') === activeGroup;
+    // 「本周」= 团购开始日(group_id 是 YYYYMMDD)起 7 天内；超过 7 天自动归入历史。
+    const isThisWeek = (order) => {
+      const gid = String(order.group_id || order.groupId || '');
+      const m = gid.match(/^(\d{4})(\d{2})(\d{2})$/);
+      if (!m) return false;
+      const startMs = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
+      return Date.now() < startMs + 7 * 24 * 60 * 60 * 1000;
+    };
 
     if (state.profileView === 'history') {
       const history = orders.filter((order) => !isThisWeek(order));
