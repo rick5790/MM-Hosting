@@ -151,7 +151,9 @@
       menu: ['主页', 'Makkie 图鉴', '探索夹心', '甜品动态', '马上预定'],
       contacts: [
         { label: '联系我们', href: 'contact.html' },
-        { label: 'Makkie 的故事', href: 'intro.html' }
+        { label: 'Makkie 的故事', href: 'intro.html' },
+        { label: '隐私政策', href: 'privacy.html' },
+        { label: '电商条款与条件', href: 'terms.html' }
       ],
       tagline: 'Butter off with Makkie',
       credit: 'Makkie 艺术设计 by @littlejulia_art',
@@ -168,7 +170,9 @@
       menu: ['Home', 'Collection', 'Layers', 'Recent Post', 'Order Now'],
       contacts: [
         { label: 'Contact', href: 'contact.html' },
-        { label: 'Makkie Story', href: 'intro.html' }
+        { label: 'Makkie Story', href: 'intro.html' },
+        { label: 'Privacy Policy', href: 'privacy.html' },
+        { label: 'Terms & Conditions', href: 'terms.html' }
       ],
       tagline: 'Butter off with Makkie',
       credit: 'Makkie art direction by @littlejulia_art',
