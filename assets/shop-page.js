@@ -395,6 +395,22 @@
       .replace(/Irvine/gi, '尔湾');
   }
 
+  // 英文模式下把后台存的中文星期翻成英文（如“周六 12:30 - 13:00” → “Saturday 12:30 - 13:00”）。
+  const PICKUP_WEEKDAY_EN = {
+    '星期一': 'Monday', '星期二': 'Tuesday', '星期三': 'Wednesday', '星期四': 'Thursday',
+    '星期五': 'Friday', '星期六': 'Saturday', '星期日': 'Sunday', '星期天': 'Sunday',
+    '周一': 'Monday', '周二': 'Tuesday', '周三': 'Wednesday', '周四': 'Thursday',
+    '周五': 'Friday', '周六': 'Saturday', '周日': 'Sunday', '周天': 'Sunday'
+  };
+  function localizePickupTime(value) {
+    let text = String(value || '');
+    if (getLang() !== 'en') return text;
+    Object.keys(PICKUP_WEEKDAY_EN).forEach((zh) => {
+      if (text.indexOf(zh) !== -1) text = text.split(zh).join(PICKUP_WEEKDAY_EN[zh]);
+    });
+    return text;
+  }
+
   function getPickupLabel(pickup) {
     if (!pickup) return '';
     return localizePickupText(pickup.label);
@@ -504,7 +520,7 @@
 
   function getPickupTimeText(pickup) {
     if (!pickup) return '';
-    const raw = cleanPickupText(localizePickupText(String(pickup.time || pickup.pickup_time || '')));
+    const raw = cleanPickupText(localizePickupTime(localizePickupText(String(pickup.time || pickup.pickup_time || ''))));
     if (raw) return raw;
     const haystack = [pickup.label, pickup.address, pickup.note, pickup.zipcode, pickup.id].filter(Boolean).join(' ').toLowerCase();
     if (/irvine|orange county|\boc\b|尔湾/.test(haystack)) {
@@ -871,7 +887,7 @@
     const pickupHtml = (pickup.name || pickup.time || pickup.address) ? `
       <div class="my-order-pickup">
         ${pickup.name ? `<div class="my-order-pickup-name">${escapeHtml(pickup.name)}</div>` : ''}
-        ${pickup.time ? `<div class="my-order-pickup-line">${escapeHtml(pickup.time)}</div>` : ''}
+        ${pickup.time ? `<div class="my-order-pickup-line">${escapeHtml(localizePickupTime(pickup.time))}</div>` : ''}
         ${pickup.address ? `<div class="my-order-pickup-line">${escapeHtml(pickup.address)}</div>` : ''}
       </div>` : '';
 

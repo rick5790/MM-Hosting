@@ -1373,6 +1373,17 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .my-order-pay.is-paid{color:#3f6248;}
 .my-order-total{font-size:15px;font-weight:800;color:#2d1f0f;}
 
+/* 微信二维码弹窗（联系页）：点「扫码添加」弹出，长按可保存 */
+.qr-pop-overlay{position:fixed;inset:0;z-index:400;display:none;place-items:center;padding:24px;}
+.qr-pop-overlay.is-open{display:grid;}
+.qr-pop-backdrop{position:absolute;inset:0;background:rgba(20,10,4,.66);backdrop-filter:blur(8px);}
+.qr-pop-panel{position:relative;width:min(100%,360px);border-radius:26px;background:#fffaf6;color:#2d1f0f;box-shadow:0 28px 90px rgba(0,0,0,.3);padding:1.7rem 1.4rem 1.5rem;text-align:center;}
+.qr-pop-close{position:absolute;top:12px;right:12px;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:999px;border:1px solid rgba(45,31,15,.1);background:rgba(255,255,255,.9);font-size:20px;color:#2d1f0f;cursor:pointer;}
+.qr-pop-label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9a7d65;margin-bottom:.9rem;}
+.qr-pop-figure{width:min(100%,240px);margin:0 auto;padding:12px;border-radius:20px;background:#fff;border:1px solid rgba(45,31,15,.08);box-shadow:0 14px 36px rgba(45,31,15,.1);}
+.qr-pop-img{display:block;width:100%;height:auto;border-radius:12px;-webkit-touch-callout:default;}
+.qr-pop-hint{margin-top:1rem;font-size:13px;line-height:1.6;color:#8a7467;}
+
 /* 我的订单：两栏布局 + 历史订单单独 view（5.12） */
 #profileOverlay .portal-panel{width:min(100%,880px);}
 .profile-layout{display:grid;grid-template-columns:minmax(190px,236px) 1fr;gap:1.4rem;align-items:start;}
@@ -1843,6 +1854,9 @@ body[data-lang="en"] .ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::
 }
 
 /* 法律条款页（隐私政策 / 电商条款）——中英切换跟随 body[data-lang] */
+/* 法律页直接显示，不做渐入：长页面上 reveal 容易卡住，导致条款像“丢失”。 */
+body[data-page="privacy"] .reveal,
+body[data-page="terms"] .reveal{opacity:1;transform:none;filter:none;transition:none;}
 .legal-en{display:none;}
 body[data-lang="en"] .legal-zh{display:none;}
 body[data-lang="en"] .legal-en{display:block;}

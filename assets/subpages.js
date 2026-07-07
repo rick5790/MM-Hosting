@@ -70,7 +70,7 @@
           description: 'Explore the layers, fillings, and textures behind each Makkie Mua dessert category.'
         }
       },
-      eye: { zh: '看看里面有什么', en: 'What Is Inside' },
+      eye: { zh: '', en: '' },
       title: { zh: '探索层层夹心', en: 'Explore the Layers' },
       sub: { zh: '', en: '' },
       actions: []
@@ -379,8 +379,8 @@
       zh: { title: '戚风三明治', sub: '轻盈夹心蛋糕', footHtml: '戚风蛋糕 · 新鲜水果<br>轻盈奶油 · 手工现切' },
       en: { title: 'Chiffon Sandwich', sub: 'Airy cream-filled cake', footHtml: 'Chiffon cake · fresh fruit<br>Light cream · hand-finished' },
       tags: {
-        zh: ['戚风蛋糕层', '鲜芒果 · 轻奶油', '戚风底层'],
-        en: ['Chiffon cake top', 'Fresh mango · light cream', 'Chiffon cake base']
+        zh: ['戚风蛋糕层', '鲜水果 · 轻奶油', '戚风底层'],
+        en: ['Chiffon cake top', 'Fresh fruit · light cream', 'Chiffon cake base']
       }
     },
     {
@@ -388,26 +388,26 @@
       zh: { title: '巴斯克芝士蛋糕', sub: '焦香软心芝士蛋糕', footHtml: '重芝士 · 烤焦顶 · 软心<br>干花点缀 · 高品质动物奶油' },
       en: { title: 'Basque Cheesecake', sub: 'Burnt-top soft-centered cheesecake', footHtml: 'Rich cheesecake · burnt top · molten center<br>Dried florals · premium dairy cream' },
       tags: {
-        zh: ['炭烤焦顶', '浓郁芝士体', '饼干底'],
-        en: ['Burnt top', 'Dense cheesecake center', 'Cookie crust']
+        zh: ['炭烤焦顶', '浓郁芝士体'],
+        en: ['Burnt top', 'Dense cheesecake center']
       }
     },
     {
       no: 'No.04',
-      zh: { title: '米布丁', sub: '酒酿米布丁', footHtml: '牛奶<br>奶油 · 米粒布丁' },
-      en: { title: 'Rice Pudding', sub: 'Fermented rice milk pudding', footHtml: 'Milk<br>Cream · rice pudding pearls' },
+      zh: { title: '米布丁', sub: '', footHtml: '牛奶<br>奶油 · 米粒布丁' },
+      en: { title: 'Rice Pudding', sub: '', footHtml: 'Milk<br>Cream · rice pudding pearls' },
       tags: {
-        zh: ['轻盈奶油顶', '糯米 · 水果底'],
-        en: ['Light cream top', 'Sticky rice · fruit base']
+        zh: ['新鲜水果', '大米米布丁·慕斯'],
+        en: ['Fresh fruit', 'Rice pudding · mousse']
       }
     },
     {
       no: 'No.05',
-      zh: { title: '酥皮挞挞', sub: '酥香挞类', footHtml: '花边酥饼 · 厚奶油<br>糖霜 · 入口即化' },
-      en: { title: 'Tart', sub: 'Flaky cream tart', footHtml: 'Fluted pastry shell · thick cream<br>Royal icing · melts on the tongue' },
+      zh: { title: '酥皮挞挞', sub: '酥香挞类', footHtml: '千层酥饼 · 厚奶油<br>糖霜 · 入口即化' },
+      en: { title: 'Tart', sub: 'Flaky cream tart', footHtml: 'Puff pastry shell · thick cream<br>Royal icing · melts on the tongue' },
       tags: {
-        zh: ['糖面 · 花边酥饼', '厚奶油夹心', '花边底饼'],
-        en: ['Iced shell · fluted crust', 'Thick cream filling', 'Fluted tart base']
+        zh: ['麻薯 · 风味奶油', '蛋挞芯', '酥皮底饼'],
+        en: ['Mochi · flavored cream', 'Egg tart center', 'Pastry base']
       }
     },
     {
@@ -492,9 +492,9 @@
       {
         key: 'wechat',
         label: { zh: '微信', en: 'WeChat' },
-        value: 'Makkie Mua',
+        value: 'Makkiemua',
         action: { zh: '扫码添加', en: 'Scan to Add' },
-        image: 'assets/images/qr/Makkie Wechat QR Code Clean.jpg'
+        qrImage: 'assets/images/qr/Makkie Wechat QR Code Clean.jpg'
       },
       {
         key: 'email',
@@ -839,7 +839,11 @@
               <div class="contact-qr-handle">${escapeHtml(card.value)}</div>
               ${card.note ? `<div class="contact-qr-note">${escapeHtml(t(card.note))}</div>` : ''}
             </div>
-            ${card.href ? `<a class="contact-qr-link" href="${escapeHtml(card.href)}" ${card.external ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(t(card.action))}</a>` : `<span class="contact-qr-link is-static">${escapeHtml(t(card.action))}</span>`}
+            ${card.qrImage
+              ? `<button class="contact-qr-link" type="button" data-qr-open="${escapeHtml(card.qrImage)}" data-qr-label="${escapeHtml(t(card.label))}">${escapeHtml(t(card.action))}</button>`
+              : card.href
+                ? `<a class="contact-qr-link" href="${escapeHtml(card.href)}" ${card.external ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(t(card.action))}</a>`
+                : `<span class="contact-qr-link is-static">${escapeHtml(t(card.action))}</span>`}
           </div>
         </article>
       `).join('');
@@ -878,7 +882,11 @@
     if (copy) {
       document.title = copy.seo[currentLang].title;
       if (descriptionMeta) descriptionMeta.setAttribute('content', copy.seo[currentLang].description);
-      if (pageEye) pageEye.textContent = t(copy.eye);
+      if (pageEye) {
+        const eyeText = t(copy.eye);
+        pageEye.textContent = eyeText;
+        pageEye.style.display = eyeText ? '' : 'none';
+      }
       if (pageTitle) pageTitle.textContent = t(copy.title);
       if (pageSub) {
         const subText = t(copy.sub);
@@ -936,6 +944,37 @@
     window.location.href = 'shop.html';
   }
 
+  let qrPopOverlay = null;
+  function openWeChatQr(src, label) {
+    if (!src) return;
+    if (!qrPopOverlay) {
+      qrPopOverlay = document.createElement('div');
+      qrPopOverlay.className = 'qr-pop-overlay';
+      qrPopOverlay.innerHTML = `
+        <div class="qr-pop-backdrop" data-qr-close></div>
+        <div class="qr-pop-panel" role="dialog" aria-modal="true">
+          <button class="qr-pop-close" type="button" data-qr-close aria-label="Close">&times;</button>
+          <div class="qr-pop-label"></div>
+          <div class="qr-pop-figure"><img class="qr-pop-img" alt=""></div>
+          <div class="qr-pop-hint"></div>
+        </div>`;
+      document.body.appendChild(qrPopOverlay);
+    }
+    const img = qrPopOverlay.querySelector('.qr-pop-img');
+    img.src = src;
+    img.alt = (label || 'WeChat') + ' QR';
+    qrPopOverlay.querySelector('.qr-pop-label').textContent = label || '';
+    qrPopOverlay.querySelector('.qr-pop-hint').textContent = currentLang === 'en'
+      ? 'Long-press the code to save it, or scan it in WeChat.'
+      : '长按二维码保存，或用微信扫一扫添加。';
+    qrPopOverlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeWeChatQr() {
+    if (qrPopOverlay) qrPopOverlay.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
   function initEvents() {
     if (navMenuButton) {
       navMenuButton.addEventListener('click', () => {
@@ -957,6 +996,18 @@
       const menuClose = event.target.closest('[data-menu-close]');
       const layerCard = event.target.closest('[data-layer-card]');
       const desktopLang = event.target.closest('#langToggle');
+      const qrOpen = event.target.closest('[data-qr-open]');
+      const qrClose = event.target.closest('[data-qr-close]');
+
+      if (qrOpen) {
+        openWeChatQr(qrOpen.dataset.qrOpen, qrOpen.dataset.qrLabel || '');
+        return;
+      }
+
+      if (qrClose) {
+        closeWeChatQr();
+        return;
+      }
 
       if (closeTrigger) {
         closeDrawer();
@@ -1011,6 +1062,7 @@
       if (event.key === 'Escape') {
         closeDrawer();
         closeCollectionOverlay();
+        closeWeChatQr();
         document.querySelectorAll('[data-layer-card].is-active').forEach((card) => card.classList.remove('is-active'));
       }
       if ((event.key === 'Enter' || event.key === ' ') && event.target.closest('[data-layer-card]')) {
