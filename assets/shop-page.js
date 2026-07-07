@@ -3,6 +3,8 @@
   const shopEntryStatus = document.getElementById('shopEntryStatus');
   const orderConfirmOverlay = document.getElementById('orderConfirmOverlay');
   const orderConfirmBody = document.getElementById('orderConfirmBody');
+  const orderSuccessOverlay = document.getElementById('orderSuccessOverlay');
+  const orderSuccessBody = document.getElementById('orderSuccessBody');
   const profileOverlay = document.getElementById('profileOverlay');
   const profileOverlayBody = document.getElementById('profileOverlayBody');
   const pickupOverlay = document.getElementById('pickupOverlay');
@@ -44,7 +46,7 @@
       totalLabel: '总价',
       completeProfile: '先保存昵称',
       nickname: '昵称',
-      nicknamePlaceholder: '请输入你的昵称',
+      nicknamePlaceholder: '请输入昵称或者通过 Google 登录自动提取，方便订单追踪',
       saveProfile: '保存昵称',
       googleLoginFailed: 'Google 登录失败，请重试',
       profileTitle: '请选择登陆方式',
@@ -78,8 +80,22 @@
       pickupTime: '自提时间',
       subtotal: '合计',
       emptyCart: '请先选择数量',
+      emptyNickname: '请输入昵称',
       submitSuccess: '订单已提交',
       saveSuccess: '已保存',
+      successTitle: '订单已提交！',
+      successMessage: '请付款后截图跟 Makkie 确认哦，请在「我的订单」里查看最新状态。',
+      viewMyOrders: '查看我的订单',
+      successClose: '知道了',
+      myOrders: '我的订单',
+      thisWeekOrders: '本周订单',
+      historyOrders: '历史订单',
+      noOrders: '还没有订单',
+      ordersLoading: '正在读取订单...',
+      ordersFailed: '订单读取失败，请稍后再试。',
+      editNickname: '修改昵称',
+      loggedInAs: '当前昵称',
+      orderNumberLabel: '订单号',
       pickupSelect: '选择自提',
       pickupChange: '更改自提地点',
       pickupIntroTitle: '请选择本周自提地点',
@@ -88,6 +104,9 @@
       category: '本期甜品',
       stock: '库存',
       limit: '限购',
+      statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '待取货', completed: '已完成', cancelled: '已取消' },
+      paymentPaid: '已确认收款',
+      paymentUnpaid: '待确认付款',
       adminTitle: '隐藏管理员入口',
       adminSub: '这里可以查看当前预定状态，并手动切换开放与关闭。',
       adminOpenLabel: '预定状态',
@@ -112,7 +131,7 @@
       totalLabel: 'Total',
       completeProfile: 'Save nickname first',
       nickname: 'Nickname',
-      nicknamePlaceholder: 'Enter your nickname',
+      nicknamePlaceholder: 'Enter a nickname, or sign in with Google to auto-fill — helps track your orders',
       saveProfile: 'Save Nickname',
       googleLoginFailed: 'Google sign-in failed, please try again',
       profileTitle: 'Choose how to sign in',
@@ -146,8 +165,22 @@
       pickupTime: 'Pickup Time',
       subtotal: 'Total',
       emptyCart: 'Select at least one item first',
+      emptyNickname: 'Please enter a nickname',
       submitSuccess: 'Order submitted',
       saveSuccess: 'Saved',
+      successTitle: 'Order submitted!',
+      successMessage: 'After payment, send Makkie a screenshot to confirm. Track the latest status under "My Orders".',
+      viewMyOrders: 'View My Orders',
+      successClose: 'Got it',
+      myOrders: 'My Orders',
+      thisWeekOrders: 'This Week',
+      historyOrders: 'Order History',
+      noOrders: 'No orders yet',
+      ordersLoading: 'Loading orders...',
+      ordersFailed: 'Failed to load orders. Please try again later.',
+      editNickname: 'Edit Nickname',
+      loggedInAs: 'Nickname',
+      orderNumberLabel: 'Order',
       pickupSelect: 'Choose Pickup',
       pickupChange: 'Change Pickup',
       pickupIntroTitle: 'Choose your pickup location first',
@@ -156,6 +189,9 @@
       category: 'Weekly Desserts',
       stock: 'Stock',
       limit: 'Limit',
+      statusLabels: { pending: 'Pending', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', cancelled: 'Cancelled' },
+      paymentPaid: 'Payment confirmed',
+      paymentUnpaid: 'Awaiting payment',
       adminTitle: 'Hidden Admin Entry',
       adminSub: 'Use this panel to check the preorder state and switch it on or off manually.',
       adminOpenLabel: 'Preorder Status',
@@ -176,7 +212,12 @@
     note: '',
     error: '',
     pickupConfirmed: false,
-    loading: true
+    loading: true,
+    pendingSubmit: false,
+    profileEditMode: false,
+    myOrders: null,
+    myOrdersLoading: false,
+    myOrdersError: ''
   };
 
   let countdownTimer = null;
@@ -646,26 +687,38 @@
     } else {
       state.cartQuantities[productId] = quantity;
     }
-    renderShop();
+    // 只更新受影响的步进器和结算栏，避免重建整个列表导致图片重新加载（手机端会闪）。
+    updateCartUI();
+  }
+
+  function updateCartUI() {
+    const c = copy();
+    shopRoot.querySelectorAll('.shop-stepper').forEach((stepper) => {
+      const inc = stepper.querySelector('[data-shop-action="increase"]');
+      const dec = stepper.querySelector('[data-shop-action="decrease"]');
+      const qtyEl = stepper.querySelector('.shop-qty');
+      if (!inc || !dec) return;
+      const pid = inc.dataset.id;
+      const product = state.products.find((item) => String(item.id) === String(pid));
+      if (!product) return;
+      const quantity = state.cartQuantities[pid] || 0;
+      const cap = Math.min(product.stock || Infinity, product.limit || Infinity);
+      if (qtyEl) qtyEl.textContent = quantity;
+      dec.disabled = quantity <= 0;
+      inc.disabled = quantity >= cap;
+    });
+    const summary = shopRoot.querySelector('.shop-submit-summary');
+    if (summary) {
+      const totalQuantity = getCartTotalQuantity();
+      const totalPrice = getSelectedItems().reduce((sum, item) => sum + (item.unitPrice || 0) * item.quantity, 0);
+      summary.innerHTML = `<strong>${escapeHtml(c.selected)} ${totalQuantity} ${escapeHtml(c.pieces)}</strong><span>${escapeHtml(c.totalLabel)} ${escapeHtml(formatMoney(totalPrice))}</span>`;
+    }
   }
 
   function openOverlay(overlay) {
     if (!overlay) return;
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
-  }
-
-  async function ensureGuestAuth() {
-    if (state.auth && state.auth.user) return state.auth;
-    const clientId = getSiteClientId();
-    const suffix = clientId.slice(-4).toUpperCase();
-    const nickname = getLang() === 'en' ? `Guest ${suffix}` : `网页顾客 ${suffix}`;
-    const auth = await siteApiRequest('/api/auth/local-login', {
-      method: 'POST',
-      body: { client_id: clientId, nickname }
-    });
-    saveSiteAuth(auth);
-    return auth;
   }
 
   function closeOverlay(overlay, body) {
@@ -676,14 +729,28 @@
   }
 
   function renderProfileOverlay() {
+    const nickname = getSavedNickname();
+    // 已登录（有昵称）且不在改昵称模式：显示“我的订单”；否则显示登录/昵称表单。
+    if (nickname && !state.profileEditMode) {
+      renderProfileLoggedIn();
+      openOverlay(profileOverlay);
+      loadMyOrders();
+      return;
+    }
+    renderProfileLoginForm();
+    openOverlay(profileOverlay);
+    renderGoogleButton();
+  }
+
+  function renderProfileLoginForm() {
     const c = copy();
-    const nickname = state.auth && state.auth.user ? (state.auth.user.profile?.nickname || state.auth.user.nickname || '') : '';
+    const nickname = getSavedNickname();
     profileOverlayBody.innerHTML = `
       <div class="portal-title">${escapeHtml(c.profileTitle)}</div>
       <div class="portal-sub">${escapeHtml(c.profileSub)}</div>
       <div class="portal-google-block" id="googleSignInButton"></div>
       <div class="portal-form">
-        <label class="portal-field">
+        <label class="portal-field portal-field--center">
           <span class="portal-label">${escapeHtml(c.nickname)}</span>
           <input id="profileNicknameInput" class="portal-input" type="text" value="${escapeHtml(nickname)}" placeholder="${escapeHtml(c.nicknamePlaceholder)}">
         </label>
@@ -693,8 +760,109 @@
         </div>
       </div>
     `;
-    openOverlay(profileOverlay);
-    renderGoogleButton();
+  }
+
+  function renderProfileLoggedIn() {
+    const c = copy();
+    const nickname = getSavedNickname();
+    profileOverlayBody.innerHTML = `
+      <div class="profile-head">
+        <div>
+          <div class="profile-head-label">${escapeHtml(c.loggedInAs)}</div>
+          <div class="profile-head-name">${escapeHtml(nickname)}</div>
+        </div>
+        <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
+      </div>
+      <div class="portal-divider"></div>
+      <div class="portal-title" style="text-align:left;font-size:1.3rem;">${escapeHtml(c.myOrders)}</div>
+      <div id="myOrdersSection">${renderMyOrdersSection()}</div>
+    `;
+  }
+
+  function getOrderStatusInfo(order) {
+    const c = copy();
+    const status = String(order.status || 'pending');
+    const label = (c.statusLabels && c.statusLabels[status]) || status;
+    return { status, label };
+  }
+
+  function renderMyOrdersSection() {
+    const c = copy();
+    if (state.myOrdersLoading) return `<div class="empty compact">${escapeHtml(c.ordersLoading)}</div>`;
+    if (state.myOrdersError) return `<div class="empty compact">${escapeHtml(state.myOrdersError)}</div>`;
+    const orders = Array.isArray(state.myOrders) ? state.myOrders : [];
+    if (!orders.length) return `<div class="empty compact">${escapeHtml(c.noOrders)}</div>`;
+
+    const activeGroup = String((state.weeklyOrder && (state.weeklyOrder.active_group_id || state.weeklyOrder.group_no)) || '');
+    const isThisWeek = (order) => activeGroup && String(order.group_id || order.groupId || '') === activeGroup;
+    const live = orders.filter(isThisWeek);
+    const history = orders.filter((order) => !isThisWeek(order));
+
+    const card = (order) => {
+      const info = getOrderStatusInfo(order);
+      const paid = String(order.payment_status || order.paymentStatus || 'non_paid') === 'paid';
+      const num = order.groupOrderNumberText || order.orderNumber || order.id;
+      const itemsText = (order.items || []).map((it) => `${it.title} × ${it.quantity}`).join('、');
+      const totalText = (order.total && order.total.text) || formatMoney(order.total_amount || 0);
+      return `
+        <div class="my-order-card">
+          <div class="my-order-top">
+            <span class="my-order-num">${escapeHtml(c.orderNumberLabel)} ${escapeHtml(num)}</span>
+            <span class="my-order-status my-order-status--${escapeHtml(info.status)}">${escapeHtml(info.label)}</span>
+          </div>
+          <div class="my-order-items">${escapeHtml(itemsText)}</div>
+          <div class="my-order-foot">
+            <span class="my-order-pay ${paid ? 'is-paid' : ''}">${escapeHtml(paid ? c.paymentPaid : c.paymentUnpaid)}</span>
+            <span class="my-order-total">${escapeHtml(totalText)}</span>
+          </div>
+        </div>
+      `;
+    };
+
+    return `
+      ${live.length ? `
+        <div class="my-orders-group">
+          <div class="my-orders-group-title">${escapeHtml(c.thisWeekOrders)}</div>
+          ${live.map(card).join('')}
+        </div>` : ''}
+      ${history.length ? `
+        <div class="my-orders-group">
+          <div class="my-orders-group-title">${escapeHtml(c.historyOrders)}</div>
+          ${history.map(card).join('')}
+        </div>` : ''}
+    `;
+  }
+
+  async function loadMyOrders() {
+    if (!state.auth || !state.auth.user) return;
+    state.myOrdersLoading = true;
+    state.myOrdersError = '';
+    const section = document.getElementById('myOrdersSection');
+    if (section) section.innerHTML = renderMyOrdersSection();
+    try {
+      const data = await siteApiRequest(`/api/orders/user/${state.auth.user.id}`);
+      state.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+    } catch (error) {
+      state.myOrdersError = error.message || copy().ordersFailed;
+    } finally {
+      state.myOrdersLoading = false;
+      const el = document.getElementById('myOrdersSection');
+      if (el) el.innerHTML = renderMyOrdersSection();
+    }
+  }
+
+  function renderOrderSuccessOverlay() {
+    const c = copy();
+    orderSuccessBody.innerHTML = `
+      <div class="order-success-icon">✓</div>
+      <div class="portal-title">${escapeHtml(c.successTitle)}</div>
+      <div class="portal-sub">${escapeHtml(c.successMessage)}</div>
+      <div class="portal-actions" style="justify-content:center;margin-top:1.4rem;">
+        <button class="shop-secondary-button" type="button" data-order-success-close>${escapeHtml(c.successClose)}</button>
+        <button class="shop-submit-button" type="button" data-order-success-orders>${escapeHtml(c.viewMyOrders)}</button>
+      </div>
+    `;
+    openOverlay(orderSuccessOverlay);
   }
 
   function renderGoogleButton() {
@@ -719,6 +887,14 @@
       });
       saveSiteAuth(auth);
       renderShop();
+      if (state.pendingSubmit) {
+        state.pendingSubmit = false;
+        closeOverlay(profileOverlay, profileOverlayBody);
+        await submitWebOrder().catch((error) => alert(error.message));
+        return;
+      }
+      // Google 登录后让用户确认/调整昵称，再进入“我的订单”。
+      state.profileEditMode = true;
       renderProfileOverlay();
     } catch (error) {
       alert(error.message || copy().googleLoginFailed);
@@ -746,17 +922,28 @@
   }
 
   async function saveProfileFromOverlay() {
+    const c = copy();
     const input = document.getElementById('profileNicknameInput');
     const nickname = input ? input.value.trim() : '';
-    if (!nickname) return;
+    if (!nickname) {
+      alert(c.emptyNickname);
+      return;
+    }
     const auth = await siteApiRequest('/api/auth/local-login', {
       method: 'POST',
-      body: { client_id: getSiteClientId(), nickname }
+      body: { client_id: getSiteClientId(), profile: { nickname } }
     });
     saveSiteAuth(auth);
     renderShop();
-    closeOverlay(profileOverlay, profileOverlayBody);
-    alert(copy().saveSuccess);
+    if (state.pendingSubmit) {
+      state.pendingSubmit = false;
+      state.profileEditMode = false;
+      closeOverlay(profileOverlay, profileOverlayBody);
+      await submitWebOrder().catch((error) => alert(error.message));
+      return;
+    }
+    state.profileEditMode = false;
+    renderProfileOverlay();
   }
 
   // 提交前的最终确认页：订单内容、总额、付款方式（Zelle/Venmo/支付宝）、截单规则，
@@ -771,6 +958,9 @@
     const pickup = getPickup();
     const total = items.reduce((sum, item) => sum + (item.unitPrice || 0) * item.quantity, 0);
     const pickupMeta = pickup ? [getPickupTimeText(pickup), getPickupAddress(pickup)].filter(Boolean).join(' · ') : '';
+    const noteInput = document.getElementById('shopOrderNoteInput');
+    if (noteInput) state.note = noteInput.value;
+    const note = (state.note || '').trim();
     orderConfirmBody.innerHTML = `
       <div class="portal-title">${escapeHtml(c.confirmSubmitTitle)}</div>
       <div class="confirm-section">
@@ -826,6 +1016,7 @@
           <div class="confirm-pickup-line">${escapeHtml(getPickupLabel(pickup))}</div>
           ${pickupMeta ? `<div class="confirm-pickup-meta">${escapeHtml(pickupMeta)}</div>` : ''}
         ` : ''}
+        ${note ? `<div class="confirm-note-line"><span class="confirm-note-label">${escapeHtml(c.orderComment)}</span>${escapeHtml(note)}</div>` : ''}
       </div>
       <div class="portal-actions confirm-actions">
         <button class="shop-secondary-button" type="button" data-order-confirm-close>${escapeHtml(c.cancelConfirm)}</button>
@@ -835,18 +1026,30 @@
     openOverlay(orderConfirmOverlay);
   }
 
+  function getSavedNickname() {
+    if (!state.auth || !state.auth.user) return '';
+    return state.auth.user.profile?.nickname || state.auth.user.nickname || '';
+  }
+
   async function submitWebOrder() {
     const c = copy();
-    await ensureGuestAuth();
     const items = getSelectedItems();
     if (!items.length) {
       alert(c.emptyCart);
       return;
     }
+    const nickname = getSavedNickname();
+    // 没登录 / 没昵称：先记住待提交，跳到登录界面，存好昵称后自动继续下单。
+    if (!nickname) {
+      state.pendingSubmit = true;
+      const noteInput = document.getElementById('shopOrderNoteInput');
+      if (noteInput) state.note = noteInput.value;
+      renderProfileOverlay();
+      return;
+    }
     const noteInput = document.getElementById('shopOrderNoteInput');
     if (noteInput) state.note = noteInput.value;
     const pickup = getPickup();
-    const nickname = state.auth && state.auth.user ? (state.auth.user.profile?.nickname || state.auth.user.nickname || '') : '';
     await siteApiRequest('/api/orders', {
       method: 'POST',
       body: {
@@ -868,7 +1071,7 @@
     state.note = '';
     closeOverlay(orderConfirmOverlay, orderConfirmBody);
     renderShop();
-    alert(c.submitSuccess);
+    renderOrderSuccessOverlay();
   }
 
   function copyToClipboard(text, button) {
@@ -1040,12 +1243,24 @@
     const profileClose = event.target.closest('[data-profile-close]');
     const pickupClose = event.target.closest('[data-pickup-close]');
     const confirmClose = event.target.closest('[data-order-confirm-close]');
+    const successClose = event.target.closest('[data-order-success-close]');
+    const successOrders = event.target.closest('[data-order-success-orders]');
     const adminClose = event.target.closest('[data-admin-close]');
 
-    if (profileClose) closeOverlay(profileOverlay, profileOverlayBody);
+    if (profileClose) {
+      state.profileEditMode = false;
+      closeOverlay(profileOverlay, profileOverlayBody);
+    }
     if (pickupClose) closeOverlay(pickupOverlay, pickupOverlayBody);
     if (confirmClose) closeOverlay(orderConfirmOverlay, orderConfirmBody);
+    if (successClose) closeOverlay(orderSuccessOverlay, orderSuccessBody);
     if (adminClose) closeOverlay(adminOverlay, adminOverlayBody);
+
+    if (successOrders) {
+      closeOverlay(orderSuccessOverlay, orderSuccessBody);
+      state.profileEditMode = false;
+      renderProfileOverlay();
+    }
 
     if (confirmCopy) {
       copyToClipboard(confirmCopy.dataset.confirmCopy, confirmCopy);
@@ -1055,7 +1270,13 @@
       renderPickupOverlay();
     }
     if (profileAction) {
-      await saveProfileFromOverlay().catch((error) => alert(error.message));
+      if (profileAction.dataset.profileAction === 'edit') {
+        state.profileEditMode = true;
+        renderProfileOverlay();
+        renderGoogleButton();
+      } else {
+        await saveProfileFromOverlay().catch((error) => alert(error.message));
+      }
     }
     if (pickupAction) {
       if (pickupAction.dataset.pickupAction === 'select') {
@@ -1090,7 +1311,9 @@
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+      state.profileEditMode = false;
       closeOverlay(orderConfirmOverlay, orderConfirmBody);
+      closeOverlay(orderSuccessOverlay, orderSuccessBody);
       closeOverlay(profileOverlay, profileOverlayBody);
       closeOverlay(pickupOverlay, pickupOverlayBody);
       closeOverlay(adminOverlay, adminOverlayBody);
