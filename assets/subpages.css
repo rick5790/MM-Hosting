@@ -1435,8 +1435,30 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .confirm-pay-copy{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:.45rem 1rem;border-radius:999px;border:none;cursor:pointer;background:#7c6561;color:#fffaf6;font-family:inherit;font-size:13px;font-weight:700;-webkit-appearance:none;appearance:none;transition:background .18s ease;}
 .confirm-pay-copy:hover{background:#6a544f;}
 .confirm-pay-copy.is-copied{background:#5a7c61;}
-.confirm-pay-instruction{margin-top:.5rem;font-size:13px;line-height:1.7;color:#6f5a4c;}
+.confirm-pay-instruction{margin-top:.8rem;padding:.8rem 1rem;border-radius:14px;background:rgba(124,101,97,.07);font-size:13px;line-height:1.7;color:#6f5a4c;}
+.confirm-total-cur{font-size:.92rem;font-weight:700;color:#9a7d65;margin-left:.15rem;}
+/* 支付宝实时汇率卡片 */
+.confirm-pay-card--alipay{align-items:center;}
+.confirm-pay-rate{display:flex;align-items:baseline;flex-wrap:wrap;gap:.5rem;margin-top:.3rem;}
+.confirm-pay-rate strong{font-size:1.15rem;font-weight:800;color:#c0392b;}
+.confirm-pay-rate span{font-size:12px;color:#8a7467;}
+.confirm-rate-badge{flex:0 0 auto;display:inline-flex;align-items:center;gap:.28rem;padding:.28rem .6rem;border-radius:999px;background:rgba(90,124,97,.14);color:#3f6248;font-size:11px;font-weight:800;}
+.confirm-rate-badge::before{content:'●';font-size:8px;line-height:1;}
+/* 底部固定操作条：确认下单 + 返回修改，含 iOS 安全区 */
+.confirm-actionbar{position:sticky;bottom:0;margin:1.4rem -1.2rem 0;padding:.9rem 1.2rem calc(1rem + env(safe-area-inset-bottom, 0px));background:#fffaf6;border-top:1px solid rgba(45,31,15,.08);box-shadow:0 -14px 26px rgba(255,250,246,.92);display:flex;flex-direction:column;gap:.3rem;z-index:3;}
+.confirm-place-btn{width:100%;min-height:52px;font-size:15px;}
+.confirm-back-btn{background:none;border:none;cursor:pointer;font-family:inherit;color:#8a7467;font-size:13px;font-weight:600;padding:.45rem;text-align:center;-webkit-appearance:none;appearance:none;}
+.confirm-back-btn:hover{color:#5f4c3d;}
+#orderConfirmOverlay .portal-panel{padding-bottom:0;}
 .confirm-rules-line{font-size:14px;line-height:1.7;color:#5f4c3d;}
+/* 售罄甜品卡：整卡置灰、不可加入购物车 */
+.shop-card--soldout .shop-card-media{filter:grayscale(1);opacity:.5;}
+.shop-card--soldout .shop-card-title,.shop-card--soldout .shop-card-desc,.shop-card--soldout .shop-card-price,.shop-card--soldout .shop-card-price strong{color:#a99e95;}
+.shop-card--soldout .shop-stepper{opacity:.5;}
+.shop-card-stock--soldout{background:rgba(124,63,53,.92);}
+/* 我的订单卡：查看付款方式按钮 */
+.my-order-pay-btn{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(124,101,97,.22);background:rgba(255,255,255,.9);color:#5f4c3d;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;transition:background .18s ease,border-color .18s ease;}
+.my-order-pay-btn:hover{background:#fff;border-color:#7c6561;}
 .confirm-pickup-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem;}
 .confirm-pickup-head .confirm-heading{margin-bottom:0;}
 .confirm-pickup-change{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:.35rem .9rem;border-radius:999px;border:1px solid rgba(124,101,97,.2);background:rgba(255,255,255,.9);color:#5f4c3d;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;transition:background .18s ease,border-color .18s ease;}
@@ -1520,7 +1542,7 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .my-order-card--rich .my-order-total{font-size:1.15rem;}
 
 /* 取消订单 */
-.my-order-cancel-row{margin-top:.8rem;display:flex;justify-content:flex-end;}
+.my-order-cancel-row{margin-top:.8rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;}
 .my-order-cancel-btn{padding:.5rem 1rem;border-radius:999px;border:1px solid rgba(124,63,53,.28);background:transparent;color:#9a4737;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
 .my-order-cancel-btn:hover{background:rgba(124,63,53,.08);}
 .my-order-cancel-confirm{margin-top:.8rem;padding:.8rem .9rem;border-radius:14px;background:rgba(154,71,55,.08);border:1px solid rgba(154,71,55,.2);}
@@ -1949,6 +1971,10 @@ body[data-lang="en"] .ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::
   .shop-grid{grid-template-columns:1fr;}
   .shop-card-body{padding:1rem;}
   .shop-card-desc{min-height:0;}
+  /* 弹窗贴近底部时，给按钮留出 iOS 主页指示条的安全区，避免“太近底边” */
+  .portal-overlay{padding:16px 16px calc(16px + env(safe-area-inset-bottom, 0px));}
+  .portal-panel{max-height:min(92vh,940px);padding-bottom:calc(1.4rem + env(safe-area-inset-bottom, 0px));}
+  #orderConfirmOverlay .portal-panel{padding-bottom:0;}
   .portal-actions{flex-direction:column;align-items:stretch;}
   .shop-submit-bar{position:static;width:100%;padding:.75rem .75rem .75rem .95rem;gap:.75rem;}
   .shop-submit-summary span{white-space:normal;}

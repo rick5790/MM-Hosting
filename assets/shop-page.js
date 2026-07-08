@@ -9,6 +9,8 @@
   const profileOverlayBody = document.getElementById('profileOverlayBody');
   const pickupOverlay = document.getElementById('pickupOverlay');
   const pickupOverlayBody = document.getElementById('pickupOverlayBody');
+  const paymentInfoOverlay = document.getElementById('paymentInfoOverlay');
+  const paymentInfoBody = document.getElementById('paymentInfoBody');
   const adminOverlay = document.getElementById('adminOverlay');
   const adminOverlayBody = document.getElementById('adminOverlayBody');
   const navLogo = document.querySelector('.nav-logo');
@@ -71,9 +73,16 @@
       venmoValue: 'makkiemua',
       alipay: '支付宝',
       alipayLine: '实时汇率请询问Makkie微信账号',
+      alipayRealtime: '支付宝 · 实时汇率',
+      rateBadge: '实时',
+      rateApprox: '1 USD ≈',
+      rateLoading: '汇率加载中…',
       copy: '复制',
       copied: '已复制',
-      confirmLine1: '付款后请私信 Makkie Mua 发送付款截图，以便确认订单。',
+      viewPayment: '查看付款方式',
+      placeOrder: '确认下单',
+      backToEdit: '返回修改',
+      confirmLine1: '付款后请私信 Makkie Mua 发送付款截图，以便确认订单。截单后秉承不浪费食物原则，不接受临时取消。',
       rules: '截单规则',
       rulesLine: '🍪 秉承不浪费食物的原则 截单后不接受临时取消订单',
       pickupInfo: '自提信息',
@@ -115,6 +124,7 @@
       pickupConfirm: '进入预定',
       category: '本期甜品',
       stock: '库存',
+      soldOut: '售罄',
       limit: '限购',
       statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '待取货', completed: '已完成', cancelled: '已取消' },
       paymentPaid: '已确认收款',
@@ -168,9 +178,16 @@
       venmoValue: 'makkiemua',
       alipay: 'Alipay',
       alipayLine: 'Please ask Makkie on WeChat for the live exchange rate.',
+      alipayRealtime: 'Alipay · Live rate',
+      rateBadge: 'Live',
+      rateApprox: '1 USD ≈',
+      rateLoading: 'Loading rate…',
       copy: 'Copy',
       copied: 'Copied',
-      confirmLine1: 'After payment, message Makkie Mua with your payment screenshot to confirm the order.',
+      viewPayment: 'View payment methods',
+      placeOrder: 'Place order',
+      backToEdit: 'Back to edit',
+      confirmLine1: 'After payment, message Makkie Mua with your payment screenshot to confirm the order. To avoid food waste, temporary cancellations are not accepted after the deadline.',
       rules: 'Cancellation Policy',
       rulesLine: '🍪 To avoid food waste, temporary cancellations are not accepted after the deadline.',
       pickupInfo: 'Pickup Info',
@@ -212,6 +229,7 @@
       pickupConfirm: 'Enter Preorder',
       category: 'Weekly Desserts',
       stock: 'Stock',
+      soldOut: 'Sold out',
       limit: 'Limit',
       statusLabels: { pending: 'Pending', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', cancelled: 'Cancelled' },
       paymentPaid: 'Payment confirmed',
@@ -244,7 +262,10 @@
     cancelBusyId: null,
     myOrders: null,
     myOrdersLoading: false,
-    myOrdersError: ''
+    myOrdersError: '',
+    exchangeRate: null,
+    exchangeRateAt: 0,
+    exchangeRateLoading: false
   };
 
   let countdownTimer = null;
@@ -348,6 +369,92 @@
     return Number.isInteger(value) ? `$${value}` : `$${value.toFixed(2)}`;
   }
 
+  function formatCny(amount) {
+    const value = Math.round((Number(amount) || 0) * 100) / 100;
+    return `¥${value.toFixed(2)}`;
+  }
+
+  // 免费、无需 API key、开启 CORS 的实时汇率（open.er-api.com，按日更新的中间价）。
+  // 30 分钟内复用缓存，拉取失败时保留上一次成功值 / 回退到“请询问微信”。
+  const FX_ENDPOINT = 'https://open.er-api.com/v6/latest/USD';
+  async function loadExchangeRate(force) {
+    const FRESH_MS = 30 * 60 * 1000;
+    if (!force && state.exchangeRate && (Date.now() - state.exchangeRateAt) < FRESH_MS) return state.exchangeRate;
+    if (state.exchangeRateLoading) return state.exchangeRate;
+    state.exchangeRateLoading = true;
+    try {
+      const res = await fetch(FX_ENDPOINT, { cache: 'no-store' });
+      const data = await res.json();
+      const cny = data && data.rates ? Number(data.rates.CNY) : NaN;
+      if (Number.isFinite(cny) && cny > 0) {
+        state.exchangeRate = cny;
+        state.exchangeRateAt = Date.now();
+      }
+    } catch (error) {
+      // 网络失败：静默保留旧值，UI 回退到人工询问。
+    } finally {
+      state.exchangeRateLoading = false;
+    }
+    return state.exchangeRate;
+  }
+
+  // 支付宝卡片：有实时汇率就显示折算人民币金额；否则显示加载中 / 人工询问。
+  function renderAlipayCard(totalUsd) {
+    const c = copy();
+    const rate = state.exchangeRate;
+    if (rate) {
+      return `
+        <div class="confirm-pay-card confirm-pay-card--alipay">
+          <div class="confirm-pay-info">
+            <div class="confirm-pay-name">${escapeHtml(c.alipayRealtime)}</div>
+            <div class="confirm-pay-rate">
+              <strong>${escapeHtml(formatCny(totalUsd * rate))}</strong>
+              <span>${escapeHtml(c.rateApprox)} ${escapeHtml(rate.toFixed(2))}</span>
+            </div>
+          </div>
+          <span class="confirm-rate-badge">${escapeHtml(c.rateBadge)}</span>
+        </div>`;
+    }
+    return `
+      <div class="confirm-pay-card confirm-pay-card--alipay">
+        <div class="confirm-pay-info">
+          <div class="confirm-pay-name">${escapeHtml(c.alipay)}</div>
+          <div class="confirm-pay-value">${escapeHtml(state.exchangeRateLoading ? c.rateLoading : c.alipayLine)}</div>
+        </div>
+      </div>`;
+  }
+
+  // Zelle / Venmo / 支付宝(实时汇率) 三张付款卡，确认弹窗与“查看付款方式”弹窗共用。
+  function renderPaymentMethods(totalUsd) {
+    const c = copy();
+    return `
+      <div class="confirm-currency-warning">${escapeHtml(c.currencyWarning)}</div>
+      <div class="confirm-pay-card">
+        <div class="confirm-pay-info">
+          <div class="confirm-pay-name">${escapeHtml(c.zelle)}</div>
+          <div class="confirm-pay-value">${escapeHtml(c.zelleValue)}</div>
+        </div>
+        <button class="confirm-pay-copy" type="button" data-confirm-copy="${escapeHtml(c.zelleValue)}">${escapeHtml(c.copy)}</button>
+      </div>
+      <div class="confirm-pay-card">
+        <div class="confirm-pay-info">
+          <div class="confirm-pay-name">${escapeHtml(c.venmo)}</div>
+          <div class="confirm-pay-value">${escapeHtml(c.venmoValue)}</div>
+        </div>
+        <button class="confirm-pay-copy" type="button" data-confirm-copy="${escapeHtml(c.venmoValue)}">${escapeHtml(c.copy)}</button>
+      </div>
+      <div data-fx-slot data-fx-total="${escapeHtml(String(totalUsd))}">${renderAlipayCard(totalUsd)}</div>
+    `;
+  }
+
+  // 汇率异步到达后，只刷新支付宝那张卡，避免重建整个弹窗。
+  function refreshFxSlots() {
+    document.querySelectorAll('[data-fx-slot]').forEach((slot) => {
+      const total = Number(slot.getAttribute('data-fx-total')) || 0;
+      slot.innerHTML = renderAlipayCard(total);
+    });
+  }
+
   function toCloudUrl(value) {
     if (!value) return '';
     // 老数据里有指向小程序仓库的相对路径（../../orders_asset/...），网页端解析不了，当作没有图片。
@@ -380,7 +487,8 @@
       title: product.name || product.title,
       price: product.price_text || `${formatMoney(product.price)} / item`,
       unitPrice: Number(product.price) || parseMoney(product.price_text),
-      stock: Number.isFinite(stock) ? stock : 0,
+      // 后台没传库存字段 => null（不追踪库存，不封顶）；显式 0 => 售罄。
+      stock: Number.isFinite(stock) ? stock : null,
       limit: Number.isFinite(limit) && limit > 0 ? limit : null,
       desc: product.description || product.desc || '',
       image: toCloudUrl(product.image_url || product.image || product.cover_url)
@@ -653,11 +761,15 @@
         <div class="shop-grid shop-grid--catalog">
         ${state.products.map((product) => {
           const quantity = state.cartQuantities[product.id] || 0;
-          const cap = Math.min(product.stock || Infinity, product.limit || Infinity);
+          const stockCap = product.stock == null ? Infinity : product.stock;
+          const cap = Math.min(stockCap, product.limit || Infinity);
+          const soldOut = product.stock === 0;
           return `
-            <article class="shop-card">
+            <article class="shop-card ${soldOut ? 'shop-card--soldout' : ''}">
               <div class="shop-card-media">
-                ${product.stock ? `<div class="shop-card-stock">${escapeHtml(c.stock)} ${product.stock}</div>` : ''}
+                ${soldOut
+                  ? `<div class="shop-card-stock shop-card-stock--soldout">${escapeHtml(c.soldOut)}</div>`
+                  : (product.stock != null ? `<div class="shop-card-stock">${escapeHtml(c.stock)} ${product.stock}</div>` : '')}
                 ${product.image
                   ? `<img class="shop-card-image" src="${escapeHtml(product.image)}" alt="${escapeHtml(product.title)}" loading="lazy">`
                   : `<div class="shop-card-placeholder">
@@ -745,7 +857,8 @@
       const product = state.products.find((item) => String(item.id) === String(pid));
       if (!product) return;
       const quantity = state.cartQuantities[pid] || 0;
-      const cap = Math.min(product.stock || Infinity, product.limit || Infinity);
+      const stockCap = product.stock == null ? Infinity : product.stock;
+      const cap = Math.min(stockCap, product.limit || Infinity);
       if (qtyEl) qtyEl.textContent = quantity;
       dec.disabled = quantity <= 0;
       inc.disabled = quantity >= cap;
@@ -888,7 +1001,14 @@
         ${pickup.address ? `<div class="my-order-pickup-line">${escapeHtml(pickup.address)}</div>` : ''}
       </div>` : '';
 
-    const cancelHtml = !cancellable ? '' : (prompting ? `
+    const totalNum = Number(order.total_amount) || 0;
+    // 已有订单：查看付款方式（含实时汇率），active 卡片始终提供，便于二次付款。
+    const paymentBtn = allowCancel
+      ? `<button class="my-order-pay-btn" type="button" data-order-payment="${escapeHtml(String(totalNum))}">${escapeHtml(c.viewPayment)}</button>`
+      : '';
+
+    const cancelHtml = !cancellable ? (paymentBtn ? `
+      <div class="my-order-cancel-row">${paymentBtn}</div>` : '') : (prompting ? `
       <div class="my-order-cancel-confirm">
         <div class="my-order-cancel-warn">${escapeHtml(c.cancelWarn)}</div>
         <div class="my-order-cancel-actions">
@@ -897,6 +1017,7 @@
         </div>
       </div>` : `
       <div class="my-order-cancel-row">
+        ${paymentBtn}
         <button class="my-order-cancel-btn" type="button" data-order-cancel="${escapeHtml(order.id)}">${escapeHtml(c.cancelOrder)}</button>
       </div>`);
 
@@ -1104,67 +1225,67 @@
     const note = (state.note || '').trim();
     orderConfirmBody.innerHTML = `
       <div class="portal-title">${escapeHtml(c.confirmSubmitTitle)}</div>
-      <div class="confirm-section">
-        <div class="confirm-heading">${escapeHtml(c.orderItems)}</div>
-        <div class="portal-summary">
-          ${items.map((item) => `
-            <div class="portal-summary-row">
-              <span>${escapeHtml(item.title)} × ${item.quantity}</span>
-              <span>${escapeHtml(formatMoney((item.unitPrice || 0) * item.quantity))}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-      <div class="confirm-section confirm-total-row">
-        <span class="confirm-heading">${escapeHtml(c.total)}</span>
-        <span class="confirm-total">${escapeHtml(formatMoney(total))}</span>
-      </div>
-      <div class="confirm-section">
-        <div class="confirm-heading">${escapeHtml(c.payment)}</div>
-        <div class="confirm-currency-warning">${escapeHtml(c.currencyWarning)}</div>
-        <div class="confirm-pay-card">
-          <div class="confirm-pay-info">
-            <div class="confirm-pay-name">${escapeHtml(c.zelle)}</div>
-            <div class="confirm-pay-value">${escapeHtml(c.zelleValue)}</div>
-          </div>
-          <button class="confirm-pay-copy" type="button" data-confirm-copy="${escapeHtml(c.zelleValue)}">${escapeHtml(c.copy)}</button>
-        </div>
-        <div class="confirm-pay-card">
-          <div class="confirm-pay-info">
-            <div class="confirm-pay-name">${escapeHtml(c.venmo)}</div>
-            <div class="confirm-pay-value">${escapeHtml(c.venmoValue)}</div>
-          </div>
-          <button class="confirm-pay-copy" type="button" data-confirm-copy="${escapeHtml(c.venmoValue)}">${escapeHtml(c.copy)}</button>
-        </div>
-        <div class="confirm-pay-card">
-          <div class="confirm-pay-info">
-            <div class="confirm-pay-name">${escapeHtml(c.alipay)}</div>
-            <div class="confirm-pay-value">${escapeHtml(c.alipayLine)}</div>
+      <div class="confirm-scroll">
+        <div class="confirm-section">
+          <div class="confirm-heading">${escapeHtml(c.orderItems)}</div>
+          <div class="portal-summary">
+            ${items.map((item) => `
+              <div class="portal-summary-row">
+                <span>${escapeHtml(item.title)} × ${item.quantity}</span>
+                <span>${escapeHtml(formatMoney((item.unitPrice || 0) * item.quantity))}</span>
+              </div>
+            `).join('')}
           </div>
         </div>
-        <div class="confirm-pay-instruction">${escapeHtml(c.confirmLine1)}</div>
-      </div>
-      <div class="confirm-section">
-        <div class="confirm-heading">${escapeHtml(c.rules)}</div>
-        <div class="confirm-rules-line">${escapeHtml(c.rulesLine)}</div>
-      </div>
-      <div class="confirm-section">
-        <div class="confirm-pickup-head">
-          <div class="confirm-heading">${escapeHtml(c.pickupInfo)}</div>
-          <button class="confirm-pickup-change" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>
+        <div class="confirm-section confirm-total-row">
+          <span class="confirm-heading">${escapeHtml(c.total)}</span>
+          <span class="confirm-total">${escapeHtml(formatMoney(total))} <span class="confirm-total-cur">USD</span></span>
         </div>
-        ${pickup ? `
-          <div class="confirm-pickup-line">${escapeHtml(getPickupLabel(pickup))}</div>
-          ${pickupMeta ? `<div class="confirm-pickup-meta">${escapeHtml(pickupMeta)}</div>` : ''}
-        ` : ''}
-        ${note ? `<div class="confirm-note-line"><span class="confirm-note-label">${escapeHtml(c.orderComment)}</span>${escapeHtml(note)}</div>` : ''}
+        <div class="confirm-section">
+          <div class="confirm-heading">${escapeHtml(c.payment)}</div>
+          ${renderPaymentMethods(total)}
+          <div class="confirm-pay-instruction">${escapeHtml(c.confirmLine1)}</div>
+        </div>
+        <div class="confirm-section">
+          <div class="confirm-pickup-head">
+            <div class="confirm-heading">${escapeHtml(c.pickupInfo)}</div>
+            <button class="confirm-pickup-change" type="button" data-shop-action="pickup-overlay">${escapeHtml(c.pickupChange)}</button>
+          </div>
+          ${pickup ? `
+            <div class="confirm-pickup-line">${escapeHtml(getPickupLabel(pickup))}</div>
+            ${pickupMeta ? `<div class="confirm-pickup-meta">${escapeHtml(pickupMeta)}</div>` : ''}
+          ` : ''}
+          ${note ? `<div class="confirm-note-line"><span class="confirm-note-label">${escapeHtml(c.orderComment)}</span>${escapeHtml(note)}</div>` : ''}
+        </div>
       </div>
-      <div class="portal-actions confirm-actions">
-        <button class="shop-secondary-button" type="button" data-order-confirm-close>${escapeHtml(c.cancelConfirm)}</button>
-        <button class="shop-submit-button" type="button" data-confirm-action="submit">${escapeHtml(c.confirmSubmit)}</button>
+      <div class="confirm-actionbar">
+        <button class="shop-submit-button confirm-place-btn" type="button" data-confirm-action="submit">${escapeHtml(c.placeOrder)} · ${escapeHtml(formatMoney(total))}</button>
+        <button class="confirm-back-btn" type="button" data-order-confirm-close>${escapeHtml(c.backToEdit)}</button>
       </div>
     `;
     openOverlay(orderConfirmOverlay);
+    // 打开即拉取实时汇率，到达后只刷新支付宝卡片。
+    loadExchangeRate().then((rate) => { if (rate) refreshFxSlots(); });
+  }
+
+  // 已有订单点“查看付款方式”：只展示付款方式（含实时汇率折算），供二次付款参考。
+  function renderPaymentInfoOverlay(totalUsd) {
+    if (!paymentInfoBody) return;
+    const c = copy();
+    const total = Number(totalUsd) || 0;
+    paymentInfoBody.innerHTML = `
+      <div class="portal-title">${escapeHtml(c.payment)}</div>
+      <div class="confirm-section">
+        ${total ? `<div class="confirm-total-row" style="margin-top:0;border-top:none;padding-top:0;">
+          <span class="confirm-heading">${escapeHtml(c.total)}</span>
+          <span class="confirm-total">${escapeHtml(formatMoney(total))} <span class="confirm-total-cur">USD</span></span>
+        </div>` : ''}
+        ${renderPaymentMethods(total)}
+        <div class="confirm-pay-instruction">${escapeHtml(c.confirmLine1)}</div>
+      </div>
+    `;
+    openOverlay(paymentInfoOverlay);
+    loadExchangeRate().then((rate) => { if (rate) refreshFxSlots(); });
   }
 
   function getSavedNickname() {
@@ -1367,7 +1488,9 @@
       return;
     }
     if (shopAction === 'review') {
-      if (!state.pickupConfirmed) {
+      // 已经默认选好自提点、确认弹窗里也能“更改”，这里不再强制弹出选地址弹窗
+      // （之前 pickupConfirmed 为 false 时会“有几率”重新弹出，属于误触发）。
+      if (!getPickup()) {
         renderPickupOverlay();
         return;
       }
@@ -1392,6 +1515,8 @@
     const orderCancel = event.target.closest('[data-order-cancel]');
     const orderCancelConfirm = event.target.closest('[data-order-cancel-confirm]');
     const orderCancelDismiss = event.target.closest('[data-order-cancel-dismiss]');
+    const orderPayment = event.target.closest('[data-order-payment]');
+    const paymentInfoClose = event.target.closest('[data-payment-info-close]');
 
     if (profileClose) {
       state.profileEditMode = false;
@@ -1399,6 +1524,8 @@
       closeOverlay(profileOverlay, profileOverlayBody);
     }
     if (pickupClose) closeOverlay(pickupOverlay, pickupOverlayBody);
+    if (paymentInfoClose) closeOverlay(paymentInfoOverlay, paymentInfoBody);
+    if (orderPayment) renderPaymentInfoOverlay(orderPayment.dataset.orderPayment);
     if (confirmClose) closeOverlay(orderConfirmOverlay, orderConfirmBody);
     if (successClose) closeOverlay(orderSuccessOverlay, orderSuccessBody);
     if (adminClose) closeOverlay(adminOverlay, adminOverlayBody);
@@ -1479,6 +1606,7 @@
       closeOverlay(orderSuccessOverlay, orderSuccessBody);
       closeOverlay(profileOverlay, profileOverlayBody);
       closeOverlay(pickupOverlay, pickupOverlayBody);
+      closeOverlay(paymentInfoOverlay, paymentInfoBody);
       closeOverlay(adminOverlay, adminOverlayBody);
     }
   });
