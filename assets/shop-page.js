@@ -371,7 +371,7 @@
 
   function normalizeProduct(product) {
     const stock = Number(product.stock);
-    const limit = Number(product.per_order_limit || product.limit || product.max_per_order);
+    const limit = Number(product.limit_per_order || product.per_order_limit || product.limit || product.max_per_order);
     const c = copy();
     return {
       id: String(product.id || product.product_id || product.slug || product.name),
