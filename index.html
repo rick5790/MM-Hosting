@@ -420,6 +420,15 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .shop-panel{max-width:1080px;margin:0 auto;padding:2rem;border-radius:30px;background:rgba(255,252,248,.9);border:1px solid rgba(196,153,106,.18);box-shadow:0 22px 56px rgba(45,31,15,.08);}
 .shop-loading,.shop-empty,.shop-error{padding:1.35rem 1.5rem;border-radius:22px;background:rgba(124,101,97,.06);color:#6a584c;font-size:14px;line-height:1.7;text-align:center;}
 .shop-error{color:#7c3f35;background:rgba(124,63,53,.08);}
+/* 团购结束（售罄）状态 —— 下次见 + 加微信二维码 */
+.shop-closed{display:flex;flex-direction:column;align-items:center;text-align:center;padding:.5rem 1rem 1rem;}
+.shop-closed-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.15rem;border-radius:999px;background:#fff;border:1px solid rgba(196,153,106,.3);box-shadow:0 10px 26px rgba(124,63,53,.08);color:#3f342c;font-size:15px;font-weight:800;}
+.shop-closed-badge-emoji{font-size:17px;}
+.shop-closed-title{margin-top:1.5rem;font-size:clamp(2.6rem,9vw,3.6rem);line-height:1;font-weight:800;letter-spacing:-.02em;color:#2d1f0f;}
+.shop-closed-sub{margin-top:1.1rem;max-width:560px;color:#7b6556;font-size:15px;line-height:1.85;}
+.shop-closed-qr{margin-top:2rem;width:min(78vw,300px);padding:20px;border-radius:26px;background:#fff;border:1px solid rgba(45,31,15,.07);box-shadow:0 18px 44px rgba(45,31,15,.10);}
+.shop-closed-qr img{display:block;width:100%;height:auto;object-fit:contain;border-radius:14px;}
+.shop-closed-caption{margin-top:1.2rem;color:#8a7467;font-size:13px;font-weight:700;letter-spacing:.02em;}
 .shop-hero{display:flex;justify-content:space-between;gap:1.6rem;align-items:flex-start;padding:1.1rem 1.2rem 1.3rem;border-radius:26px;background:linear-gradient(135deg,rgba(255,248,241,.95),rgba(243,231,216,.98));border:1px solid rgba(196,153,106,.14);}
 .shop-hero-copy{max-width:640px;}
 .shop-hero--closed{justify-content:center;align-items:center;text-align:center;}
@@ -627,6 +636,16 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .contact-code-label{font-size:12px;color:var(--muted);margin-bottom:.6rem;letter-spacing:.08em;}
 .contact-code-box{width:220px;height:220px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 36px rgba(45,31,15,.12);}
 .contact-code-box img{width:100%;height:100%;object-fit:contain;padding:12px;background:#fff;border-radius:18px;}
+/* 往期甜品无缝滑动展示 */
+.dessert-showcase{position:relative;width:100%;max-width:1100px;margin:1rem auto 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);}
+.showcase-track{display:flex;width:max-content;animation:showcase-slide 46s linear infinite;}
+.dessert-showcase:hover .showcase-track{animation-play-state:paused;}
+.showcase-card{flex:0 0 auto;width:190px;margin-right:1.1rem;text-align:center;}
+.showcase-card-img{width:190px;height:190px;border-radius:22px;overflow:hidden;background:#efe3d1;box-shadow:0 14px 34px rgba(45,31,15,.10);border:1px solid rgba(196,153,106,.14);}
+.showcase-card-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.showcase-card-name{margin-top:.7rem;font-size:13px;line-height:1.5;font-weight:700;color:#4f4339;padding:0 .2rem;}
+@keyframes showcase-slide{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+@media (prefers-reduced-motion:reduce){.showcase-track{animation:none;}.dessert-showcase{overflow-x:auto;}}
 
 footer{background:var(--dark);padding:3.25rem 3rem 2rem;}
 .ft{display:grid;grid-template-columns:minmax(340px,1.5fr) minmax(180px,.72fr) minmax(180px,.72fr);align-items:flex-start;gap:4.5rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.06);}
@@ -973,6 +992,8 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .social-head{flex-direction:column;align-items:flex-start;}
   .social-grid{grid-template-columns:1fr;}
   .contact-codes{grid-template-columns:1fr;}
+  .showcase-card{width:150px;}
+  .showcase-card-img{width:150px;height:150px;}
   .hero,.products,.order{padding-left:1.2rem;padding-right:1.2rem;}
   .ft{grid-template-columns:1fr;gap:2rem;}
 }
@@ -1531,17 +1552,8 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 <section id="order" class="order">
   <div class="sec-eye" style="display:none;"></div>
   <h2 class="sec-title"><span class="order-title-line">限量纯手工制作 ·</span><span class="order-title-line">采用新鲜有机原料</span></h2>
-  <p class="sec-sub">添加我们的WeChat获得最新动态</p>
-  <div style="display:flex;flex-direction:column;align-items:center;">
-    <div class="contact-codes">
-      <div class="contact-code">
-        <div class="contact-code-label">微信</div>
-        <div class="contact-code-box">
-          <img src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua WeChat QR code"/>
-        </div>
-      </div>
-    </div>
-  </div>
+  <p class="sec-sub">往期人气甜品图鉴</p>
+  <div class="dessert-showcase" id="dessertShowcase" aria-label="往期甜品"></div>
 </section>
 
 <footer id="footer">
@@ -1867,6 +1879,32 @@ function closeQrOverlay() {
 
 renderMenuCards();
 
+// 首页底部「限量纯手工制作」区块：从图鉴里随机挑几款甜品做无缝滑动展示（名字+图片）。
+let dessertShowcaseItems = null;
+function renderDessertShowcase() {
+  const host = document.getElementById('dessertShowcase');
+  if (!host) return;
+  if (!dessertShowcaseItems) {
+    const all = collectionArchiveData.reduce((acc, g) => acc.concat(g.items || []), []).filter((it) => it.image);
+    for (let i = all.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = all[i]; all[i] = all[j]; all[j] = tmp;
+    }
+    dessertShowcaseItems = all.slice(0, Math.min(10, all.length));
+  }
+  if (!dessertShowcaseItems.length) { host.innerHTML = ''; return; }
+  const lang = getUiLang();
+  const cardHtml = (item) => `
+    <div class="showcase-card">
+      <div class="showcase-card-img"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(localizeCollectionText(item.title, lang))}" loading="lazy"></div>
+      <div class="showcase-card-name">${escapeHtml(localizeCollectionText(item.title, lang))}</div>
+    </div>`;
+  const cards = dessertShowcaseItems.map(cardHtml).join('');
+  // 复制一份，配合 translateX(-50%) 实现无缝循环滚动
+  host.innerHTML = `<div class="showcase-track">${cards}${cards}</div>`;
+}
+renderDessertShowcase();
+
 if (menuGrid) {
   menuGrid.addEventListener('click', (event) => {
     const button = event.target.closest('[data-menu-target]');
@@ -1927,6 +1965,10 @@ const orderPortalCopy = {
     orderNow: '进入订单',
     weeklyMenu: '本周菜单',
     orderClosedCopy: '当前网页端预定未开启。等你们后台打开后，这里会和小程序同步显示。',
+    closedBadge: '本次甜品已被抢光啦',
+    closedTitle: '下次见',
+    closedMessage: '本次的甜品都已收单，正在赶制中。下次开团时间不定，扫码添加微信，第一时间获得开售通知。',
+    closedQrCaption: '扫码添加微信 · 获取开售通知',
     selectPickup: '选择自提',
     category: '本期甜品',
     deadlinePrefix: '截单：',
@@ -1993,6 +2035,10 @@ const orderPortalCopy = {
     orderNow: 'Open Ordering',
     weeklyMenu: 'Weekly Menu',
     orderClosedCopy: 'Web ordering is currently closed. Once the admin opens it, this page will sync with the miniapp.',
+    closedBadge: 'This batch is all sold out',
+    closedTitle: 'See you next time',
+    closedMessage: 'This round is fully booked and we are busy baking. The next drop time is flexible — scan to add us on WeChat and be the first to know when it opens.',
+    closedQrCaption: 'Scan to add WeChat · get drop alerts',
     selectPickup: 'Choose Pickup',
     category: 'Weekly Desserts',
     deadlinePrefix: 'Deadline: ',
@@ -2329,18 +2375,16 @@ function renderShop() {
   }
 
   if (!isWeeklyOpen()) {
-    shopRoot.className = '';
+    shopRoot.className = 'shop-closed-wrap';
     shopRoot.innerHTML = `
-      <div class="shop-hero shop-hero--closed">
-        <div class="shop-hero-copy">
-          ${(siteState.weeklyOrder && (siteState.weeklyOrder.title || siteState.weeklyOrder.name))
-            ? `<div class="shop-title">${escapeHtml(siteState.weeklyOrder.title || siteState.weeklyOrder.name)}</div>`
-            : ''}
-          <div class="shop-sub">${escapeHtml(copy.orderClosedCopy)}</div>
+      <div class="shop-closed">
+        <div class="shop-closed-badge"><span class="shop-closed-badge-emoji">🍪</span>${escapeHtml(copy.closedBadge)}</div>
+        <div class="shop-closed-title">${escapeHtml(copy.closedTitle)}</div>
+        <div class="shop-closed-sub">${escapeHtml(copy.closedMessage)}</div>
+        <div class="shop-closed-qr">
+          <img src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua WeChat QR code" loading="lazy">
         </div>
-        <div class="shop-countdown-wrap">
-          <div class="shop-deadline">${escapeHtml(copy.closedHint)}</div>
-        </div>
+        <div class="shop-closed-caption">${escapeHtml(copy.closedQrCaption)}</div>
       </div>
     `;
     return;
@@ -3736,7 +3780,7 @@ const bilingualCopy = {
     order: {
       eye: '',
       title: '<span class="order-title-line">限量纯手工制作</span><span class="order-title-line">采用新鲜有机原料</span>',
-      sub: '添加我们的WeChat获得最新动态',
+      sub: '往期人气甜品图鉴',
       labels: ['微信']
     },
     footer: {
@@ -3875,7 +3919,7 @@ const bilingualCopy = {
     order: {
       eye: '',
       title: '<span class="order-title-line">Small-batch handmade desserts</span><span class="order-title-line">made with fresh premium ingredients</span>',
-      sub: 'The lineup rotates weekly. To protect freshness and food safety, all orders are preorder only. The latest booking link updates every week. Message us on WeChat or Instagram.',
+      sub: 'A look at our past dessert lineup',
       labels: ['WeChat', 'Rednote Highlights']
     },
     footer: {
@@ -4018,6 +4062,7 @@ function applyBilingualLanguage(lang) {
   bilingualSetText('#menu .menu-head .sec-eye', copy.menu.headEye);
   bilingualSetText('#menu .menu-head .sec-title', copy.menu.headTitle);
   renderMenuCards(lang, copy.menu.cardIcon);
+  renderDessertShowcase();
 
   bilingualRefreshOpenMenu();
 
