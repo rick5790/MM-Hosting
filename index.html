@@ -1699,7 +1699,8 @@ const productCards = document.querySelectorAll('.card');
 const supportsTouchPreview = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 const collectionImageVersion = '20260619';
 const collectionImageBase = 'https://api.makkiemua.com/uploads/collection';
-const collectionArchiveData = [
+// 硬编码图鉴作为兜底；页面加载后会尝试用后台 /api/collection 覆盖，实现与后台同步。
+let collectionArchiveData = [
   {
     id: 'menu-basque',
     title: { zh: '巴斯克蛋糕', en: 'Basque Cheesecake' },
@@ -1913,6 +1914,38 @@ function renderDessertShowcase() {
   host.innerHTML = `<div class="showcase-track">${cards}${cards}</div>`;
 }
 renderDessertShowcase();
+
+// 与后台图鉴同步：加载后拉取 /api/collection，成功则覆盖硬编码并重渲染（失败保留兜底）。
+const COLLECTION_API_URL = 'https://admin.makkiemua.com/api/collection';
+async function loadCollectionFromApi() {
+  try {
+    const res = await fetch(COLLECTION_API_URL, { credentials: 'omit' });
+    if (!res.ok) return;
+    const payload = await res.json();
+    const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
+    const mapped = groups.map((g, i) => ({
+      id: 'cat-' + i,
+      title: { zh: g.group || '', en: g.group || '' },
+      subtitle: { zh: '', en: '' },
+      items: (g.items || [])
+        .map((it) => ({
+          title: { zh: it.name || '', en: it.name_en || it.name || '' },
+          image: it.image_url || ''
+        }))
+        .filter((it) => it.image)
+    })).filter((g) => g.items.length);
+    if (!mapped.length) return;
+    collectionArchiveData = mapped;
+    dessertShowcaseItems = null; // 数据变了，重新随机
+    const lang = getUiLang();
+    const icon = (bilingualCopy[lang] && bilingualCopy[lang].menu && bilingualCopy[lang].menu.cardIcon) || '查看图鉴';
+    renderMenuCards(lang, icon);
+    renderDessertShowcase();
+  } catch (error) {
+    // 网络/CORS 失败：保留硬编码图鉴
+  }
+}
+loadCollectionFromApi();
 
 if (menuGrid) {
   menuGrid.addEventListener('click', (event) => {
