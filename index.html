@@ -634,6 +634,11 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .contact-code-label{font-size:12px;color:var(--muted);margin-bottom:.6rem;letter-spacing:.08em;}
 .contact-code-box{width:220px;height:220px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 36px rgba(45,31,15,.12);}
 .contact-code-box img{width:100%;height:100%;object-fit:contain;padding:12px;background:#fff;border-radius:18px;}
+/* 二维码支持手机长按保存（含微信浏览器识别二维码） */
+.contact-code-img{-webkit-touch-callout:default;touch-action:manipulation;}
+/* “添加我们的WeChat获得最新动态” 做成更明显的微信绿药丸 */
+#order .sec-sub.order-wechat-pill{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1.35rem;border-radius:999px;background:#5a7c61;color:#fff;font-size:14px;font-weight:700;letter-spacing:.02em;margin:.1rem auto 2.4rem;box-shadow:0 12px 26px rgba(90,124,97,.24);}
+#order .sec-sub.order-wechat-pill::before{content:'💬';font-size:13px;line-height:1;}
 
 footer{background:var(--dark);padding:3.25rem 3rem 2rem;}
 .ft{display:grid;grid-template-columns:minmax(340px,1.5fr) minmax(180px,.72fr) minmax(180px,.72fr);align-items:flex-start;gap:4.5rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.06);}
@@ -1545,13 +1550,13 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 <section id="order" class="order">
   <div class="sec-eye" style="display:none;"></div>
   <h2 class="sec-title"><span class="order-title-line">限量纯手工制作 ·</span><span class="order-title-line">采用新鲜有机原料</span></h2>
-  <p class="sec-sub">添加我们的WeChat获得最新动态</p>
+  <p class="sec-sub order-wechat-pill">添加我们的WeChat获得最新动态</p>
   <div style="display:flex;flex-direction:column;align-items:center;">
     <div class="contact-codes">
       <div class="contact-code">
-        <div class="contact-code-label">微信</div>
+        <div class="contact-code-label">长按保存</div>
         <div class="contact-code-box">
-          <img src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua WeChat QR code"/>
+          <img class="contact-code-img" src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua 微信二维码（长按保存）"/>
         </div>
       </div>
     </div>
@@ -1973,7 +1978,7 @@ const orderPortalCopy = {
     weeklyMenu: '本周菜单',
     orderClosedCopy: '当前网页端预定未开启。等你们后台打开后，这里会和小程序同步显示。',
     closedTitle: '下次见',
-    closedMessage: '本次的甜品都已收单，正在赶制中。下次开团时间不定，敬请期待下次开售。',
+    closedMessage: '本次的甜品都已收单，敬请期待下次开售',
     closedBtn: '预定还未开始',
     selectPickup: '选择自提',
     category: '本期甜品',
@@ -2042,7 +2047,7 @@ const orderPortalCopy = {
     weeklyMenu: 'Weekly Menu',
     orderClosedCopy: 'Web ordering is currently closed. Once the admin opens it, this page will sync with the miniapp.',
     closedTitle: 'See you next time',
-    closedMessage: 'This round is fully booked and we are busy baking. The next drop time is flexible — stay tuned for the next opening.',
+    closedMessage: 'This round is fully booked and we are busy baking - stay tuned for the next opening',
     closedBtn: 'Preorder not open yet',
     selectPickup: 'Choose Pickup',
     category: 'Weekly Desserts',
@@ -3808,7 +3813,7 @@ const bilingualCopy = {
       eye: '',
       title: '<span class="order-title-line">限量纯手工制作</span><span class="order-title-line">采用新鲜有机原料</span>',
       sub: '添加我们的WeChat获得最新动态',
-      labels: ['微信']
+      labels: ['长按保存']
     },
     footer: {
       tagline: 'Butter off with Makkie',
@@ -3946,8 +3951,8 @@ const bilingualCopy = {
     order: {
       eye: '',
       title: '<span class="order-title-line">Small-batch handmade desserts</span><span class="order-title-line">made with fresh premium ingredients</span>',
-      sub: 'The lineup rotates weekly. To protect freshness and food safety, all orders are preorder only. The latest booking link updates every week. Message us on WeChat or Instagram.',
-      labels: ['WeChat', 'Rednote Highlights']
+      sub: 'Add us on WeChat for the latest',
+      labels: ['Long-press to save', 'Rednote Highlights']
     },
     footer: {
       tagline: 'Butter off with Makkie',
