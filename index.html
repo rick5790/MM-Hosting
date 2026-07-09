@@ -1133,6 +1133,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <canvas class="shop-silk-canvas" id="shopSilkCanvas" aria-hidden="true"></canvas>
     <div class="shop-entry-head">
       <div class="shop-entry-copy">
+        <div class="shop-entry-open" id="shopEntryOpen">
         <div class="sec-eye" id="shopEntryEye">订单入口</div>
         <h2 class="sec-title" id="shopEntryTitle">本周预定入口</h2>
         <p class="sec-sub" id="shopEntrySub">请期待下次团购哦，关注我们的社交媒体获得下次通知</p>
@@ -1161,6 +1162,14 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
           </div>
         </div>
         <button class="shop-entry-cta" id="shopEntryCta" type="button" data-order-entry>进入订单</button>
+        </div>
+        <div class="shop-entry-closed" id="shopEntryClosed" hidden>
+          <div class="shop-closed-badge"><span class="shop-closed-badge-emoji">🍪</span><span id="shopClosedBadge">本次甜品已被抢光啦</span></div>
+          <div class="shop-closed-title" id="shopClosedTitle">下次见</div>
+          <div class="shop-closed-sub" id="shopClosedSub"></div>
+          <div class="shop-closed-qr"><img src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua WeChat QR code" loading="lazy"></div>
+          <div class="shop-closed-caption" id="shopClosedCaption"></div>
+        </div>
       </div>
     </div>
     <div class="shop-entry-status" id="shopEntryStatus" style="justify-content:center;">
@@ -2375,16 +2384,18 @@ function renderShop() {
   }
 
   if (!isWeeklyOpen()) {
-    shopRoot.className = 'shop-closed-wrap';
+    shopRoot.className = '';
     shopRoot.innerHTML = `
-      <div class="shop-closed">
-        <div class="shop-closed-badge"><span class="shop-closed-badge-emoji">🍪</span>${escapeHtml(copy.closedBadge)}</div>
-        <div class="shop-closed-title">${escapeHtml(copy.closedTitle)}</div>
-        <div class="shop-closed-sub">${escapeHtml(copy.closedMessage)}</div>
-        <div class="shop-closed-qr">
-          <img src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua WeChat QR code" loading="lazy">
+      <div class="shop-hero shop-hero--closed">
+        <div class="shop-hero-copy">
+          ${(siteState.weeklyOrder && (siteState.weeklyOrder.title || siteState.weeklyOrder.name))
+            ? `<div class="shop-title">${escapeHtml(siteState.weeklyOrder.title || siteState.weeklyOrder.name)}</div>`
+            : ''}
+          <div class="shop-sub">${escapeHtml(copy.orderClosedCopy)}</div>
         </div>
-        <div class="shop-closed-caption">${escapeHtml(copy.closedQrCaption)}</div>
+        <div class="shop-countdown-wrap">
+          <div class="shop-deadline">${escapeHtml(copy.closedHint)}</div>
+        </div>
       </div>
     `;
     return;
@@ -2950,7 +2961,28 @@ function updateShopEntryCountdown() {
   const widget = document.getElementById('shopEntryCountdown');
   if (!widget || siteState.loading) return;
   const deadlineMs = getWeeklyDeadlineMs();
-  const active = isGroupBuyActive() && deadlineMs;
+  // ?preview=closed 可强制预览「团购结束」售罄态，方便本地/线上验收。
+  const forceClosed = /[?&]preview=closed/.test(location.search);
+  const active = !forceClosed && isGroupBuyActive() && deadlineMs;
+
+  // 团购结束时，首页下单区整块换成「下次见」售罄卡（徽章+标题+说明+微信二维码）。
+  const openBlock = document.getElementById('shopEntryOpen');
+  const closedBlock = document.getElementById('shopEntryClosed');
+  if (openBlock && closedBlock) {
+    if (!active) {
+      const oc = getOrderCopy();
+      const setTxt = (elId, val) => { const el = document.getElementById(elId); if (el && val != null) el.textContent = val; };
+      setTxt('shopClosedBadge', oc.closedBadge);
+      setTxt('shopClosedTitle', oc.closedTitle);
+      setTxt('shopClosedSub', oc.closedMessage);
+      setTxt('shopClosedCaption', oc.closedQrCaption);
+      openBlock.hidden = true;
+      closedBlock.hidden = false;
+    } else {
+      openBlock.hidden = false;
+      closedBlock.hidden = true;
+    }
+  }
 
   if (!active) {
     widget.hidden = true;
@@ -4063,6 +4095,7 @@ function applyBilingualLanguage(lang) {
   bilingualSetText('#menu .menu-head .sec-title', copy.menu.headTitle);
   renderMenuCards(lang, copy.menu.cardIcon);
   renderDessertShowcase();
+  updateShopEntryCountdown();
 
   bilingualRefreshOpenMenu();
 
