@@ -690,21 +690,44 @@ nav{
   margin-right:auto;
   overflow:visible;
 }
+/* 3D 落地阴影，把立体的层叠“压”在桌面上 */
+.layers-showcase-stack-shell::after{
+  content:'';
+  position:absolute;
+  left:50%;
+  bottom:6px;
+  width:64%;
+  height:20px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:radial-gradient(ellipse at center, rgba(74,44,18,.22), rgba(74,44,18,0) 70%);
+  filter:blur(3px);
+  z-index:0;
+  transition:opacity .5s ease, transform .5s ease;
+}
+.layers-showcase-card.is-active .layers-showcase-stack-shell::after{
+  transform:translateX(-50%) scale(1.12);
+  opacity:.9;
+}
 .layers-showcase-stack{
   position:relative;
   width:100%;
   height:100%;
   transform-style:preserve-3d;
+  /* 默认就带一点立体倾斜，让每一层看起来是 3D 的 */
+  transform:rotateX(16deg) rotateY(-15deg);
   transition:transform .65s cubic-bezier(.34,1.3,.64,1);
+  z-index:1;
 }
 .layers-showcase-card.is-active .layers-showcase-stack{
-  transform:rotateX(14deg) rotateY(-10deg);
+  transform:rotateX(24deg) rotateY(-22deg) translateY(-6px) scale(1.04);
 }
 .layers-showcase-part{
   position:absolute;
   left:50%;
   transform-style:preserve-3d;
   transition:transform .6s cubic-bezier(.34,1.45,.64,1);
+  filter:drop-shadow(0 6px 10px rgba(74,44,18,.16));
 }
 .layers-showcase-tag{
   position:absolute;
