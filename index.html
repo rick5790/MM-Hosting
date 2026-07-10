@@ -217,12 +217,11 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 }
 .hero{text-align:center;padding:4.4rem 2rem 4rem;background:var(--bg);}
 .hero-logo{
-  width:min(68vw,360px);
+  width:min(56vw,300px);
   aspect-ratio:1/1;
   display:block;
   margin:0 auto 1.1rem;
   background:transparent;
-  mix-blend-mode:multiply;
   object-fit:cover;
   object-position:center;
   border-radius:50%;
@@ -242,7 +241,7 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
   object-fit:contain;
 }
 .hero-eyebrow{font-size:12px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.6rem;font-family:'Noto Serif SC',serif;}
-.hero-title{font-size:clamp(3rem,8vw,6.5rem);font-weight:600;line-height:0.95;letter-spacing:-0.03em;color:var(--text);margin-bottom:1.2rem;}
+.hero-title{font-size:clamp(3rem,8vw,6.5rem);font-weight:600;line-height:0.95;letter-spacing:-0.03em;color:var(--text);margin-bottom:2.5rem;}
 .hero-title em{font-style:normal;color:var(--text);font-weight:600;}
 .hero-sub{font-size:15px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:2.5rem;}
 .hero-links{
@@ -421,6 +420,13 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .shop-panel{max-width:1080px;margin:0 auto;padding:2rem;border-radius:30px;background:rgba(255,252,248,.9);border:1px solid rgba(196,153,106,.18);box-shadow:0 22px 56px rgba(45,31,15,.08);}
 .shop-loading,.shop-empty,.shop-error{padding:1.35rem 1.5rem;border-radius:22px;background:rgba(124,101,97,.06);color:#6a584c;font-size:14px;line-height:1.7;text-align:center;}
 .shop-error{color:#7c3f35;background:rgba(124,63,53,.08);}
+/* 团购结束（售罄）状态 —— 下次见 + 加微信二维码 */
+.shop-closed{display:flex;flex-direction:column;align-items:center;text-align:center;padding:.5rem 1rem 1rem;}
+.shop-closed-title{margin-top:.5rem;font-size:clamp(2.6rem,9vw,3.6rem);line-height:1;font-weight:800;letter-spacing:-.02em;color:#2d1f0f;}
+.shop-closed-sub{margin-top:1.1rem;max-width:560px;color:#7b6556;font-size:15px;line-height:1.85;}
+/* 预定还未开始：与图四同款按钮，但置灰不可点 */
+.shop-entry-cta--soon{background:rgba(79,67,57,.3);color:#fffaf6;box-shadow:none;cursor:default;}
+.shop-entry-cta--soon:hover{background:rgba(79,67,57,.3);transform:none;}
 .shop-hero{display:flex;justify-content:space-between;gap:1.6rem;align-items:flex-start;padding:1.1rem 1.2rem 1.3rem;border-radius:26px;background:linear-gradient(135deg,rgba(255,248,241,.95),rgba(243,231,216,.98));border:1px solid rgba(196,153,106,.14);}
 .shop-hero-copy{max-width:640px;}
 .shop-hero--closed{justify-content:center;align-items:center;text-align:center;}
@@ -628,6 +634,10 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .contact-code-label{font-size:12px;color:var(--muted);margin-bottom:.6rem;letter-spacing:.08em;}
 .contact-code-box{width:220px;height:220px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 36px rgba(45,31,15,.12);}
 .contact-code-box img{width:100%;height:100%;object-fit:contain;padding:12px;background:#fff;border-radius:18px;}
+/* 二维码支持手机长按保存（含微信浏览器识别二维码） */
+.contact-code-img{-webkit-touch-callout:default;touch-action:manipulation;}
+/* “添加我们的WeChat获得最新动态” 做成醒目的深棕药丸（与「查看主页」按钮同风格） */
+#order .sec-sub.order-wechat-pill{display:inline-flex;align-items:center;white-space:nowrap;padding:.72rem 1.7rem;border-radius:999px;background:var(--dark);color:var(--bg);font-size:14px;font-weight:700;letter-spacing:.02em;margin:2.6rem auto 1.6rem;box-shadow:0 14px 30px rgba(26,15,5,.2);}
 
 footer{background:var(--dark);padding:3.25rem 3rem 2rem;}
 .ft{display:grid;grid-template-columns:minmax(340px,1.5fr) minmax(180px,.72fr) minmax(180px,.72fr);align-items:flex-start;gap:4.5rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.06);}
@@ -1113,6 +1123,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <canvas class="shop-silk-canvas" id="shopSilkCanvas" aria-hidden="true"></canvas>
     <div class="shop-entry-head">
       <div class="shop-entry-copy">
+        <div class="shop-entry-open" id="shopEntryOpen">
         <div class="sec-eye" id="shopEntryEye">订单入口</div>
         <h2 class="sec-title" id="shopEntryTitle">本周预定入口</h2>
         <p class="sec-sub" id="shopEntrySub">请期待下次团购哦，关注我们的社交媒体获得下次通知</p>
@@ -1141,6 +1152,12 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
           </div>
         </div>
         <button class="shop-entry-cta" id="shopEntryCta" type="button" data-order-entry>进入订单</button>
+        </div>
+        <div class="shop-entry-closed" id="shopEntryClosed" hidden>
+          <div class="shop-closed-title" id="shopClosedTitle">下次见</div>
+          <div class="shop-closed-sub" id="shopClosedSub"></div>
+          <button class="shop-entry-cta shop-entry-cta--soon" type="button" id="shopClosedBtn" disabled>预定还未开始</button>
+        </div>
       </div>
     </div>
     <div class="shop-entry-status" id="shopEntryStatus" style="justify-content:center;">
@@ -1532,13 +1549,12 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 <section id="order" class="order">
   <div class="sec-eye" style="display:none;"></div>
   <h2 class="sec-title"><span class="order-title-line">限量纯手工制作 ·</span><span class="order-title-line">采用新鲜有机原料</span></h2>
-  <p class="sec-sub">添加我们的WeChat获得最新动态</p>
   <div style="display:flex;flex-direction:column;align-items:center;">
+    <p class="sec-sub order-wechat-pill">添加我们的WeChat获得最新动态</p>
     <div class="contact-codes">
       <div class="contact-code">
-        <div class="contact-code-label">微信</div>
         <div class="contact-code-box">
-          <img src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua WeChat QR code"/>
+          <img class="contact-code-img" src="assets/images/qr/Makkie Wechat QR Code Clean.jpg" alt="Makkie Mua 微信二维码（长按保存）"/>
         </div>
       </div>
     </div>
@@ -1679,7 +1695,8 @@ const productCards = document.querySelectorAll('.card');
 const supportsTouchPreview = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 const collectionImageVersion = '20260619';
 const collectionImageBase = 'https://api.makkiemua.com/uploads/collection';
-const collectionArchiveData = [
+// 硬编码图鉴作为兜底；页面加载后会尝试用后台 /api/collection 覆盖，实现与后台同步。
+let collectionArchiveData = [
   {
     id: 'menu-basque',
     title: { zh: '巴斯克蛋糕', en: 'Basque Cheesecake' },
@@ -1868,6 +1885,36 @@ function closeQrOverlay() {
 
 renderMenuCards();
 
+// 与后台图鉴同步：加载后拉取 /api/collection，成功则覆盖硬编码并重渲染菜单卡片（失败保留兜底）。
+const COLLECTION_API_URL = 'https://admin.makkiemua.com/api/collection';
+async function loadCollectionFromApi() {
+  try {
+    const res = await fetch(COLLECTION_API_URL, { credentials: 'omit' });
+    if (!res.ok) return;
+    const payload = await res.json();
+    const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
+    const mapped = groups.map((g, i) => ({
+      id: 'cat-' + i,
+      title: { zh: g.group || '', en: g.group || '' },
+      subtitle: { zh: '', en: '' },
+      items: (g.items || [])
+        .map((it) => ({
+          title: { zh: it.name || '', en: it.name_en || it.name || '' },
+          image: it.image_url || ''
+        }))
+        .filter((it) => it.image)
+    })).filter((g) => g.items.length);
+    if (!mapped.length) return;
+    collectionArchiveData = mapped;
+    const lang = getUiLang();
+    const icon = (bilingualCopy[lang] && bilingualCopy[lang].menu && bilingualCopy[lang].menu.cardIcon) || '查看图鉴';
+    renderMenuCards(lang, icon);
+  } catch (error) {
+    // 网络/CORS 失败：保留硬编码图鉴
+  }
+}
+loadCollectionFromApi();
+
 if (menuGrid) {
   menuGrid.addEventListener('click', (event) => {
     const button = event.target.closest('[data-menu-target]');
@@ -1928,6 +1975,9 @@ const orderPortalCopy = {
     orderNow: '进入订单',
     weeklyMenu: '本周菜单',
     orderClosedCopy: '当前网页端预定未开启。等你们后台打开后，这里会和小程序同步显示。',
+    closedTitle: '下次见',
+    closedMessage: '本次的甜品都已收单，敬请期待下次开售',
+    closedBtn: '预定还未开始',
     selectPickup: '选择自提',
     category: '本期甜品',
     deadlinePrefix: '截单：',
@@ -1994,6 +2044,9 @@ const orderPortalCopy = {
     orderNow: 'Open Ordering',
     weeklyMenu: 'Weekly Menu',
     orderClosedCopy: 'Web ordering is currently closed. Once the admin opens it, this page will sync with the miniapp.',
+    closedTitle: 'See you next time',
+    closedMessage: 'This round is fully booked and we are busy baking - stay tuned for the next opening',
+    closedBtn: 'Preorder not open yet',
     selectPickup: 'Choose Pickup',
     category: 'Weekly Desserts',
     deadlinePrefix: 'Deadline: ',
@@ -2907,7 +2960,27 @@ function updateShopEntryCountdown() {
   const widget = document.getElementById('shopEntryCountdown');
   if (!widget || siteState.loading) return;
   const deadlineMs = getWeeklyDeadlineMs();
-  const active = isGroupBuyActive() && deadlineMs;
+  // ?preview=closed 可强制预览「团购结束」售罄态，方便本地/线上验收。
+  const forceClosed = /[?&]preview=closed/.test(location.search);
+  const active = !forceClosed && isGroupBuyActive() && deadlineMs;
+
+  // 团购结束时，首页下单区整块换成「下次见」售罄卡（徽章+标题+说明+微信二维码）。
+  const openBlock = document.getElementById('shopEntryOpen');
+  const closedBlock = document.getElementById('shopEntryClosed');
+  if (openBlock && closedBlock) {
+    if (!active) {
+      const oc = getOrderCopy();
+      const setTxt = (elId, val) => { const el = document.getElementById(elId); if (el && val != null) el.textContent = val; };
+      setTxt('shopClosedTitle', oc.closedTitle);
+      setTxt('shopClosedSub', oc.closedMessage);
+      setTxt('shopClosedBtn', oc.closedBtn);
+      openBlock.hidden = true;
+      closedBlock.hidden = false;
+    } else {
+      openBlock.hidden = false;
+      closedBlock.hidden = true;
+    }
+  }
 
   if (!active) {
     widget.hidden = true;
@@ -3738,7 +3811,7 @@ const bilingualCopy = {
       eye: '',
       title: '<span class="order-title-line">限量纯手工制作</span><span class="order-title-line">采用新鲜有机原料</span>',
       sub: '添加我们的WeChat获得最新动态',
-      labels: ['微信']
+      labels: ['长按保存']
     },
     footer: {
       tagline: 'Butter off with Makkie',
@@ -3876,8 +3949,8 @@ const bilingualCopy = {
     order: {
       eye: '',
       title: '<span class="order-title-line">Small-batch handmade desserts</span><span class="order-title-line">made with fresh premium ingredients</span>',
-      sub: 'The lineup rotates weekly. To protect freshness and food safety, all orders are preorder only. The latest booking link updates every week. Message us on WeChat or Instagram.',
-      labels: ['WeChat', 'Rednote Highlights']
+      sub: 'Add us on WeChat for the latest',
+      labels: ['Long-press to save', 'Rednote Highlights']
     },
     footer: {
       tagline: 'Butter off with Makkie',
@@ -4019,6 +4092,7 @@ function applyBilingualLanguage(lang) {
   bilingualSetText('#menu .menu-head .sec-eye', copy.menu.headEye);
   bilingualSetText('#menu .menu-head .sec-title', copy.menu.headTitle);
   renderMenuCards(lang, copy.menu.cardIcon);
+  updateShopEntryCountdown();
 
   bilingualRefreshOpenMenu();
 

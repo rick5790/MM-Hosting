@@ -187,7 +187,8 @@
 
   const collectionImageVersion = '20260619';
   const collectionImageBase = 'https://api.makkiemua.com/uploads/collection';
-  const collectionGroups = [
+  // 硬编码兜底；图鉴页加载后会用后台 /api/collection 覆盖，实现与后台同步。
+  let collectionGroups = [
     {
       id: 'menu-basque',
       title: { zh: '巴斯克蛋糕', en: 'Basque Cheesecake' },
@@ -1200,6 +1201,27 @@
   initEvents();
   applyLanguage(currentLang);
   initReveal();
+
+  // 与后台图鉴同步（仅图鉴页）：拉取 /api/collection，成功则覆盖硬编码并重渲染（失败保留兜底）。
+  if (page === 'collection') {
+    fetch('https://admin.makkiemua.com/api/collection', { credentials: 'omit' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((payload) => {
+        const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
+        const mapped = groups.map((g, i) => ({
+          id: 'cat-' + i,
+          title: { zh: g.group || '', en: g.group || '' },
+          subtitle: { zh: '', en: '' },
+          items: (g.items || [])
+            .map((it) => ({ title: { zh: it.name || '', en: it.name_en || it.name || '' }, image: it.image_url || '' }))
+            .filter((it) => it.image)
+        })).filter((g) => g.items.length);
+        if (!mapped.length) return;
+        collectionGroups = mapped;
+        renderCollectionPage();
+      })
+      .catch(() => {});
+  }
 })();
 
 
