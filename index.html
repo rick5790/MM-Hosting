@@ -222,13 +222,12 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
   display:block;
   margin:0 auto 1.1rem;
   background:transparent;
-  object-fit:contain;
+  object-fit:cover;
   object-position:center;
+  border-radius:50%;
+  overflow:hidden;
   filter:drop-shadow(0 16px 24px rgba(61,38,27,.10));
-  animation:heroBob 4s ease-in-out infinite;
 }
-@keyframes heroBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
-@media (prefers-reduced-motion:reduce){.hero-logo{animation:none;}}
 .hero-wordmark{
   width:min(100%,520px);
   display:block;
@@ -1104,8 +1103,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 </div>
 
 <div class="hero">
-  <img class="hero-logo" src="assets/images/brand/Makkie_Original_Logo.png" alt="Makkie Mua logo">
-
+  <video class="hero-logo" autoplay muted loop playsinline preload="auto" aria-label="Makkie Mua waving logo">
+    <source src="assets/video/makkie-waving-clean.webm?v=20260403-143509" type="video/webm">
+  </video>
   <img class="hero-wordmark-art" src="assets/images/brand/Makkie_Mua_Text_Original.png" alt="Makkie Mua">
   <div class="hero-eyebrow">独家创意甜品</div>
   <p class="hero-sub">每一层都是手作的温度<br>Los Angeles &amp; Orange County</p>
