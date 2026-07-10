@@ -70,7 +70,7 @@
           description: 'Explore the layers, fillings, and textures behind each Makkie Mua dessert category.'
         }
       },
-      eye: { zh: '', en: '' },
+      eye: { zh: '看看里面有什么', en: 'See What Is Inside' },
       title: { zh: '探索层层夹心', en: 'Explore the Layers' },
       sub: { zh: '', en: '' },
       actions: []
@@ -283,22 +283,22 @@
 
   const instagramPosts = [
     {
+      href: 'https://www.instagram.com/p/DalwPhMj4os/',
+      image: 'assets/images/social/instagram-latest-20260709.jpg',
+      date: '2026.07.09',
+      title: { zh: '抹茶双重麻薯', en: 'Duo Mochi Matcha' }
+    },
+    {
+      href: 'https://www.instagram.com/p/DadiTX8DyJr/',
+      image: 'assets/images/social/instagram-latest-20260707.jpg',
+      date: '2026.07.07',
+      title: { zh: '接骨木花奇异果糯糯拿破仑酥', en: 'Elderflower Kiwi Mochi Mille-Feuille' }
+    },
+    {
       href: 'https://www.instagram.com/p/DZ29qH1D6yj/',
       image: 'assets/images/social/instagram-latest-20260621.jpg',
       date: '2026.06.21',
       title: { zh: '黑松露流心巴斯克', en: 'Black Truffle Lava Basque' }
-    },
-    {
-      href: 'https://www.instagram.com/p/DZjklgXFSxx/',
-      image: 'assets/images/social/instagram-latest-20260613a.jpg',
-      date: '2026.06.13',
-      title: { zh: '绿豆沙巴斯克', en: 'Mung Bean Basque' }
-    },
-    {
-      href: 'https://www.instagram.com/p/DZjkfVmtnLw/',
-      image: 'assets/images/social/instagram-latest-20260613b.jpg',
-      date: '2026.06.13',
-      title: { zh: '玫瑰荔枝酸奶拿破仑酥', en: 'Rose Lychee Yogurt Mille-Feuille' }
     },
     {
       href: 'https://www.instagram.com/p/DZGBNk7D6LV/',
