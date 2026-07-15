@@ -123,7 +123,7 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .nav-menu.is-open .nav-menu-lines::before{top:0;transform:rotate(45deg);}
 .nav-menu.is-open .nav-menu-lines::after{top:0;transform:rotate(-45deg);}
 .nav-main{display:flex;justify-content:space-between;align-items:center;padding:0 3rem;height:52px;}
-.nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;min-height:52px;flex:0 0 auto;position:relative;isolation:isolate;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0);will-change:transform;}
+.nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;min-height:52px;flex:0 0 auto;position:relative;isolation:isolate;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0);will-change:transform;cursor:pointer;}
 .nav-logo-mark{width:28px;height:28px;object-fit:contain;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0);will-change:transform,opacity;}
 .nav-actions{display:flex;align-items:center;gap:.8rem;min-height:52px;flex:0 0 auto;margin-left:auto;}
 .nav-profile{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:0 0 52px;width:52px;min-width:52px;height:52px;min-height:52px;padding:0;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.06);color:var(--bg);cursor:pointer;box-shadow:0 10px 22px rgba(0,0,0,.14);transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;-webkit-appearance:none;appearance:none;}
@@ -2187,9 +2187,15 @@ function loadOrderSeen() {
 function saveOrderSeen(map) {
   try { localStorage.setItem(ORDER_SEEN_KEY, JSON.stringify(map)); } catch (e) {}
 }
+// 「本周」= 属于当前开放的团购档期（group_id 匹配 weeklyOrder 的 active_group_id/group_no）。
+function isThisWeek(order) {
+  const activeGroup = String((siteState.weeklyOrder && (siteState.weeklyOrder.active_group_id || siteState.weeklyOrder.group_no)) || '');
+  return Boolean(activeGroup) && String(order.group_id || order.groupId || '') === activeGroup;
+}
 function isOrderUnread(order) {
   const status = String((order && order.status) || 'pending');
   if (status === 'pending') return false;
+  if (!isThisWeek(order)) return false;
   return loadOrderSeen()[String(order.id)] !== status;
 }
 function markOrderRead(order) {
@@ -2752,9 +2758,6 @@ function renderMyOrdersSection() {
   if (siteState.myOrdersLoading) return `<div class="empty compact">${escapeHtml(c.ordersLoading)}</div>`;
   if (siteState.myOrdersError) return `<div class="empty compact">${escapeHtml(siteState.myOrdersError)}</div>`;
   const orders = Array.isArray(siteState.myOrders) ? siteState.myOrders : [];
-
-  const activeGroup = String((siteState.weeklyOrder && (siteState.weeklyOrder.active_group_id || siteState.weeklyOrder.group_no)) || '');
-  const isThisWeek = (order) => activeGroup && String(order.group_id || order.groupId || '') === activeGroup;
 
   const hint = (list) => countUnreadOrders(list) ? `<div class="my-orders-hint">${escapeHtml(c.readHint)}</div>` : '';
 
@@ -3420,7 +3423,9 @@ if (navLogo) {
     if (adminTapCount >= 6) {
       adminTapCount = 0;
       renderAdminOverlay();
+      return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
 
