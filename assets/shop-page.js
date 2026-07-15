@@ -78,9 +78,18 @@
   function saveOrderSeen(map) {
     try { localStorage.setItem(ORDER_SEEN_KEY, JSON.stringify(map)); } catch (e) {}
   }
+  // 「本周」= 团购开始日(group_id 是 YYYYMMDD)起 7 天内；超过 7 天自动归入历史。
+  function isThisWeek(order) {
+    const gid = String(order.group_id || order.groupId || '');
+    const m = gid.match(/^(\d{4})(\d{2})(\d{2})$/);
+    if (!m) return false;
+    const startMs = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
+    return Date.now() < startMs + 7 * 24 * 60 * 60 * 1000;
+  }
   function isOrderUnread(order) {
     const status = String((order && order.status) || 'pending');
     if (status === 'pending') return false;
+    if (!isThisWeek(order)) return false;
     return loadOrderSeen()[String(order.id)] !== status;
   }
   function markOrderRead(order) {
@@ -345,6 +354,7 @@
   let countdownTimer = null;
   let adminTapCount = 0;
   let adminTapTimer = null;
+  let logoHomeTimer = null;
 
   function getLang() {
     return window.MakkieSite && typeof window.MakkieSite.getLang === 'function'
@@ -1144,15 +1154,6 @@
     if (state.myOrdersError) return `<div class="empty compact">${escapeHtml(state.myOrdersError)}</div>`;
     const orders = Array.isArray(state.myOrders) ? state.myOrders : [];
 
-    // 「本周」= 团购开始日(group_id 是 YYYYMMDD)起 7 天内；超过 7 天自动归入历史。
-    const isThisWeek = (order) => {
-      const gid = String(order.group_id || order.groupId || '');
-      const m = gid.match(/^(\d{4})(\d{2})(\d{2})$/);
-      if (!m) return false;
-      const startMs = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
-      return Date.now() < startMs + 7 * 24 * 60 * 60 * 1000;
-    };
-
     const hint = (list) => countUnreadOrders(list) ? `<div class="my-orders-hint">${escapeHtml(c.readHint)}</div>` : '';
 
     if (state.profileView === 'history') {
@@ -1736,13 +1737,19 @@
     navLogo.addEventListener('click', () => {
       adminTapCount += 1;
       window.clearTimeout(adminTapTimer);
+      window.clearTimeout(logoHomeTimer);
       adminTapTimer = window.setTimeout(() => {
         adminTapCount = 0;
       }, 900);
       if (adminTapCount >= 6) {
         adminTapCount = 0;
         renderAdminOverlay();
+        return;
       }
+      // 延迟跳转首页，留出窗口让连续点击（后台入口）被上面的计数捕获，而不是刚点第一下就跳走。
+      logoHomeTimer = window.setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 350);
     });
   }
 

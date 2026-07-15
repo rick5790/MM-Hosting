@@ -87,6 +87,7 @@ nav{
   -webkit-backface-visibility:hidden;
   transform:translateZ(0);
   will-change:transform;
+  cursor:pointer;
 }
 .nav-logo-mark{
   width:28px;
