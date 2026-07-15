@@ -1812,6 +1812,10 @@ body[data-lang="en"] .ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::
   }
   .shop-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
   .contact-qr-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .contact-qr-card.is-detail-card{grid-template-columns:56px minmax(0,1fr);gap:1rem;}
+  .contact-qr-card.is-detail-card .contact-qr-icon{width:52px;height:52px;}
+  .contact-qr-card.is-detail-card .contact-qr-icon svg{width:24px;height:24px;}
+  .contact-qr-card.is-detail-card .contact-qr-handle{font-size:1.05rem;}
   .ft{grid-template-columns:minmax(280px,1fr) minmax(180px,.75fr) minmax(180px,.75fr);gap:3rem;}
 }
 

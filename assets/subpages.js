@@ -837,7 +837,7 @@
           <div class="contact-qr-copy">
             <div class="contact-qr-copy-main">
               <div class="contact-qr-label">${escapeHtml(t(card.label))}</div>
-              <div class="contact-qr-handle">${escapeHtml(card.value)}</div>
+              <div class="contact-qr-handle">${escapeHtml(card.value).replace('@', '@<wbr>')}</div>
               ${card.note ? `<div class="contact-qr-note">${escapeHtml(t(card.note))}</div>` : ''}
             </div>
             ${card.qrImage
