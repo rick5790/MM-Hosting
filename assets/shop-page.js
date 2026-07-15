@@ -31,6 +31,72 @@
     clientId: 'makkie.web.clientId'
   };
 
+  // ===== 时区：全站以美西 PST/PDT 为准 =====
+  // 团购时间（order_deadline_at / start_at）是「无时区的美西挂钟」；
+  // created_at 等后端时间是「无时区的 UTC」。两者解析方式不同。
+  const LA_TZ = 'America/Los_Angeles';
+  function hasExplicitZone(str) {
+    return /[zZ]$|[+-]\d{2}:?\d{2}$/.test(String(str).trim());
+  }
+  function laOffsetMinutes(utcMs) {
+    const dtf = new Intl.DateTimeFormat('en-US', {
+      timeZone: LA_TZ, hourCycle: 'h23',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+    const p = {};
+    dtf.formatToParts(new Date(utcMs)).forEach((x) => { p[x.type] = x.value; });
+    const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
+    return Math.round((asUTC - utcMs) / 60000);
+  }
+  function parseLaWallClock(value) {
+    if (!value) return NaN;
+    const s = String(value).trim().replace(' ', 'T');
+    if (hasExplicitZone(s)) return Date.parse(s);
+    const m = s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+    if (!m) return Date.parse(s);
+    const guess = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0));
+    const off1 = laOffsetMinutes(guess);
+    const instant = guess - off1 * 60000;
+    const off2 = laOffsetMinutes(instant);
+    return off2 === off1 ? instant : guess - off2 * 60000;
+  }
+  function parseUtcTimestamp(value) {
+    if (!value) return NaN;
+    const s = String(value).trim().replace(' ', 'T');
+    if (hasExplicitZone(s)) return Date.parse(s);
+    return Date.parse(s + 'Z');
+  }
+
+  // ===== 订单状态「未读」小红点 =====
+  // 记录每个订单「上次已读的状态」；当前状态与已读不同、且不是 pending（下单初始态）就算未读。
+  // 顾客点卡片即标记为已读。跨页共用同一个 localStorage key。
+  const ORDER_SEEN_KEY = 'makkie.web.orderSeen';
+  function loadOrderSeen() {
+    try { return JSON.parse(localStorage.getItem(ORDER_SEEN_KEY)) || {}; } catch (e) { return {}; }
+  }
+  function saveOrderSeen(map) {
+    try { localStorage.setItem(ORDER_SEEN_KEY, JSON.stringify(map)); } catch (e) {}
+  }
+  function isOrderUnread(order) {
+    const status = String((order && order.status) || 'pending');
+    if (status === 'pending') return false;
+    return loadOrderSeen()[String(order.id)] !== status;
+  }
+  function markOrderRead(order) {
+    if (!order) return;
+    const map = loadOrderSeen();
+    map[String(order.id)] = String(order.status || 'pending');
+    saveOrderSeen(map);
+  }
+  function countUnreadOrders(orders) {
+    return (Array.isArray(orders) ? orders : []).filter(isOrderUnread).length;
+  }
+  function updateNavUnreadDot(count) {
+    const has = (count || 0) > 0;
+    document.querySelectorAll('[data-profile-entry]').forEach((b) => b.classList.toggle('has-unread', has));
+  }
+
   const orderCopy = {
     zh: {
       syncing: '同步中',
@@ -126,7 +192,11 @@
       stock: '库存',
       soldOut: '售罄',
       limit: '限购',
-      statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '待取货', completed: '已完成', cancelled: '已取消' },
+      statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '可自提', completed: '已完成', cancelled: '已取消' },
+      statusUpdatedPrefix: '订单状态已更新为「',
+      statusUpdatedSuffix: '」',
+      readHint: '👆 点击卡片任意位置表示已阅读，红点会消失',
+      cancelReasonLabel: '取消理由：',
       paymentPaid: '已确认收款',
       paymentUnpaid: '待确认付款',
       adminTitle: '隐藏管理员入口',
@@ -232,6 +302,10 @@
       soldOut: 'Sold out',
       limit: 'Limit',
       statusLabels: { pending: 'Pending', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', cancelled: 'Cancelled' },
+      statusUpdatedPrefix: 'Order status updated to "',
+      statusUpdatedSuffix: '"',
+      readHint: '👆 Tap the card anywhere to mark as read — the dot will clear',
+      cancelReasonLabel: 'Cancellation reason: ',
       paymentPaid: 'Payment confirmed',
       paymentUnpaid: 'Awaiting payment',
       adminTitle: 'Hidden Admin Entry',
@@ -689,7 +763,7 @@
   function renderCountdown(deadlineIso) {
     const c = copy();
     if (!deadlineIso) return '';
-    const remaining = Date.parse(deadlineIso) - Date.now();
+    const remaining = parseLaWallClock(deadlineIso) - Date.now();
     if (!Number.isFinite(remaining) || remaining <= 0) {
       return `<div class="shop-deadline">${escapeHtml(c.expired)}</div>`;
     }
@@ -969,9 +1043,12 @@
 
   function formatOrderDate(value) {
     if (!value) return '';
-    const date = new Date(String(value).replace(' ', 'T'));
-    if (Number.isNaN(date.getTime())) return String(value);
-    return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+    const ms = parseUtcTimestamp(value);
+    if (Number.isNaN(ms)) return String(value);
+    const p = {};
+    new Intl.DateTimeFormat('en-US', { timeZone: LA_TZ, year: 'numeric', month: 'numeric', day: 'numeric' })
+      .formatToParts(new Date(ms)).forEach((x) => { p[x.type] = x.value; });
+    return `${p.year}/${p.month}/${p.day}`;
   }
 
   // 学习图1（小程序订单卡）：下单日期、单号/状态、昵称+ID、逐项金额、自提点、合计。
@@ -987,6 +1064,17 @@
     const cancellable = allowCancel && String(order.status || '') === 'pending';
     const prompting = cancellable && Number(state.cancelPromptId) === Number(order.id);
     const busy = Number(state.cancelBusyId) === Number(order.id);
+    const unread = isOrderUnread(order);
+    const cancelReason = String(order.cancel_reason || order.cancelReason || '');
+
+    // 状态变更提示条（未读时显示）；已取消则显示取消理由。
+    const updatedHtml = unread ? `
+      <div class="my-order-updated">
+        <span class="my-order-updated-icon">🔔</span>
+        <span>${escapeHtml(c.statusUpdatedPrefix + info.label + c.statusUpdatedSuffix)}</span>
+      </div>` : '';
+    const cancelReasonHtml = (String(order.status || '') === 'cancelled' && cancelReason) ? `
+      <div class="my-order-reason">${escapeHtml(c.cancelReasonLabel + cancelReason)}</div>` : '';
 
     const itemsHtml = (order.items || []).map((it) => `
       <div class="my-order-line">
@@ -1022,7 +1110,8 @@
       </div>`);
 
     return `
-      <div class="my-order-card my-order-card--rich">
+      <div class="my-order-card my-order-card--rich ${unread ? 'is-unread' : ''}" data-order-read="${escapeHtml(order.id)}">
+        ${unread ? '<span class="my-order-dot" aria-hidden="true"></span>' : ''}
         <div class="my-order-top">
           <div class="my-order-date">
             <span class="my-order-date-label">${escapeHtml(c.orderDateLabel)}</span>
@@ -1038,6 +1127,8 @@
       </div>
         <div class="my-order-lines">${itemsHtml}</div>
         ${pickupHtml}
+        ${updatedHtml}
+        ${cancelReasonHtml}
         <div class="my-order-foot">
           <span class="my-order-pay ${paid ? 'is-paid' : ''}">${escapeHtml(paid ? c.paymentPaid : c.paymentUnpaid)}</span>
           <span class="my-order-total">${escapeHtml(totalText)}</span>
@@ -1062,15 +1153,17 @@
       return Date.now() < startMs + 7 * 24 * 60 * 60 * 1000;
     };
 
+    const hint = (list) => countUnreadOrders(list) ? `<div class="my-orders-hint">${escapeHtml(c.readHint)}</div>` : '';
+
     if (state.profileView === 'history') {
       const history = orders.filter((order) => !isThisWeek(order));
       if (!history.length) return `<div class="empty compact">${escapeHtml(c.historyEmpty)}</div>`;
-      return `<div class="my-orders-list">${history.map((order) => renderOrderCard(order, false)).join('')}</div>`;
+      return `<div class="my-orders-list">${history.map((order) => renderOrderCard(order, false)).join('')}</div>${hint(history)}`;
     }
 
     const live = orders.filter(isThisWeek);
     if (!live.length) return `<div class="empty compact">${escapeHtml(c.noThisWeekOrders)}</div>`;
-    return `<div class="my-orders-list">${live.map((order) => renderOrderCard(order, true)).join('')}</div>`;
+    return `<div class="my-orders-list">${live.map((order) => renderOrderCard(order, true)).join('')}</div>${hint(live)}`;
   }
 
   function refreshMyOrdersSection() {
@@ -1104,6 +1197,7 @@
     try {
       const data = await siteApiRequest(`/api/orders/user/${state.auth.user.id}`);
       state.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+      updateNavUnreadDot(countUnreadOrders(state.myOrders));
     } catch (error) {
       state.myOrdersError = error.message || copy().ordersFailed;
     } finally {
@@ -1111,6 +1205,16 @@
       const el = document.getElementById('myOrdersSection');
       if (el) el.innerHTML = renderMyOrdersSection();
     }
+  }
+
+  // 后台静默拉取订单，只为更新导航「我的」红点（不改动可见列表）。
+  async function refreshNavUnread() {
+    if (!state.auth || !state.auth.user) { updateNavUnreadDot(0); return; }
+    try {
+      const data = await siteApiRequest(`/api/orders/user/${state.auth.user.id}`);
+      state.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+      updateNavUnreadDot(countUnreadOrders(state.myOrders));
+    } catch (error) {}
   }
 
   function renderOrderSuccessOverlay() {
@@ -1517,6 +1621,17 @@
     const orderCancelDismiss = event.target.closest('[data-order-cancel-dismiss]');
     const orderPayment = event.target.closest('[data-order-payment]');
     const paymentInfoClose = event.target.closest('[data-payment-info-close]');
+    const readCard = event.target.closest('[data-order-read]');
+
+    // 点卡片任意非按钮区域 = 标记该订单状态已读，红点消失。
+    if (readCard && !event.target.closest('button')) {
+      const order = (state.myOrders || []).find((o) => String(o.id) === String(readCard.dataset.orderRead));
+      if (order && isOrderUnread(order)) {
+        markOrderRead(order);
+        refreshMyOrdersSection();
+        updateNavUnreadDot(countUnreadOrders(state.myOrders));
+      }
+    }
 
     if (profileClose) {
       state.profileEditMode = false;
@@ -1639,5 +1754,8 @@
     renderProfileOverlay();
   });
 
-  checkLocalAuth().finally(loadShopData);
+  checkLocalAuth().finally(() => {
+    loadShopData();
+    refreshNavUnread();
+  });
 })();

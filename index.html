@@ -126,7 +126,8 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .nav-logo{display:flex;align-items:center;gap:.55rem;font-size:14px;font-weight:500;color:var(--bg);letter-spacing:0.02em;min-height:52px;flex:0 0 auto;position:relative;isolation:isolate;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0);will-change:transform;}
 .nav-logo-mark{width:28px;height:28px;object-fit:contain;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0);will-change:transform,opacity;}
 .nav-actions{display:flex;align-items:center;gap:.8rem;min-height:52px;flex:0 0 auto;margin-left:auto;}
-.nav-profile{display:inline-flex;align-items:center;justify-content:center;flex:0 0 52px;width:52px;min-width:52px;height:52px;min-height:52px;padding:0;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.06);color:var(--bg);cursor:pointer;box-shadow:0 10px 22px rgba(0,0,0,.14);transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;-webkit-appearance:none;appearance:none;}
+.nav-profile{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:0 0 52px;width:52px;min-width:52px;height:52px;min-height:52px;padding:0;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(245,237,224,.06);color:var(--bg);cursor:pointer;box-shadow:0 10px 22px rgba(0,0,0,.14);transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;-webkit-appearance:none;appearance:none;}
+.nav-profile.has-unread::after{content:'';position:absolute;top:9px;right:9px;width:10px;height:10px;border-radius:50%;background:#e0483d;border:2px solid #2b2018;box-shadow:0 0 0 1px rgba(224,72,61,.4);}
 .nav-profile:hover{background:rgba(245,237,224,.14);border-color:rgba(255,255,255,.14);transform:translateY(-1px);box-shadow:0 14px 26px rgba(0,0,0,.18);}
 .nav-icon-mark{width:22px;height:22px;display:block;}
 .nav-book{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:.68rem 1.5rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:#2a170a;color:var(--bg);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;box-shadow:0 8px 18px rgba(0,0,0,.18);}
@@ -499,15 +500,21 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .profile-history-title{font-size:1.3rem;font-weight:800;color:#2d1f0f;}
 .my-orders-list{display:flex;flex-direction:column;gap:.8rem;}
 .my-order-card{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);}
-.my-order-card--rich{padding:1rem 1.1rem;background:rgba(124,101,97,.05);}
+.my-order-card--rich{position:relative;padding:1rem 1.1rem;background:rgba(124,101,97,.05);}
+.my-order-card--rich.is-unread{border-color:rgba(224,72,61,.4);box-shadow:0 0 0 1px rgba(224,72,61,.14);cursor:pointer;}
+.my-order-dot{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#e0483d;border:3px solid #fff;box-shadow:0 2px 6px rgba(224,72,61,.4);}
 .my-order-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
 .my-order-status{flex:0 0 auto;padding:.25rem .7rem;border-radius:999px;font-size:11px;font-weight:800;background:rgba(124,101,97,.14);color:#5f4c3d;}
 .my-order-status--pending{background:rgba(196,140,74,.16);color:#8a5a1f;}
-.my-order-status--paid{background:rgba(90,124,97,.16);color:#3f6248;}
-.my-order-status--making{background:rgba(124,101,97,.16);color:#6a4f45;}
+.my-order-status--paid{background:rgba(72,110,152,.16);color:#2f5175;}
+.my-order-status--making{background:rgba(72,110,152,.16);color:#2f5175;}
 .my-order-status--ready{background:rgba(72,110,152,.16);color:#2f5175;}
 .my-order-status--completed{background:rgba(90,124,97,.2);color:#33513b;}
 .my-order-status--cancelled{background:rgba(124,63,53,.14);color:#7c3f35;}
+.my-order-updated{display:flex;align-items:center;gap:.5rem;margin-top:.7rem;padding:.7rem .85rem;border-radius:14px;background:rgba(224,72,61,.08);border:1px solid rgba(224,72,61,.18);font-size:13px;font-weight:700;color:#b23a30;}
+.my-order-updated-icon{flex:0 0 auto;}
+.my-order-reason{margin-top:.7rem;padding:.7rem .85rem;border-radius:14px;background:rgba(124,63,53,.08);border:1px solid rgba(124,63,53,.18);font-size:13px;font-weight:600;color:#7c3f35;}
+.my-orders-hint{margin-top:.65rem;text-align:center;font-size:12px;color:#8c786d;}
 .my-order-date{display:flex;flex-direction:column;gap:.15rem;}
 .my-order-date-label{font-size:11px;letter-spacing:.06em;color:#9a7d65;}
 .my-order-date-value{font-size:1.15rem;font-weight:800;color:#2d1f0f;line-height:1.1;}
@@ -2020,7 +2027,11 @@ const orderPortalCopy = {
     cancelKeep: '暂不取消',
     cancelSuccess: '订单已取消，库存已释放。',
     cancelFailed: '取消失败，请稍后再试。',
-    statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '待取货', completed: '已完成', cancelled: '已取消' },
+    statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '可自提', completed: '已完成', cancelled: '已取消' },
+    statusUpdatedPrefix: '订单状态已更新为「',
+    statusUpdatedSuffix: '」',
+    readHint: '👆 点击卡片任意位置表示已阅读，红点会消失',
+    cancelReasonLabel: '取消理由：',
     profileTitle: '请选择登陆方式',
     profileSub: '请尽量保持昵称和微信名一致，方便提货和核对哦～',
     saved: '已保存',
@@ -2090,6 +2101,10 @@ const orderPortalCopy = {
     cancelSuccess: 'Order cancelled. The stock has been released.',
     cancelFailed: 'Failed to cancel. Please try again later.',
     statusLabels: { pending: 'Pending', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', cancelled: 'Cancelled' },
+    statusUpdatedPrefix: 'Order status updated to "',
+    statusUpdatedSuffix: '"',
+    readHint: '👆 Tap the card anywhere to mark as read — the dot will clear',
+    cancelReasonLabel: 'Cancellation reason: ',
     profileTitle: 'Choose how to sign in',
     profileSub: 'Please use the same name as your WeChat so pickup is easy to verify~',
     saved: 'Saved',
@@ -2124,6 +2139,72 @@ const siteState = {
 let shopCountdownTimer = null;
 let adminTapCount = 0;
 let adminTapTimer = null;
+
+// ===== 时区：全站以美西 PST/PDT 为准 =====
+// 团购时间（start_at / order_deadline_at）后台存的是「无时区的美西挂钟」；
+// created_at 等后端时间是「无时区的 UTC」。两者解析方式不同。
+const LA_TZ = 'America/Los_Angeles';
+function hasExplicitZone(str) {
+  return /[zZ]$|[+-]\d{2}:?\d{2}$/.test(String(str).trim());
+}
+function laOffsetMinutes(utcMs) {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: LA_TZ, hourCycle: 'h23',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+  const p = {};
+  dtf.formatToParts(new Date(utcMs)).forEach((x) => { p[x.type] = x.value; });
+  const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
+  return Math.round((asUTC - utcMs) / 60000);
+}
+// 美西挂钟字符串 → 绝对时刻 ms（无时区按 PST/PDT 解释，含 DST）
+function parseLaWallClock(value) {
+  if (!value) return NaN;
+  const s = String(value).trim().replace(' ', 'T');
+  if (hasExplicitZone(s)) return Date.parse(s);
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (!m) return Date.parse(s);
+  const guess = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0));
+  const off1 = laOffsetMinutes(guess);
+  const instant = guess - off1 * 60000;
+  const off2 = laOffsetMinutes(instant);
+  return off2 === off1 ? instant : guess - off2 * 60000;
+}
+// SQLite UTC 时间戳 → 绝对时刻 ms（无时区按 UTC 解释）
+function parseUtcTimestamp(value) {
+  if (!value) return NaN;
+  const s = String(value).trim().replace(' ', 'T');
+  if (hasExplicitZone(s)) return Date.parse(s);
+  return Date.parse(s + 'Z');
+}
+
+// ===== 订单状态「未读」小红点（与 shop-page.js 共用同一 localStorage key）=====
+const ORDER_SEEN_KEY = 'makkie.web.orderSeen';
+function loadOrderSeen() {
+  try { return JSON.parse(localStorage.getItem(ORDER_SEEN_KEY)) || {}; } catch (e) { return {}; }
+}
+function saveOrderSeen(map) {
+  try { localStorage.setItem(ORDER_SEEN_KEY, JSON.stringify(map)); } catch (e) {}
+}
+function isOrderUnread(order) {
+  const status = String((order && order.status) || 'pending');
+  if (status === 'pending') return false;
+  return loadOrderSeen()[String(order.id)] !== status;
+}
+function markOrderRead(order) {
+  if (!order) return;
+  const map = loadOrderSeen();
+  map[String(order.id)] = String(order.status || 'pending');
+  saveOrderSeen(map);
+}
+function countUnreadOrders(orders) {
+  return (Array.isArray(orders) ? orders : []).filter(isOrderUnread).length;
+}
+function updateNavUnreadDot(count) {
+  const has = (count || 0) > 0;
+  document.querySelectorAll('[data-profile-entry]').forEach((b) => b.classList.toggle('has-unread', has));
+}
 
 function getUiLang() {
   return document.body.dataset.lang === 'en' ? 'en' : 'zh';
@@ -2328,7 +2409,7 @@ function updateShopEntryStatus() {
 
 function renderCountdown(deadlineIso) {
   if (!deadlineIso) return '';
-  const remaining = Date.parse(deadlineIso) - Date.now();
+  const remaining = parseLaWallClock(deadlineIso) - Date.now();
   if (!Number.isFinite(remaining) || remaining <= 0) {
     return `<div class="shop-deadline">${escapeHtml(getOrderCopy().expired)}</div>`;
   }
@@ -2566,9 +2647,12 @@ function getOrderStatusInfo(order) {
 
 function formatOrderDate(value) {
   if (!value) return '';
-  const date = new Date(String(value).replace(' ', 'T'));
-  if (Number.isNaN(date.getTime())) return String(value);
-  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+  const ms = parseUtcTimestamp(value);
+  if (Number.isNaN(ms)) return String(value);
+  const p = {};
+  new Intl.DateTimeFormat('en-US', { timeZone: LA_TZ, year: 'numeric', month: 'numeric', day: 'numeric' })
+    .formatToParts(new Date(ms)).forEach((x) => { p[x.type] = x.value; });
+  return `${p.year}/${p.month}/${p.day}`;
 }
 
 const PICKUP_WEEKDAY_EN = {
@@ -2598,6 +2682,16 @@ function renderOrderCard(order, allowCancel) {
   const cancellable = allowCancel && String(order.status || '') === 'pending';
   const prompting = cancellable && Number(siteState.cancelPromptId) === Number(order.id);
   const busy = Number(siteState.cancelBusyId) === Number(order.id);
+  const unread = isOrderUnread(order);
+  const cancelReason = String(order.cancel_reason || order.cancelReason || '');
+
+  const updatedHtml = unread ? `
+    <div class="my-order-updated">
+      <span class="my-order-updated-icon">🔔</span>
+      <span>${escapeHtml(c.statusUpdatedPrefix + info.label + c.statusUpdatedSuffix)}</span>
+    </div>` : '';
+  const cancelReasonHtml = (String(order.status || '') === 'cancelled' && cancelReason) ? `
+    <div class="my-order-reason">${escapeHtml(c.cancelReasonLabel + cancelReason)}</div>` : '';
 
   const itemsHtml = (order.items || []).map((it) => `
     <div class="my-order-line">
@@ -2625,7 +2719,8 @@ function renderOrderCard(order, allowCancel) {
     </div>`);
 
   return `
-    <div class="my-order-card my-order-card--rich">
+    <div class="my-order-card my-order-card--rich ${unread ? 'is-unread' : ''}" data-order-read="${escapeHtml(order.id)}">
+      ${unread ? '<span class="my-order-dot" aria-hidden="true"></span>' : ''}
       <div class="my-order-top">
         <div class="my-order-date">
           <span class="my-order-date-label">${escapeHtml(c.orderDateLabel)}</span>
@@ -2641,6 +2736,8 @@ function renderOrderCard(order, allowCancel) {
       </div>
       <div class="my-order-lines">${itemsHtml}</div>
       ${pickupHtml}
+      ${updatedHtml}
+      ${cancelReasonHtml}
       <div class="my-order-foot">
         <span class="my-order-pay ${paid ? 'is-paid' : ''}">${escapeHtml(paid ? c.paymentPaid : c.paymentUnpaid)}</span>
         <span class="my-order-total">${escapeHtml(totalText)}</span>
@@ -2659,15 +2756,17 @@ function renderMyOrdersSection() {
   const activeGroup = String((siteState.weeklyOrder && (siteState.weeklyOrder.active_group_id || siteState.weeklyOrder.group_no)) || '');
   const isThisWeek = (order) => activeGroup && String(order.group_id || order.groupId || '') === activeGroup;
 
+  const hint = (list) => countUnreadOrders(list) ? `<div class="my-orders-hint">${escapeHtml(c.readHint)}</div>` : '';
+
   if (siteState.profileView === 'history') {
     const history = orders.filter((order) => !isThisWeek(order));
     if (!history.length) return `<div class="empty compact">${escapeHtml(c.historyEmpty)}</div>`;
-    return `<div class="my-orders-list">${history.map((order) => renderOrderCard(order, false)).join('')}</div>`;
+    return `<div class="my-orders-list">${history.map((order) => renderOrderCard(order, false)).join('')}</div>${hint(history)}`;
   }
 
   const live = orders.filter(isThisWeek);
   if (!live.length) return `<div class="empty compact">${escapeHtml(c.noThisWeekOrders)}</div>`;
-  return `<div class="my-orders-list">${live.map((order) => renderOrderCard(order, true)).join('')}</div>`;
+  return `<div class="my-orders-list">${live.map((order) => renderOrderCard(order, true)).join('')}</div>${hint(live)}`;
 }
 
 function refreshMyOrdersSection() {
@@ -2683,12 +2782,23 @@ async function loadMyOrders() {
   try {
     const data = await siteApiRequest(`/api/orders/user/${siteState.auth.user.id}`);
     siteState.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+    updateNavUnreadDot(countUnreadOrders(siteState.myOrders));
   } catch (error) {
     siteState.myOrdersError = error.message || getOrderCopy().ordersFailed;
   } finally {
     siteState.myOrdersLoading = false;
     refreshMyOrdersSection();
   }
+}
+
+// 后台静默拉取订单，只为更新导航「我的」红点（不改动可见弹窗）。
+async function refreshNavUnread() {
+  if (!siteState.auth || !siteState.auth.user) { updateNavUnreadDot(0); return; }
+  try {
+    const data = await siteApiRequest(`/api/orders/user/${siteState.auth.user.id}`);
+    siteState.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+    updateNavUnreadDot(countUnreadOrders(siteState.myOrders));
+  } catch (error) {}
 }
 
 async function cancelMyOrder(orderId) {
@@ -2933,7 +3043,7 @@ function getWeeklyDeadlineMs() {
   const weekly = siteState.weeklyOrder;
   if (!weekly) return 0;
   const raw = weekly.order_deadline_at || weekly.end_at || weekly.close_at || '';
-  const ms = Date.parse(raw);
+  const ms = parseLaWallClock(raw);
   return Number.isFinite(ms) ? ms : 0;
 }
 
@@ -2942,7 +3052,7 @@ function isGroupBuyActive() {
   if (!weekly || !weekly.is_open || !siteState.products.length) return false;
   const nowMs = Date.now();
   if (weekly.start_at) {
-    const startMs = Date.parse(weekly.start_at);
+    const startMs = parseLaWallClock(weekly.start_at);
     if (Number.isFinite(startMs) && startMs > nowMs) return false;
   }
   const deadlineMs = getWeeklyDeadlineMs();
@@ -2951,7 +3061,7 @@ function isGroupBuyActive() {
 
 const shopEntryCdLabels = {
   zh: { title: '本周团购结束还有', days: '天', hours: '时', minutes: '分', seconds: '秒' },
-  en: { title: 'Weekly group order ends in', days: 'Days', hours: 'Hrs', minutes: 'Mins', seconds: 'Secs' }
+  en: { title: 'Weekly Order ends in', days: 'Days', hours: 'Hrs', minutes: 'Mins', seconds: 'Secs' }
 };
 
 // 团购进行中且设了截单时间时，把“每周定时开放…”换成翻页时钟式倒计时；结束后恢复。
@@ -3032,7 +3142,7 @@ function maybeShowGroupBuyPopup() {
   const sub = document.getElementById('groupBuyOverlaySub');
   const later = document.getElementById('groupBuyOverlayLater');
   const go = document.getElementById('groupBuyOverlayGo');
-  if (title) title.textContent = lang === 'en' ? 'Weekly group order is live' : '本周团购正在进行中';
+  if (title) title.textContent = lang === 'en' ? 'Weekly Order is live' : '本周团购正在进行中';
   if (sub) sub.textContent = '';
   if (later) later.textContent = lang === 'en' ? 'Maybe later' : '先逛逛';
   if (go) go.textContent = lang === 'en' ? 'Order now' : '去下单';
@@ -3086,6 +3196,16 @@ document.addEventListener('click', async (event) => {
   const orderCancel = event.target.closest('[data-order-cancel]');
   const orderCancelConfirm = event.target.closest('[data-order-cancel-confirm]');
   const orderCancelDismiss = event.target.closest('[data-order-cancel-dismiss]');
+  const readCard = event.target.closest('[data-order-read]');
+  // 点卡片任意非按钮区域 = 标记该订单状态已读，红点消失。
+  if (readCard && !event.target.closest('button')) {
+    const order = (siteState.myOrders || []).find((o) => String(o.id) === String(readCard.dataset.orderRead));
+    if (order && isOrderUnread(order)) {
+      markOrderRead(order);
+      refreshMyOrdersSection();
+      updateNavUnreadDot(countUnreadOrders(siteState.myOrders));
+    }
+  }
   if (profileAction) {
     if (profileAction.dataset.profileAction === 'edit') {
       siteState.profileEditMode = true;
@@ -3208,6 +3328,7 @@ document.querySelectorAll('[data-groupbuy-close]').forEach((button) => {
 checkLocalAuth().finally(async () => {
   await loadShopData();
   maybeShowGroupBuyPopup();
+  refreshNavUnread();
 });
 
 const latestInstagramPosts = [
@@ -3837,7 +3958,7 @@ const bilingualCopy = {
     shopEntry: {
       eye: 'Order Entry',
       title: 'Weekly Drop',
-      sub: 'Stay tuned for our next group order — follow our social media for the next announcement',
+      sub: 'Stay tuned for our next Weekly Order — follow our social media for the next announcement',
       cta: 'Open Order'
     },
     seo: {
