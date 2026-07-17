@@ -393,7 +393,26 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 
 .marquee{display:none;}
 .shop-entry{padding:4rem 2rem 1.2rem;background:var(--bg);}
+.shop-entry-duo{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;max-width:1080px;margin:0 auto;align-items:stretch;}
 .shop-shell{position:relative;display:grid;place-items:center;max-width:1080px;margin:0 auto;padding:2rem 2rem 2.15rem;border-radius:30px;background:linear-gradient(135deg,rgba(248,241,230,.96),rgba(239,225,206,.98));border:1px solid rgba(196,153,106,.2);box-shadow:0 22px 56px rgba(45,31,15,.08);text-align:center;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black);mask-image:radial-gradient(white,black);}
+.shop-entry-duo .shop-shell{max-width:none;margin:0;height:100%;}
+.shop-shell--cake{background:linear-gradient(135deg,rgba(250,240,232,.97),rgba(243,225,215,.98));}
+.shop-shell--cake .sec-title{margin:.5rem 0 0;font-size:clamp(2.6rem,9vw,3.6rem);line-height:1;font-weight:800;letter-spacing:-.02em;color:#2d1f0f;}
+.shop-shell--cake .sec-sub{margin:1.1rem 0 0;max-width:560px;color:#7b6556;font-size:15px;line-height:1.85;font-weight:400;}
+.shop-cta-arrow{margin-left:.5rem;font-size:1.05em;line-height:1;}
+@media(max-width:820px){
+  .shop-entry-duo{grid-template-columns:1fr;gap:1.1rem;}
+  .shop-entry-duo .shop-shell{padding:1.7rem 1.4rem;}
+  .shop-closed-title,.shop-shell--cake .sec-title{font-size:clamp(2rem,8vw,2.5rem);}
+}
+@media(max-width:560px){
+  .shop-entry{padding:1.6rem 1.1rem .8rem;}
+  .shop-entry-duo{gap:.9rem;}
+  .shop-entry-duo .shop-shell{padding:1.4rem 1.1rem;}
+  .shop-closed-title,.shop-shell--cake .sec-title{font-size:clamp(1.7rem,7.4vw,2.1rem);}
+  .shop-closed-sub,.shop-shell--cake .sec-sub{font-size:13.5px;line-height:1.7;margin-top:.85rem;}
+  .shop-entry-cta{min-height:50px;margin-top:1.1rem;font-size:14px;}
+}
 .shop-silk-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0;opacity:.64;mix-blend-mode:multiply;}
 .shop-shell::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%, rgba(255,255,255,.72), transparent 46%),linear-gradient(180deg,rgba(255,250,244,.32),rgba(245,237,224,.22));pointer-events:none;z-index:0;}
 .shop-entry-head{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;gap:1.15rem;margin:0 auto 1rem;}
@@ -601,6 +620,76 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .menu-overlay-panel .menu-addon{border-top:1px solid rgba(45,31,15,.08);}
 .menu-addon-title{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,237,224,.45);margin-bottom:.55rem;}
 .menu-overlay-panel .menu-addon-title{color:var(--muted);}
+/* ── 蛋糕预定弹窗（复用 menu-overlay 外壳）── */
+.cake-overlay-panel{width:min(100%,760px);text-align:left;}
+.cake-step-head{text-align:center;padding:.2rem 0 1rem;border-bottom:1px solid rgba(45,31,15,.08);margin-bottom:1.3rem;}
+.cake-step-title{font-size:clamp(1.6rem,4.4vw,2.3rem);font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1.05;}
+.cake-step-sub{margin-top:.5rem;font-size:13.5px;color:#7b6556;line-height:1.6;}
+.cake-steps-dots{display:flex;justify-content:center;gap:.4rem;margin-top:.9rem;}
+.cake-steps-dots span{width:7px;height:7px;border-radius:999px;background:rgba(154,125,101,.3);}
+.cake-steps-dots span.is-on{background:var(--accent);}
+.cake-notice{display:flex;gap:.6rem;align-items:flex-start;margin:0 0 1.2rem;padding:.85rem 1rem;border-radius:16px;background:rgba(196,153,106,.12);border:1px solid rgba(196,153,106,.28);color:#5f4633;font-size:13px;line-height:1.6;}
+.cake-notice strong{color:#3c2a20;}
+/* 款式选择 */
+.cake-pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.cake-pick-card{display:flex;flex-direction:column;border:1px solid rgba(124,101,97,.18);border-radius:22px;overflow:hidden;background:rgba(255,249,243,.9);cursor:pointer;text-align:left;padding:0;transition:transform .18s ease,box-shadow .2s ease,border-color .2s ease;}
+.cake-pick-card:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(45,31,15,.12);border-color:rgba(196,153,106,.45);}
+.cake-pick-media{aspect-ratio:4/3;background:#efe3d4;overflow:hidden;}
+.cake-pick-media img{width:100%;height:100%;object-fit:cover;display:block;}
+.cake-pick-body{padding:.9rem 1rem 1.1rem;}
+.cake-pick-name{font-size:1.05rem;font-weight:700;color:#2d1f0f;}
+.cake-pick-meta{margin-top:.3rem;font-size:12.5px;color:#8a6f5b;line-height:1.5;}
+.cake-pick-price{margin-top:.55rem;font-size:1.15rem;font-weight:800;color:var(--text);}
+/* 口味选择 */
+.cake-flavor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem;}
+.cake-flavor-chip{border:1px solid rgba(124,101,97,.2);border-radius:14px;background:rgba(255,249,243,.85);padding:.7rem .5rem;font-size:14px;color:#4e3729;cursor:pointer;text-align:center;transition:all .15s ease;}
+.cake-flavor-chip:hover{border-color:rgba(196,153,106,.5);}
+.cake-flavor-chip.is-active{background:var(--dark);color:var(--bg);border-color:var(--dark);font-weight:700;}
+.cake-single-flavor{text-align:center;color:#5f4633;font-size:14.5px;line-height:1.8;padding:.6rem 0;}
+/* 日历 */
+.cake-cal{max-width:420px;margin:0 auto;}
+.cake-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;}
+.cake-cal-title{font-size:1rem;font-weight:700;color:#2d1f0f;}
+.cake-cal-nav{width:34px;height:34px;border-radius:999px;border:1px solid rgba(124,101,97,.25);background:#fff;color:#3c2a20;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.cake-cal-nav:disabled{opacity:.3;cursor:not-allowed;}
+.cake-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cake-cal-dow{text-align:center;font-size:11px;color:#9a7d65;padding:.3rem 0;font-weight:600;}
+.cake-cal-cell{aspect-ratio:1/1;border:none;border-radius:12px;background:transparent;font-size:14px;color:#3c2a20;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease;}
+.cake-cal-cell.is-empty{visibility:hidden;}
+.cake-cal-cell:not(.is-disabled):hover{background:rgba(196,153,106,.18);}
+.cake-cal-cell.is-disabled{color:rgba(120,101,90,.32);cursor:not-allowed;text-decoration:line-through;}
+.cake-cal-cell.is-selected{background:var(--dark);color:var(--bg);font-weight:700;}
+.cake-cal-legend{margin-top:.7rem;font-size:12px;color:#8a6f5b;text-align:center;line-height:1.6;}
+.cake-time-field{margin-top:1.1rem;}
+.cake-time-field label{display:block;font-size:13px;color:#5f4633;margin-bottom:.35rem;font-weight:600;}
+.cake-input,.cake-textarea{width:100%;border:1px solid rgba(124,101,97,.25);border-radius:12px;padding:.7rem .85rem;font-family:inherit;font-size:14px;color:#2d1f0f;background:#fffdfa;}
+.cake-textarea{min-height:70px;resize:vertical;}
+/* 确认页 */
+.cake-review-row{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-bottom:1px solid rgba(45,31,15,.07);font-size:14.5px;}
+.cake-review-row .k{color:#8a6f5b;}
+.cake-review-row .v{color:#2d1f0f;font-weight:600;text-align:right;}
+.cake-review-total{display:flex;justify-content:space-between;padding:.8rem 0 0;font-size:1.15rem;font-weight:800;color:var(--text);}
+.cake-confirm-warn{margin:1.1rem 0;padding:1rem 1.1rem;border-radius:16px;background:rgba(198,74,52,.08);border:1px solid rgba(198,74,52,.25);color:#8a3b28;font-size:14px;font-weight:600;line-height:1.6;text-align:center;}
+.cake-pay-note{font-size:12.5px;color:#8a6f5b;text-align:center;margin-top:.4rem;}
+/* 底部按钮 */
+.cake-actions{display:flex;gap:.8rem;margin-top:1.5rem;}
+.cake-btn{flex:1;min-height:54px;border-radius:999px;font-size:15px;font-weight:700;letter-spacing:.03em;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;transition:background .2s ease,transform .15s ease;}
+.cake-btn--primary{background:var(--dark);color:var(--bg);box-shadow:0 14px 28px rgba(26,15,5,.18);}
+.cake-btn--primary:hover:not(:disabled){background:#3a2010;transform:translateY(-1px);}
+.cake-btn--primary:disabled{opacity:.45;cursor:not-allowed;}
+.cake-btn--ghost{flex:0 0 auto;padding:0 1.5rem;background:rgba(79,67,57,.1);color:#5f4633;}
+.cake-btn--ghost:hover{background:rgba(79,67,57,.16);}
+/* 我的订单里的蛋糕卡 */
+.my-order-card--cake .my-order-num-badge{background:rgba(196,153,106,.9);}
+.my-order-cake-name{font-size:1rem;font-weight:700;color:#2d1f0f;}
+.my-order-cake-flavor{font-size:13.5px;color:#7b6556;margin-top:.15rem;}
+.my-order-cake-pickup{margin-top:.6rem;font-size:13.5px;color:#4e3729;}
+.my-order-cake-pickup strong{color:#2d1f0f;}
+.my-order-cake-remind{margin-top:.6rem;padding:.55rem .7rem;border-radius:12px;background:rgba(198,74,52,.08);color:#8a3b28;font-size:12.5px;line-height:1.55;}
+@media(max-width:600px){
+  .cake-pick-grid{grid-template-columns:1fr;}
+  .cake-actions{flex-wrap:wrap;}
+}
 .qr-overlay[hidden]{display:none;}
 .qr-overlay{position:fixed;inset:0;z-index:320;display:grid;place-items:center;padding:24px;}
 .qr-overlay-backdrop{position:absolute;inset:0;background:rgba(20,10,4,.68);backdrop-filter:blur(10px);}
@@ -1126,6 +1215,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 </div>
 
 <section class="shop-entry">
+  <div class="shop-entry-duo">
   <div class="shop-shell">
     <canvas class="shop-silk-canvas" id="shopSilkCanvas" aria-hidden="true"></canvas>
     <div class="shop-entry-head">
@@ -1169,6 +1259,18 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     </div>
     <div class="shop-entry-status" id="shopEntryStatus" style="justify-content:center;">
     </div>
+  </div>
+
+  <div class="shop-shell shop-shell--cake">
+    <canvas class="shop-silk-canvas" id="cakeSilkCanvas" aria-hidden="true"></canvas>
+    <div class="shop-entry-head">
+      <div class="shop-entry-copy">
+        <h2 class="sec-title">蛋糕预定</h2>
+        <p class="sec-sub">整糕至少提前14天预定</p>
+        <button class="shop-entry-cta" type="button" data-cake-entry>查看款式和口味 <span class="shop-cta-arrow" aria-hidden="true">&#8594;</span></button>
+      </div>
+    </div>
+  </div>
   </div>
 </section>
 
@@ -1623,6 +1725,14 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   </div>
 </div>
 
+<div class="menu-overlay cake-overlay" id="cakeOverlay" hidden>
+  <div class="menu-overlay-backdrop" data-cake-close></div>
+  <div class="menu-overlay-panel cake-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="cakeOverlayTitle">
+    <button class="menu-overlay-close" type="button" aria-label="关闭蛋糕预定" data-cake-close>×</button>
+    <div id="cakeOverlayBody"></div>
+  </div>
+</div>
+
 <div class="portal-overlay" id="orderReviewOverlay" hidden>
   <div class="portal-overlay-backdrop" data-order-review-close></div>
   <div class="portal-panel" role="dialog" aria-modal="true" aria-labelledby="orderReviewTitle">
@@ -1982,7 +2092,7 @@ const orderPortalCopy = {
     orderNow: '进入订单',
     weeklyMenu: '本周菜单',
     orderClosedCopy: '当前网页端预定未开启。等你们后台打开后，这里会和小程序同步显示。',
-    closedTitle: '下次见',
+    closedTitle: '甜品预定',
     closedMessage: '本次的甜品都已收单，敬请期待下次开售',
     closedBtn: '预定还未开始',
     selectPickup: '选择自提',
@@ -2055,7 +2165,7 @@ const orderPortalCopy = {
     orderNow: 'Open Ordering',
     weeklyMenu: 'Weekly Menu',
     orderClosedCopy: 'Web ordering is currently closed. Once the admin opens it, this page will sync with the miniapp.',
-    closedTitle: 'See you next time',
+    closedTitle: 'Dessert Preorder',
     closedMessage: 'This round is fully booked and we are busy baking - stay tuned for the next opening',
     closedBtn: 'Preorder not open yet',
     selectPickup: 'Choose Pickup',
@@ -2121,6 +2231,7 @@ const orderPortalCopy = {
 const siteState = {
   auth: loadSiteAuth(),
   weeklyOrder: null,
+  myCakeOrders: [],
   pickups: [],
   products: [],
   cartQuantities: {},
@@ -2765,8 +2876,11 @@ function renderMyOrdersSection() {
   }
 
   const live = orders.filter(isThisWeek);
-  if (!live.length) return `<div class="empty compact">${escapeHtml(c.noThisWeekOrders)}</div>`;
-  return `<div class="my-orders-list">${live.map((order) => renderOrderCard(order, true)).join('')}</div>${hint(live)}`;
+  const cakeOrders = Array.isArray(siteState.myCakeOrders) ? siteState.myCakeOrders : [];
+  const cakeHtml = cakeOrders.map((order) => renderCakeOrderCard(order)).join('');
+  if (!live.length && !cakeHtml) return `<div class="empty compact">${escapeHtml(c.noThisWeekOrders)}</div>`;
+  const liveHtml = live.map((order) => renderOrderCard(order, true)).join('');
+  return `<div class="my-orders-list">${cakeHtml}${liveHtml}</div>${hint(live)}`;
 }
 
 function refreshMyOrdersSection() {
@@ -2780,8 +2894,12 @@ async function loadMyOrders() {
   siteState.myOrdersError = '';
   refreshMyOrdersSection();
   try {
-    const data = await siteApiRequest(`/api/orders/user/${siteState.auth.user.id}`);
+    const [data, cakeData] = await Promise.all([
+      siteApiRequest(`/api/orders/user/${siteState.auth.user.id}`),
+      siteApiRequest(`/api/cake-orders/user/${siteState.auth.user.id}`).catch(() => null)
+    ]);
     siteState.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+    siteState.myCakeOrders = cakeData && Array.isArray(cakeData.orders) ? cakeData.orders : [];
     updateNavUnreadDot(countUnreadOrders(siteState.myOrders));
   } catch (error) {
     siteState.myOrdersError = error.message || getOrderCopy().ordersFailed;
@@ -3486,9 +3604,7 @@ window.addEventListener('scroll', syncMobileTabsVisibility, { passive: true });
 mobileTabsQuery.addEventListener('change', syncMobileTabsVisibility);
 syncMobileTabsVisibility();
 
-function initShopSilkBackground() {
-  const canvas = document.getElementById('shopSilkCanvas');
-  const shell = document.querySelector('.shop-shell');
+function initShopSilkBackground(canvas, shell) {
   if (!canvas || !shell || prefersReducedMotion) return;
 
   const gl = canvas.getContext('webgl', { alpha: true, antialias: false });
@@ -3633,7 +3749,395 @@ function initShopSilkBackground() {
   }, { once: true });
 }
 
-initShopSilkBackground();
+document.querySelectorAll('.shop-shell').forEach((shell) => {
+  initShopSilkBackground(shell.querySelector('.shop-silk-canvas'), shell);
+});
+
+/* ==================== 蛋糕预定下单流程 ==================== */
+const CAKE_CATALOG = [
+  {
+    id: 'quartet',
+    name: '稻香米奶油四重奏',
+    price: 88,
+    image: 'assets/images/cakes/quartet.jpg',
+    meta: '六寸 · 单一口味',
+    flavorNote: '大米戚风 · 米麻薯 · 米布丁 · 米奶油',
+    flavors: []
+  },
+  {
+    id: 'basque',
+    name: '巴斯克蛋糕',
+    price: 68,
+    image: 'assets/images/cakes/basque.jpg',
+    meta: '六寸 · 17 款口味',
+    flavors: [
+      '提拉米苏巴斯克', '黑芝麻豆乳巴斯克', '斑斓芭乐巴斯克', '伯爵茶巴斯克',
+      '蔓越莓巴斯克', '覆盆子巴斯克', '百香果西米巴斯克', '绿豆沙巴斯克',
+      '芋泥巴斯克', '抹茶巴斯克', '山楂巴斯克', '咸蛋黄麻薯巴斯克',
+      '雪媚娘巴斯克', '海盐榴莲巴斯克', '酒酿姜撞奶巴斯克', '法葱巴斯克',
+      '龙井抹茶巴斯克'
+    ]
+  }
+];
+const CAKE_MIN_LEAD_DAYS = 14;
+const CAKE_STATUS_LABELS = {
+  pending: '待确认', confirmed: '已确认', making: '制作中',
+  ready: '待取货', completed: '已完成', cancelled: '已取消'
+};
+
+// —— 美国联邦节假日（与后端 cakeOrderService.js 逻辑一致）——
+function cakePad(n) { return String(n).padStart(2, '0'); }
+function cakeYmd(y, m, d) { return `${y}-${cakePad(m)}-${cakePad(d)}`; }
+function cakeNthWeekday(y, m, weekday, n) {
+  const first = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+  return 1 + ((weekday - first + 7) % 7) + (n - 1) * 7;
+}
+function cakeLastWeekday(y, m, weekday) {
+  const days = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const last = new Date(Date.UTC(y, m - 1, days)).getUTCDay();
+  return days - ((last - weekday + 7) % 7);
+}
+function cakeFederalHolidays(year) {
+  return [
+    cakeYmd(year, 1, 1),
+    cakeYmd(year, 1, cakeNthWeekday(year, 1, 1, 3)),
+    cakeYmd(year, 2, cakeNthWeekday(year, 2, 1, 3)),
+    cakeYmd(year, 5, cakeLastWeekday(year, 5, 1)),
+    cakeYmd(year, 6, 19),
+    cakeYmd(year, 7, 4),
+    cakeYmd(year, 9, cakeNthWeekday(year, 9, 1, 1)),
+    cakeYmd(year, 10, cakeNthWeekday(year, 10, 1, 2)),
+    cakeYmd(year, 11, 11),
+    cakeYmd(year, 11, cakeNthWeekday(year, 11, 4, 4)),
+    cakeYmd(year, 12, 25)
+  ];
+}
+function cakeLaToday() {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(new Date());
+}
+function cakeYmdAddDays(str, n) {
+  const t = new Date(`${str}T00:00:00Z`).getTime() + n * 86400000;
+  const d = new Date(t);
+  return cakeYmd(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
+}
+function cakeHolidaySet() {
+  const y = Number(cakeLaToday().slice(0, 4));
+  return new Set([...cakeFederalHolidays(y), ...cakeFederalHolidays(y + 1)]);
+}
+function cakeFormatDateCn(str) {
+  if (!str) return '';
+  const [y, m, d] = str.split('-');
+  const wd = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][new Date(`${str}T00:00:00Z`).getUTCDay()];
+  return `${y} 年 ${Number(m)} 月 ${Number(d)} 日 ${wd}`;
+}
+
+const cakeFlow = { step: 'pick', cakeId: '', flavor: '', month: null, selected: '', preferredTime: '', notes: '' };
+const cakeOverlay = document.getElementById('cakeOverlay');
+const cakeOverlayBody = document.getElementById('cakeOverlayBody');
+
+function openCakeOverlay() {
+  const earliest = cakeYmdAddDays(cakeLaToday(), CAKE_MIN_LEAD_DAYS);
+  cakeFlow.step = 'pick';
+  cakeFlow.cakeId = '';
+  cakeFlow.flavor = '';
+  cakeFlow.selected = '';
+  cakeFlow.preferredTime = '';
+  cakeFlow.notes = '';
+  cakeFlow.month = { y: Number(earliest.slice(0, 4)), m: Number(earliest.slice(5, 7)) };
+  renderCakeStep();
+  openOverlay(cakeOverlay);
+}
+function closeCakeOverlay() {
+  closeOverlay(cakeOverlay, cakeOverlayBody);
+}
+function getCakeById(id) { return CAKE_CATALOG.find((c) => c.id === id) || null; }
+
+function cakeStepDots(active) {
+  const steps = ['pick', 'flavor', 'date', 'review'];
+  return `<div class="cake-steps-dots">${steps.map((s) => `<span class="${s === active ? 'is-on' : ''}"></span>`).join('')}</div>`;
+}
+
+function renderCakeStep() {
+  if (cakeFlow.step === 'pick') return renderCakePick();
+  if (cakeFlow.step === 'flavor') return renderCakeFlavor();
+  if (cakeFlow.step === 'date') return renderCakeDate();
+  if (cakeFlow.step === 'review') return renderCakeReview();
+}
+
+function renderCakePick() {
+  cakeOverlayBody.innerHTML = `
+    <div class="cake-step-head">
+      <div class="cake-step-title" id="cakeOverlayTitle">蛋糕预定</div>
+      <div class="cake-step-sub">整糕至少提前 2 周预定 · 仅自提</div>
+      ${cakeStepDots('pick')}
+    </div>
+    <div class="cake-pick-grid">
+      ${CAKE_CATALOG.map((cake) => `
+        <button class="cake-pick-card" type="button" data-cake-pick="${escapeHtml(cake.id)}">
+          <div class="cake-pick-media"><img src="${escapeHtml(cake.image)}" alt="${escapeHtml(cake.name)}" loading="lazy" onerror="this.style.display='none'"></div>
+          <div class="cake-pick-body">
+            <div class="cake-pick-name">${escapeHtml(cake.name)}</div>
+            <div class="cake-pick-meta">${escapeHtml(cake.meta)}</div>
+            <div class="cake-pick-price">$${cake.price}</div>
+          </div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderCakeFlavor() {
+  const cake = getCakeById(cakeFlow.cakeId);
+  if (!cake) { cakeFlow.step = 'pick'; return renderCakeStep(); }
+  const body = cake.flavors.length
+    ? `<div class="cake-flavor-grid">${cake.flavors.map((f) => `
+        <button class="cake-flavor-chip ${cakeFlow.flavor === f ? 'is-active' : ''}" type="button" data-cake-flavor="${escapeHtml(f)}">${escapeHtml(f)}</button>
+      `).join('')}</div>`
+    : `<div class="cake-single-flavor">这款为单一口味：<br><strong>${escapeHtml(cake.flavorNote || '')}</strong></div>`;
+  const canNext = cake.flavors.length ? Boolean(cakeFlow.flavor) : true;
+  cakeOverlayBody.innerHTML = `
+    <div class="cake-step-head">
+      <div class="cake-step-title">${escapeHtml(cake.name)}</div>
+      <div class="cake-step-sub">$${cake.price} · 六寸</div>
+      ${cakeStepDots('flavor')}
+    </div>
+    <div class="cake-notice"><span>🕒</span><div>请至少<strong>提前 2 周</strong>预定，蛋糕<strong>仅支持自提</strong>。</div></div>
+    ${cake.flavors.length ? '<div class="cake-step-sub" style="margin-bottom:.8rem;">选择口味</div>' : ''}
+    ${body}
+    <div class="cake-actions">
+      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="pick">返回</button>
+      <button class="cake-btn cake-btn--primary" type="button" data-cake-next="date" ${canNext ? '' : 'disabled'}>下一步：选自提日期</button>
+    </div>
+  `;
+}
+
+function renderCakeDate() {
+  const cake = getCakeById(cakeFlow.cakeId);
+  const today = cakeLaToday();
+  const earliest = cakeYmdAddDays(today, CAKE_MIN_LEAD_DAYS);
+  const holidays = cakeHolidaySet();
+  const { y, m } = cakeFlow.month;
+  const firstDow = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+  const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const dows = ['日', '一', '二', '三', '四', '五', '六'];
+  const canPrev = `${y}-${cakePad(m)}` > earliest.slice(0, 7);
+
+  let cells = '';
+  for (let i = 0; i < firstDow; i += 1) cells += '<div class="cake-cal-cell is-empty"></div>';
+  for (let d = 1; d <= daysInMonth; d += 1) {
+    const ds = cakeYmd(y, m, d);
+    const disabled = ds < earliest || holidays.has(ds);
+    const selected = ds === cakeFlow.selected;
+    cells += `<button class="cake-cal-cell ${disabled ? 'is-disabled' : ''} ${selected ? 'is-selected' : ''}" type="button" ${disabled ? 'disabled' : `data-cake-date="${ds}"`}>${d}</button>`;
+  }
+
+  cakeOverlayBody.innerHTML = `
+    <div class="cake-step-head">
+      <div class="cake-step-title">选择自提日期</div>
+      <div class="cake-step-sub">${escapeHtml(cake ? cake.name : '')} · 最早 ${cakeFormatDateCn(earliest)}</div>
+      ${cakeStepDots('date')}
+    </div>
+    <div class="cake-cal">
+      <div class="cake-cal-head">
+        <button class="cake-cal-nav" type="button" data-cake-month="-1" ${canPrev ? '' : 'disabled'}>‹</button>
+        <div class="cake-cal-title">${y} 年 ${m} 月</div>
+        <button class="cake-cal-nav" type="button" data-cake-month="1">›</button>
+      </div>
+      <div class="cake-cal-grid">
+        ${dows.map((w) => `<div class="cake-cal-dow">${w}</div>`).join('')}
+        ${cells}
+      </div>
+      <div class="cake-cal-legend">灰色删除线 = 不可选（14 天内或美国节假日）</div>
+      <div class="cake-time-field">
+        <label for="cakePreferredTime">期望自提时间（选填）</label>
+        <input id="cakePreferredTime" class="cake-input" type="text" placeholder="例：下午 2-3 点" value="${escapeHtml(cakeFlow.preferredTime)}">
+      </div>
+    </div>
+    <div class="cake-actions">
+      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="flavor">返回</button>
+      <button class="cake-btn cake-btn--primary" type="button" data-cake-next="review" ${cakeFlow.selected ? '' : 'disabled'}>下一步：确认订单</button>
+    </div>
+  `;
+}
+
+function renderCakeReview() {
+  const cake = getCakeById(cakeFlow.cakeId);
+  if (!cake || !cakeFlow.selected) { cakeFlow.step = 'date'; return renderCakeStep(); }
+  cakeOverlayBody.innerHTML = `
+    <div class="cake-step-head">
+      <div class="cake-step-title">确认订单</div>
+      <div class="cake-step-sub">确认后请微信联系店家确认时间</div>
+      ${cakeStepDots('review')}
+    </div>
+    <div class="cake-review">
+      <div class="cake-review-row"><span class="k">蛋糕</span><span class="v">${escapeHtml(cake.name)}（六寸）</span></div>
+      <div class="cake-review-row"><span class="k">口味</span><span class="v">${escapeHtml(cakeFlow.flavor || cake.flavorNote || '单一口味')}</span></div>
+      <div class="cake-review-row"><span class="k">自提日期</span><span class="v">${escapeHtml(cakeFormatDateCn(cakeFlow.selected))}</span></div>
+      <div class="cake-review-row"><span class="k">期望时间</span><span class="v">${escapeHtml(cakeFlow.preferredTime || '未指定')}</span></div>
+      <div class="cake-review-total"><span>合计</span><span>$${cake.price}</span></div>
+    </div>
+    <div class="cake-time-field">
+      <label for="cakeNotes">备注（选填）</label>
+      <textarea id="cakeNotes" class="cake-textarea" placeholder="口味调整、字牌、过敏原等">${escapeHtml(cakeFlow.notes)}</textarea>
+    </div>
+    <div class="cake-confirm-warn">⚠️ 请下单后微信联系店家确认时间哦，不确认的订单不会制作。</div>
+    <div class="cake-pay-note">付款方式：Zelle makkiemua@gmail.com · Venmo makkiemua</div>
+    <div class="cake-actions">
+      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="date">返回</button>
+      <button class="cake-btn cake-btn--primary" type="button" data-cake-submit>提交预定</button>
+    </div>
+  `;
+}
+
+async function submitCakeOrder(button) {
+  if (!siteState.auth || !siteState.auth.user) {
+    closeCakeOverlay();
+    renderProfileOverlay();
+    return;
+  }
+  const cake = getCakeById(cakeFlow.cakeId);
+  if (!cake || !cakeFlow.selected) return;
+  const notesEl = document.getElementById('cakeNotes');
+  if (notesEl) cakeFlow.notes = notesEl.value;
+  const nickname = (siteState.auth.user.profile && siteState.auth.user.profile.nickname) || siteState.auth.user.nickname || '';
+  if (button) { button.disabled = true; button.textContent = '提交中…'; }
+  try {
+    await siteApiRequest('/api/cake-orders', {
+      method: 'POST',
+      body: {
+        cake_id: cake.id,
+        flavor: cakeFlow.flavor,
+        pickup_date: cakeFlow.selected,
+        preferred_time: cakeFlow.preferredTime,
+        notes: cakeFlow.notes,
+        customer_name: nickname
+      }
+    });
+    closeCakeOverlay();
+    alert('预定已提交！请微信联系店家确认时间哦，不确认的订单不会制作。');
+    loadMyOrders();
+  } catch (error) {
+    if (button) { button.disabled = false; button.textContent = '提交预定'; }
+    alert(error.message || '提交失败，请稍后再试');
+  }
+}
+
+function renderCakeOrderCard(order) {
+  const status = String(order.status || 'pending');
+  const label = CAKE_STATUS_LABELS[status] || status;
+  const dateText = formatOrderDate(order.created_at || order.createdAt);
+  const flavor = order.flavor || '单一口味';
+  const totalText = (order.total && order.total.text) || formatMoney(order.unit_price || order.total_amount || 0);
+  const cancellable = status === 'pending';
+  const reason = String(order.cancel_reason || order.cancelReason || '');
+  return `
+    <div class="my-order-card my-order-card--rich my-order-card--cake">
+      <div class="my-order-top">
+        <div class="my-order-date">
+          <span class="my-order-date-label">下单时间</span>
+          <strong class="my-order-date-value">${escapeHtml(dateText)}</strong>
+        </div>
+        <div class="my-order-badges">
+          <span class="my-order-num-badge">🎂 蛋糕</span>
+          <span class="my-order-status my-order-status--${escapeHtml(status)}">${escapeHtml(label)}</span>
+        </div>
+      </div>
+      <div class="my-order-cake-name">${escapeHtml(order.cake_name || order.cakeName || '')}（六寸）</div>
+      <div class="my-order-cake-flavor">${escapeHtml(flavor)}</div>
+      <div class="my-order-cake-pickup">自提日期：<strong>${escapeHtml(cakeFormatDateCn(order.pickup_date || order.pickupDate))}</strong>${(order.preferred_time || order.preferredTime) ? ` · ${escapeHtml(order.preferred_time || order.preferredTime)}` : ''}</div>
+      ${status === 'cancelled' && reason ? `<div class="my-order-reason">取消原因：${escapeHtml(reason)}</div>` : ''}
+      ${status !== 'cancelled' && status !== 'completed' ? '<div class="my-order-cake-remind">🕒 请微信联系店家确认自提时间，不确认的订单不会制作。</div>' : ''}
+      <div class="my-order-foot">
+        <span class="my-order-pay">仅自提</span>
+        <span class="my-order-total">${escapeHtml(totalText)}</span>
+      </div>
+      ${cancellable ? `<div class="my-order-cancel-row"><button class="my-order-cancel-btn" type="button" data-cake-cancel="${escapeHtml(order.id)}">取消预定</button></div>` : ''}
+    </div>
+  `;
+}
+
+async function cancelCakeOrder(orderId) {
+  if (!confirm('确定取消这单蛋糕预定吗？')) return;
+  try {
+    await siteApiRequest(`/api/cake-orders/${orderId}/cancel`, { method: 'PATCH' });
+    loadMyOrders();
+  } catch (error) {
+    alert(error.message || '取消失败');
+  }
+}
+
+// —— 事件绑定 ——
+document.querySelectorAll('[data-cake-entry]').forEach((btn) => btn.addEventListener('click', openCakeOverlay));
+
+if (cakeOverlay) {
+  cakeOverlay.addEventListener('click', (event) => {
+    const closeEl = event.target.closest('[data-cake-close]');
+    if (closeEl) { closeCakeOverlay(); return; }
+
+    const pickEl = event.target.closest('[data-cake-pick]');
+    if (pickEl) {
+      cakeFlow.cakeId = pickEl.getAttribute('data-cake-pick');
+      cakeFlow.flavor = '';
+      cakeFlow.step = 'flavor';
+      renderCakeStep();
+      return;
+    }
+
+    const flavorEl = event.target.closest('[data-cake-flavor]');
+    if (flavorEl) {
+      cakeFlow.flavor = flavorEl.getAttribute('data-cake-flavor');
+      renderCakeStep();
+      return;
+    }
+
+    const monthEl = event.target.closest('[data-cake-month]');
+    if (monthEl) {
+      const delta = Number(monthEl.getAttribute('data-cake-month'));
+      let m = cakeFlow.month.m + delta;
+      let y = cakeFlow.month.y;
+      if (m < 1) { m = 12; y -= 1; }
+      if (m > 12) { m = 1; y += 1; }
+      cakeFlow.month = { y, m };
+      renderCakeStep();
+      return;
+    }
+
+    const dateEl = event.target.closest('[data-cake-date]');
+    if (dateEl) {
+      cakeFlow.selected = dateEl.getAttribute('data-cake-date');
+      renderCakeStep();
+      return;
+    }
+
+    const backEl = event.target.closest('[data-cake-back]');
+    if (backEl) {
+      cakeFlow.step = backEl.getAttribute('data-cake-back');
+      renderCakeStep();
+      return;
+    }
+
+    const nextEl = event.target.closest('[data-cake-next]');
+    if (nextEl) {
+      // 离开日期步骤时先记住期望时间输入
+      const timeEl = document.getElementById('cakePreferredTime');
+      if (timeEl) cakeFlow.preferredTime = timeEl.value;
+      cakeFlow.step = nextEl.getAttribute('data-cake-next');
+      renderCakeStep();
+      return;
+    }
+
+    const submitEl = event.target.closest('[data-cake-submit]');
+    if (submitEl) { submitCakeOrder(submitEl); return; }
+  });
+}
+
+// 我的订单里的蛋糕订单取消按钮（委托到 document，因为卡片是动态渲染的）
+document.addEventListener('click', (event) => {
+  const cancelEl = event.target.closest('[data-cake-cancel]');
+  if (cancelEl) { cancelCakeOrder(cancelEl.getAttribute('data-cake-cancel')); }
+});
 
 document.querySelectorAll('.hero-links .btn-chip').forEach((link) => {
   if (!link.querySelector('.btn-chip-label')) {
