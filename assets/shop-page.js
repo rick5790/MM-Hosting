@@ -745,8 +745,26 @@
     return getSelectedItems().reduce((sum, item) => sum + item.quantity, 0);
   }
 
+  function getWeeklyDeadlineMs() {
+    const weekly = state.weeklyOrder;
+    if (!weekly) return 0;
+    const raw = weekly.order_deadline_at || weekly.end_at || weekly.close_at || '';
+    const ms = parseLaWallClock(raw);
+    return Number.isFinite(ms) ? ms : 0;
+  }
+
   function isWeeklyOpen() {
-    return Boolean(state.weeklyOrder && state.weeklyOrder.is_open && state.products.length);
+    const weekly = state.weeklyOrder;
+    if (!weekly || !weekly.is_open || !state.products.length) return false;
+    const nowMs = Date.now();
+    // 尚未到开团时间：视为未开放
+    if (weekly.start_at) {
+      const startMs = parseLaWallClock(weekly.start_at);
+      if (Number.isFinite(startMs) && startMs > nowMs) return false;
+    }
+    // 已过截单时间：视为已关闭（即使后台 is_open 仍为 true）
+    const deadlineMs = getWeeklyDeadlineMs();
+    return !deadlineMs || deadlineMs > nowMs;
   }
 
   function updateEntryStatus() {
