@@ -588,6 +588,7 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .portal-divider{margin:1rem 0;border-top:1px solid rgba(45,31,15,.08);}
 .portal-or{display:flex;align-items:center;gap:.9rem;margin:1.1rem 0;color:#9a7d65;font-size:12.5px;letter-spacing:.06em;}
 .portal-or::before,.portal-or::after{content:"";flex:1;height:1px;background:rgba(45,31,15,.1);}
+.portal-wechat-hint{margin:1.1rem 0;padding:.85rem 1rem;border-radius:14px;background:rgba(196,153,106,.12);border:1px solid rgba(196,153,106,.3);color:#6f5636;font-size:13px;line-height:1.65;text-align:left;}
 .portal-google-block{display:flex;justify-content:center;margin-top:1rem;min-height:44px;}
 .portal-pickups{display:grid;gap:.75rem;margin-top:.8rem;}
 .portal-pickup{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);color:#2d1f0f;cursor:pointer;-webkit-appearance:none;appearance:none;}
@@ -1241,6 +1242,20 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   <video class="hero-logo" autoplay muted loop playsinline preload="auto" aria-label="Makkie Mua waving logo">
     <source src="assets/video/makkie-waving-clean.webm?v=20260403-143509" type="video/webm">
   </video>
+  <script>
+    // 微信内置浏览器多数无法内联自动播放视频，直接换成静态 Makkie logo。
+    (function () {
+      if (!/MicroMessenger/i.test(navigator.userAgent || '')) return;
+      var video = document.currentScript.previousElementSibling;
+      if (!video || video.tagName !== 'VIDEO') video = document.querySelector('.hero-logo');
+      if (!video || video.tagName !== 'VIDEO') return;
+      var img = document.createElement('img');
+      img.className = video.className;
+      img.src = 'assets/images/brand/Makkie_Original_Logo.png';
+      img.alt = 'Makkie Mua';
+      video.parentNode.replaceChild(img, video);
+    })();
+  </script>
   <img class="hero-wordmark-art" src="assets/images/brand/Makkie_Mua_Text_Original.png" alt="Makkie Mua">
   <div class="hero-eyebrow">独家创意甜品</div>
   <p class="hero-sub">每一层都是手作的温度<br>Los Angeles &amp; Orange County</p>
@@ -2188,6 +2203,7 @@ const orderPortalCopy = {
     cancelReasonLabel: '取消理由：',
     profileTitle: '请选择登陆方式',
     profileSub: '通过 Google 登陆，或填写昵称登陆',
+    wechatNoGoogle: '微信内暂不支持 Google 登录。你可以直接输入昵称下单，或点击右上角选择在默认浏览器中打开。',
     saved: '已保存',
     submitSuccess: '订单已提交',
     viewInMyOrders: '可在右上角「我的」里查看订单进度～',
@@ -2267,6 +2283,7 @@ const orderPortalCopy = {
     cancelReasonLabel: 'Cancellation reason: ',
     profileTitle: 'Choose how to sign in',
     profileSub: 'Sign in with Google, or continue with a nickname',
+    wechatNoGoogle: 'Google sign-in isn’t supported inside WeChat. You can order with just a nickname, or tap the top-right menu to open in your default browser.',
     saved: 'Saved',
     submitSuccess: 'Order submitted',
     viewInMyOrders: "You can track your order anytime under “My” at the top right.",
@@ -2457,6 +2474,8 @@ async function siteApiRequest(url, options = {}) {
   const auth = siteState.auth || loadSiteAuth();
   const response = await fetch(joinApiUrl(url), {
     method: options.method || 'GET',
+    // 携带 makkie_session HttpOnly Cookie（跨域），实现长期登录
+    credentials: 'include',
     headers: {
       'content-type': 'application/json',
       ...(auth && auth.token ? { authorization: `Bearer ${auth.token}` } : {}),
@@ -2743,14 +2762,22 @@ function renderProfileOverlay() {
   renderGoogleButton();
 }
 
+function isWeChatBrowser() {
+  return /MicroMessenger/i.test(navigator.userAgent || '');
+}
+
 function renderProfileLoginForm() {
   const copy = getOrderCopy();
   const nickname = getSavedNickname();
+  // 微信内置浏览器不支持 Google 登录：隐藏按钮，给出提示，仅保留昵称下单。
+  const loginBlock = isWeChatBrowser()
+    ? `<div class="portal-wechat-hint">${escapeHtml(copy.wechatNoGoogle)}</div>`
+    : `<div class="portal-google-block" id="googleSignInButton"></div>
+    <div class="portal-or"><span>${escapeHtml(copy.or || '或')}</span></div>`;
   profileOverlayBody.innerHTML = `
     <div class="portal-title" id="profileOverlayTitle">${escapeHtml(copy.profileTitle)}</div>
     <div class="portal-sub">${escapeHtml(copy.profileSub)}</div>
-    <div class="portal-google-block" id="googleSignInButton"></div>
-    <div class="portal-or"><span>${escapeHtml(copy.or || '或')}</span></div>
+    ${loginBlock}
     <div class="portal-form">
       <label class="portal-field portal-field--center">
         <span class="portal-label">${escapeHtml(copy.nickname)}</span>
@@ -3008,6 +3035,7 @@ async function cancelMyOrder(orderId) {
 }
 
 function renderGoogleButton() {
+  if (isWeChatBrowser()) return; // 微信内不初始化 Google 登录
   const container = document.getElementById('googleSignInButton');
   if (!container || !window.google || !window.google.accounts || !window.google.accounts.id) return;
   window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
@@ -3219,6 +3247,18 @@ async function loadShopData() {
 }
 
 async function checkLocalAuth() {
+  // 1) 先用长期 session Cookie 恢复账号（后端 /api/auth/me 读取 makkie_session）。
+  //    localStorage 只作为 UI 缓存，不作为认证依据。
+  try {
+    const me = await siteApiRequest('/api/auth/me');
+    if (me && me.user) {
+      const prev = loadSiteAuth() || {};
+      saveSiteAuth({ token: prev.token || '', user: me.user });
+      return;
+    }
+  } catch (error) { /* 无有效 session（401）时回退到 client_id 识别 */ }
+
+  // 2) 回退：用浏览器 client_id 让后端识别/恢复游客身份（并顺便补发 session Cookie）。
   try {
     const auth = await siteApiRequest('/api/auth/local-check', {
       method: 'POST',

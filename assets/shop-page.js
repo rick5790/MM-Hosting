@@ -119,6 +119,7 @@
       googleLoginFailed: 'Google 登录失败，请重试',
       profileTitle: '请选择登陆方式',
       profileSub: '请尽量保持昵称和微信名一致，方便提货和核对哦～',
+      wechatNoGoogle: '微信内暂不支持 Google 登录。你可以直接输入昵称下单，或点击右上角选择在默认浏览器中打开。',
       close: '关闭',
       orderNote: '订单备注',
       orderComment: '备注',
@@ -228,6 +229,7 @@
       googleLoginFailed: 'Google sign-in failed, please try again',
       profileTitle: 'Choose how to sign in',
       profileSub: 'Please use the same name as your WeChat so pickup is easy to verify~',
+      wechatNoGoogle: 'Google sign-in isn’t supported inside WeChat. You can order with just a nickname, or tap the top-right menu to open in your default browser.',
       close: 'Close',
       orderNote: 'Order Note',
       orderComment: 'Comment',
@@ -402,6 +404,8 @@
     const auth = state.auth || loadSiteAuth();
     const response = await fetch(joinApiUrl(url), {
       method: options.method || 'GET',
+      // 携带 makkie_session HttpOnly Cookie（跨域），实现长期登录
+      credentials: 'include',
       headers: {
         'content-type': 'application/json',
         ...(auth && auth.token ? { authorization: `Bearer ${auth.token}` } : {}),
@@ -994,13 +998,21 @@
     renderGoogleButton();
   }
 
+  function isWeChatBrowser() {
+    return /MicroMessenger/i.test(navigator.userAgent || '');
+  }
+
   function renderProfileLoginForm() {
     const c = copy();
     const nickname = getSavedNickname();
+    // 微信内置浏览器不支持 Google 登录：隐藏按钮，给出提示，仅保留昵称下单。
+    const loginBlock = isWeChatBrowser()
+      ? `<div class="portal-wechat-hint">${escapeHtml(c.wechatNoGoogle)}</div>`
+      : '<div class="portal-google-block" id="googleSignInButton"></div>';
     profileOverlayBody.innerHTML = `
       <div class="portal-title">${escapeHtml(c.profileTitle)}</div>
       <div class="portal-sub">${escapeHtml(c.profileSub)}</div>
-      <div class="portal-google-block" id="googleSignInButton"></div>
+      ${loginBlock}
       <div class="portal-form">
         <label class="portal-field portal-field--center">
           <span class="portal-label">${escapeHtml(c.nickname)}</span>
@@ -1250,6 +1262,7 @@
   }
 
   function renderGoogleButton() {
+    if (isWeChatBrowser()) return; // 微信内不初始化 Google 登录
     const container = document.getElementById('googleSignInButton');
     if (!container || !window.google || !window.google.accounts || !window.google.accounts.id) return;
     window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
@@ -1567,6 +1580,17 @@
   }
 
   async function checkLocalAuth() {
+    // 1) 先用长期 session Cookie 恢复账号（/api/auth/me 读取 makkie_session）。
+    try {
+      const me = await siteApiRequest('/api/auth/me');
+      if (me && me.user) {
+        const prev = loadSiteAuth() || {};
+        saveSiteAuth({ token: prev.token || '', user: me.user });
+        return;
+      }
+    } catch (error) { /* 无有效 session（401）时回退 */ }
+
+    // 2) 回退：用浏览器 client_id 识别/恢复游客身份（后端会顺便补发 session Cookie）。
     try {
       const auth = await siteApiRequest('/api/auth/local-check', {
         method: 'POST',
