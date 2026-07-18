@@ -128,6 +128,7 @@
       googleLoginFailed: 'Google 登录失败，请重试',
       profileTitle: '请选择登陆方式',
       profileSub: '请尽量保持昵称和微信名一致，方便提货和核对哦～',
+      wechatNoGoogle: '微信内暂不支持 Google 登录。你可以直接输入昵称下单，或点击右上角选择在默认浏览器中打开。',
       close: '关闭',
       orderNote: '订单备注',
       orderComment: '备注',
@@ -190,6 +191,8 @@
       ordersLoading: '正在读取订单...',
       ordersFailed: '订单读取失败，请稍后再试。',
       editNickname: '修改昵称',
+      logout: '退出登录',
+      logoutConfirm: '确定要退出登录吗？退出后需要重新登录或填写昵称。',
       loggedInAs: '当前昵称',
       orderNumberLabel: '订单号',
       pickupSelect: '选择自提',
@@ -237,6 +240,7 @@
       googleLoginFailed: 'Google sign-in failed, please try again',
       profileTitle: 'Choose how to sign in',
       profileSub: 'Please use the same name as your WeChat so pickup is easy to verify~',
+      wechatNoGoogle: 'Google sign-in isn’t supported inside WeChat. You can order with just a nickname, or tap the top-right menu to open in your default browser.',
       close: 'Close',
       orderNote: 'Order Note',
       orderComment: 'Comment',
@@ -299,6 +303,8 @@
       ordersLoading: 'Loading orders...',
       ordersFailed: 'Failed to load orders. Please try again later.',
       editNickname: 'Edit Nickname',
+      logout: 'Log out',
+      logoutConfirm: 'Log out? You’ll need to sign in or enter a nickname again.',
       loggedInAs: 'Nickname',
       orderNumberLabel: 'Order',
       pickupSelect: 'Choose Pickup',
@@ -412,6 +418,8 @@
     const auth = state.auth || loadSiteAuth();
     const response = await fetch(joinApiUrl(url), {
       method: options.method || 'GET',
+      // 携带 makkie_session HttpOnly Cookie（跨域），实现长期登录
+      credentials: 'include',
       headers: {
         'content-type': 'application/json',
         ...(auth && auth.token ? { authorization: `Bearer ${auth.token}` } : {}),
@@ -755,8 +763,26 @@
     return getSelectedItems().reduce((sum, item) => sum + item.quantity, 0);
   }
 
+  function getWeeklyDeadlineMs() {
+    const weekly = state.weeklyOrder;
+    if (!weekly) return 0;
+    const raw = weekly.order_deadline_at || weekly.end_at || weekly.close_at || '';
+    const ms = parseLaWallClock(raw);
+    return Number.isFinite(ms) ? ms : 0;
+  }
+
   function isWeeklyOpen() {
-    return Boolean(state.weeklyOrder && state.weeklyOrder.is_open && state.products.length);
+    const weekly = state.weeklyOrder;
+    if (!weekly || !weekly.is_open || !state.products.length) return false;
+    const nowMs = Date.now();
+    // 尚未到开团时间：视为未开放
+    if (weekly.start_at) {
+      const startMs = parseLaWallClock(weekly.start_at);
+      if (Number.isFinite(startMs) && startMs > nowMs) return false;
+    }
+    // 已过截单时间：视为已关闭（即使后台 is_open 仍为 true）
+    const deadlineMs = getWeeklyDeadlineMs();
+    return !deadlineMs || deadlineMs > nowMs;
   }
 
   function updateEntryStatus() {
@@ -986,13 +1012,21 @@
     renderGoogleButton();
   }
 
+  function isWeChatBrowser() {
+    return /MicroMessenger/i.test(navigator.userAgent || '');
+  }
+
   function renderProfileLoginForm() {
     const c = copy();
     const nickname = getSavedNickname();
+    // 微信内置浏览器不支持 Google 登录：隐藏按钮，给出提示，仅保留昵称下单。
+    const loginBlock = isWeChatBrowser()
+      ? `<div class="portal-wechat-hint">${escapeHtml(c.wechatNoGoogle)}</div>`
+      : '<div class="portal-google-block" id="googleSignInButton"></div>';
     profileOverlayBody.innerHTML = `
       <div class="portal-title">${escapeHtml(c.profileTitle)}</div>
       <div class="portal-sub">${escapeHtml(c.profileSub)}</div>
-      <div class="portal-google-block" id="googleSignInButton"></div>
+      ${loginBlock}
       <div class="portal-form">
         <label class="portal-field portal-field--center">
           <span class="portal-label">${escapeHtml(c.nickname)}</span>
@@ -1040,6 +1074,9 @@
         <div class="portal-divider"></div>
         <div class="profile-main-title">${escapeHtml(c.thisWeekOrders)}</div>
         <div id="myOrdersSection">${renderMyOrdersSection()}</div>
+        <div class="profile-logout-row">
+          <button class="profile-logout-btn" type="button" data-profile-action="logout">${escapeHtml(c.logout)}</button>
+        </div>
       </div>
     `;
   }
@@ -1233,6 +1270,7 @@
   }
 
   function renderGoogleButton() {
+    if (isWeChatBrowser()) return; // 微信内不初始化 Google 登录
     const container = document.getElementById('googleSignInButton');
     if (!container || !window.google || !window.google.accounts || !window.google.accounts.id) return;
     window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
@@ -1550,6 +1588,17 @@
   }
 
   async function checkLocalAuth() {
+    // 1) 先用长期 session Cookie 恢复账号（/api/auth/me 读取 makkie_session）。
+    try {
+      const me = await siteApiRequest('/api/auth/me');
+      if (me && me.user) {
+        const prev = loadSiteAuth() || {};
+        saveSiteAuth({ token: prev.token || '', user: me.user });
+        return;
+      }
+    } catch (error) { /* 无有效 session（401）时回退 */ }
+
+    // 2) 回退：用浏览器 client_id 识别/恢复游客身份（后端会顺便补发 session Cookie）。
     try {
       const auth = await siteApiRequest('/api/auth/local-check', {
         method: 'POST',
@@ -1557,6 +1606,27 @@
       });
       if (auth && auth.user) saveSiteAuth(auth);
     } catch (error) {}
+  }
+
+  async function logoutSite() {
+    const c = copy();
+    if (!window.confirm(c.logoutConfirm)) return;
+    // 1) 后端删除 DB session + 清除 Cookie（credentials:'include' 会带上 makkie_session）。
+    try { await siteApiRequest('/api/auth/logout', { method: 'POST' }); } catch (error) { /* 即使失败也清本地 */ }
+    // 2) 清除本地缓存的身份。localStorage 只是 UI 缓存；连同 client_id 一起清，实现干净登出。
+    state.auth = null;
+    state.myOrders = [];
+    state.profileEditMode = false;
+    state.profileView = 'main';
+    try {
+      localStorage.removeItem(siteStorageKeys.auth);
+      localStorage.removeItem(siteStorageKeys.clientId);
+    } catch (error) {}
+    // 3) 回到登录表单，刷新导航红点与菜单（下单需登录）。
+    updateNavUnreadDot(0);
+    renderProfileOverlay();
+    renderGoogleButton();
+    renderShop();
   }
 
   function resetCountdown() {
@@ -1660,10 +1730,13 @@
       renderPickupOverlay();
     }
     if (profileAction) {
-      if (profileAction.dataset.profileAction === 'edit') {
+      const act = profileAction.dataset.profileAction;
+      if (act === 'edit') {
         state.profileEditMode = true;
         renderProfileOverlay();
         renderGoogleButton();
+      } else if (act === 'logout') {
+        await logoutSite();
       } else {
         await saveProfileFromOverlay().catch((error) => alert(error.message));
       }
