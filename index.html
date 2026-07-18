@@ -514,6 +514,9 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .profile-history-entry:hover{background:rgba(124,101,97,.08);}
 .profile-history-arrow{font-size:18px;color:#9a7d65;line-height:1;}
 .profile-main-title{font-size:1.15rem;font-weight:800;color:#2d1f0f;text-align:center;}
+.profile-logout-row{display:flex;justify-content:center;margin-top:.4rem;padding-top:1rem;border-top:1px solid rgba(45,31,15,.07);}
+.profile-logout-btn{padding:.55rem 1.4rem;border-radius:999px;border:1px solid rgba(124,63,53,.25);background:transparent;color:#9a4737;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s ease;}
+.profile-logout-btn:hover{background:rgba(124,63,53,.08);}
 .profile-history-head{position:relative;display:flex;align-items:center;justify-content:center;gap:.9rem;min-height:44px;}
 .profile-history-back{position:absolute;left:0;top:0;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;border:1px solid rgba(124,101,97,.14);background:rgba(255,255,255,.76);color:#7c6561;font-family:inherit;font-size:24px;font-weight:800;line-height:1;cursor:pointer;}
 .profile-history-back:hover{background:rgba(124,101,97,.08);}
@@ -2181,6 +2184,8 @@ const orderPortalCopy = {
     orderNumberLabel: '订单号',
     loggedInAs: '当前昵称',
     editNickname: '修改昵称',
+    logout: '退出登录',
+    logoutConfirm: '确定要退出登录吗？退出后需要重新登录或填写昵称。',
     ordersLoading: '正在读取订单...',
     ordersFailed: '订单读取失败，请稍后再试。',
     noOrders: '还没有订单',
@@ -2261,6 +2266,8 @@ const orderPortalCopy = {
     orderNumberLabel: 'Order',
     loggedInAs: 'Nickname',
     editNickname: 'Edit Nickname',
+    logout: 'Log out',
+    logoutConfirm: 'Log out? You’ll need to sign in or enter a nickname again.',
     ordersLoading: 'Loading orders...',
     ordersFailed: 'Failed to load orders. Please try again later.',
     noOrders: 'No orders yet',
@@ -2824,6 +2831,9 @@ function renderProfileLoggedIn() {
       <div class="portal-divider"></div>
       <div class="profile-main-title">${escapeHtml(c.thisWeekOrders)}</div>
       <div id="myOrdersSection">${renderMyOrdersSection()}</div>
+      <div class="profile-logout-row">
+        <button class="profile-logout-btn" type="button" data-profile-action="logout">${escapeHtml(c.logout)}</button>
+      </div>
     </div>
   `;
 }
@@ -3268,6 +3278,27 @@ async function checkLocalAuth() {
   } catch (error) {}
 }
 
+async function logoutSite() {
+  const c = getOrderCopy();
+  if (!window.confirm(c.logoutConfirm)) return;
+  // 1) 后端删除 DB session + 清除 Cookie（credentials:'include' 会带上 makkie_session）。
+  try { await siteApiRequest('/api/auth/logout', { method: 'POST' }); } catch (error) { /* 即使失败也清本地 */ }
+  // 2) 清除本地缓存的身份。localStorage 只是 UI 缓存；连同 client_id 一起清，实现干净登出。
+  siteState.auth = null;
+  siteState.myOrders = [];
+  siteState.myCakeOrders = [];
+  siteState.profileEditMode = false;
+  siteState.profileView = 'main';
+  try {
+    localStorage.removeItem(siteStorageKeys.auth);
+    localStorage.removeItem(siteStorageKeys.clientId);
+  } catch (error) {}
+  // 3) 回到登录表单，并刷新导航红点。
+  renderProfileOverlay();
+  renderGoogleButton();
+  if (typeof refreshNavUnread === 'function') refreshNavUnread();
+}
+
 function getWeeklyDeadlineMs() {
   const weekly = siteState.weeklyOrder;
   if (!weekly) return 0;
@@ -3480,10 +3511,13 @@ document.addEventListener('click', async (event) => {
     }
   }
   if (profileAction) {
-    if (profileAction.dataset.profileAction === 'edit') {
+    const act = profileAction.dataset.profileAction;
+    if (act === 'edit') {
       siteState.profileEditMode = true;
       renderProfileOverlay();
       renderGoogleButton();
+    } else if (act === 'logout') {
+      await logoutSite();
     } else {
       await saveProfileFromOverlay().catch((error) => alert(error.message));
     }

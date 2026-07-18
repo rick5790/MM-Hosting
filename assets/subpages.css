@@ -1535,6 +1535,9 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .profile-history-arrow{font-size:18px;color:#9a7d65;line-height:1;}
 .profile-stack .portal-divider{margin:.2rem 0;}
 .profile-main-title{font-size:1.15rem;font-weight:800;color:#2d1f0f;text-align:center;}
+.profile-logout-row{display:flex;justify-content:center;margin-top:.4rem;padding-top:1rem;border-top:1px solid rgba(45,31,15,.07);}
+.profile-logout-btn{padding:.55rem 1.4rem;border-radius:999px;border:1px solid rgba(124,63,53,.25);background:transparent;color:#9a4737;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s ease;}
+.profile-logout-btn:hover{background:rgba(124,63,53,.08);}
 .profile-history-head{position:relative;display:flex;align-items:center;justify-content:center;gap:.9rem;min-height:44px;}
 .profile-history-back{position:absolute;left:0;top:0;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;border:1px solid rgba(124,101,97,.14);background:rgba(255,255,255,.76);color:#7c6561;font-family:inherit;font-size:24px;font-weight:800;line-height:1;cursor:pointer;}
 .profile-history-back:hover{background:rgba(124,101,97,.08);}

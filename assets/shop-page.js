@@ -182,6 +182,8 @@
       ordersLoading: '正在读取订单...',
       ordersFailed: '订单读取失败，请稍后再试。',
       editNickname: '修改昵称',
+      logout: '退出登录',
+      logoutConfirm: '确定要退出登录吗？退出后需要重新登录或填写昵称。',
       loggedInAs: '当前昵称',
       orderNumberLabel: '订单号',
       pickupSelect: '选择自提',
@@ -292,6 +294,8 @@
       ordersLoading: 'Loading orders...',
       ordersFailed: 'Failed to load orders. Please try again later.',
       editNickname: 'Edit Nickname',
+      logout: 'Log out',
+      logoutConfirm: 'Log out? You’ll need to sign in or enter a nickname again.',
       loggedInAs: 'Nickname',
       orderNumberLabel: 'Order',
       pickupSelect: 'Choose Pickup',
@@ -1060,6 +1064,9 @@
         <div class="portal-divider"></div>
         <div class="profile-main-title">${escapeHtml(c.thisWeekOrders)}</div>
         <div id="myOrdersSection">${renderMyOrdersSection()}</div>
+        <div class="profile-logout-row">
+          <button class="profile-logout-btn" type="button" data-profile-action="logout">${escapeHtml(c.logout)}</button>
+        </div>
       </div>
     `;
   }
@@ -1600,6 +1607,27 @@
     } catch (error) {}
   }
 
+  async function logoutSite() {
+    const c = copy();
+    if (!window.confirm(c.logoutConfirm)) return;
+    // 1) 后端删除 DB session + 清除 Cookie（credentials:'include' 会带上 makkie_session）。
+    try { await siteApiRequest('/api/auth/logout', { method: 'POST' }); } catch (error) { /* 即使失败也清本地 */ }
+    // 2) 清除本地缓存的身份。localStorage 只是 UI 缓存；连同 client_id 一起清，实现干净登出。
+    state.auth = null;
+    state.myOrders = [];
+    state.profileEditMode = false;
+    state.profileView = 'main';
+    try {
+      localStorage.removeItem(siteStorageKeys.auth);
+      localStorage.removeItem(siteStorageKeys.clientId);
+    } catch (error) {}
+    // 3) 回到登录表单，刷新导航红点与菜单（下单需登录）。
+    updateNavUnreadDot(0);
+    renderProfileOverlay();
+    renderGoogleButton();
+    renderShop();
+  }
+
   function resetCountdown() {
     if (countdownTimer) window.clearInterval(countdownTimer);
     countdownTimer = window.setInterval(() => {
@@ -1701,10 +1729,13 @@
       renderPickupOverlay();
     }
     if (profileAction) {
-      if (profileAction.dataset.profileAction === 'edit') {
+      const act = profileAction.dataset.profileAction;
+      if (act === 'edit') {
         state.profileEditMode = true;
         renderProfileOverlay();
         renderGoogleButton();
+      } else if (act === 'logout') {
+        await logoutSite();
       } else {
         await saveProfileFromOverlay().catch((error) => alert(error.message));
       }
