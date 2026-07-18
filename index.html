@@ -2208,7 +2208,7 @@ const orderPortalCopy = {
     noOrders: '还没有订单',
     paymentPaid: '已确认收款',
     paymentUnpaid: '待确认付款',
-    payReminder: '请在团购截单后 6 小时内完成付款哦～逾期订单可能会被取消',
+    payReminder: '请在开团后 60 小时内完成付款哦～逾期未付款的订单会自动取消',
     payAutoCancel: '到期未付款订单会自动取消哦',
     viewPayment: '查看付款方式',
     hidePayment: '收起付款方式',
@@ -2293,7 +2293,7 @@ const orderPortalCopy = {
     noOrders: 'No orders yet',
     paymentPaid: 'Payment confirmed',
     paymentUnpaid: 'Awaiting payment',
-    payReminder: 'Please pay within 6 hours after the group-buy closes — unpaid orders may be cancelled.',
+    payReminder: 'Please pay within 60 hours of the group-buy opening — unpaid orders are cancelled automatically.',
     payAutoCancel: 'Unpaid orders are auto-cancelled after the deadline',
     viewPayment: 'View payment methods',
     hidePayment: 'Hide payment methods',
@@ -3343,11 +3343,15 @@ function getWeeklyDeadlineMs() {
   return Number.isFinite(ms) ? ms : 0;
 }
 
-// 付款截止 = 团购截单时间 + 6 小时宽限
-const PAY_GRACE_HOURS = 6;
+// 付款截止 = 开团时间（start_at）+ 60 小时，逾期未付款后端会自动取消。
+// 必须与后端 weeklyOrderService.getPayDeadlineMs 保持一致，否则倒计时会骗人。
+const PAY_WINDOW_HOURS = 60;
 function getPayDeadlineMs() {
-  const d = getWeeklyDeadlineMs();
-  return d ? d + PAY_GRACE_HOURS * 3600 * 1000 : 0;
+  const weekly = siteState.weeklyOrder;
+  if (!weekly || !weekly.start_at) return 0;
+  const startMs = parseLaWallClock(weekly.start_at);
+  if (!Number.isFinite(startMs)) return 0;
+  return startMs + PAY_WINDOW_HOURS * 3600 * 1000;
 }
 function formatPayCountdown(remainMs) {
   const s = Math.max(0, Math.floor(remainMs / 1000));
