@@ -2190,6 +2190,7 @@ const orderPortalCopy = {
     profileSub: '通过 Google 登陆，或填写昵称登陆',
     saved: '已保存',
     submitSuccess: '订单已提交',
+    viewInMyOrders: '可在右上角「我的」里查看订单进度～',
     adminTitle: '隐藏管理员入口',
     adminSub: '这里会读取和小程序同一套 weekly order 状态。',
     adminLocked: '当前账号还不是管理员账号。先保存你平时在小程序里使用的管理员身份，再刷新试试看。',
@@ -2268,6 +2269,7 @@ const orderPortalCopy = {
     profileSub: 'Sign in with Google, or continue with a nickname',
     saved: 'Saved',
     submitSuccess: 'Order submitted',
+    viewInMyOrders: "You can track your order anytime under “My” at the top right.",
     adminTitle: 'Hidden Admin Entry',
     adminSub: 'This panel reads the same weekly-order state used by the miniapp.',
     adminLocked: 'This account is not marked as an admin yet. Save the same admin identity you use in the miniapp and refresh.',
@@ -3136,7 +3138,7 @@ async function submitWebOrder() {
   closeOverlay(orderReviewOverlay, orderReviewBody);
   // 重新拉取产品，让库存立即反映刚下的这单（否则显示的是下单前的旧库存）。
   await loadShopData();
-  alert(copy.submitSuccess + '\n\n' + copy.payReminder);
+  alert(copy.submitSuccess + '\n\n' + copy.payReminder + '\n\n' + copy.viewInMyOrders);
 }
 
 function renderAdminOverlay() {
@@ -4184,7 +4186,7 @@ async function submitCakeOrder(button) {
       }
     });
     closeCakeOverlay();
-    alert('询单已提交！请微信联系店家确认口味 / 时间与付款，确认后才会开始制作。');
+    alert('询单已提交！\n\n请微信联系店家确认口味 / 时间与付款，确认后才会开始制作。\n\n' + getOrderCopy().viewInMyOrders);
     loadMyOrders();
   } catch (error) {
     if (button) { button.disabled = false; button.textContent = '提交预定'; }
