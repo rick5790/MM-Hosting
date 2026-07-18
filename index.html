@@ -714,6 +714,13 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .cake-pay-copy{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--accent);}
 .cake-pay-item.is-copied .cake-pay-copy{color:#3f8a54;}
 .cake-pay-rate{flex-basis:100%;font-size:11.5px;color:#8a6f5b;padding-left:calc(66px + .7rem);}
+/* 询单成功界面 */
+.cake-success{text-align:center;padding:1.2rem 0 .4rem;}
+.cake-success-icon{display:flex;align-items:center;justify-content:center;width:66px;height:66px;margin:.4rem auto 1.2rem;border-radius:999px;background:#5a7c61;color:#fff;font-size:2rem;font-weight:800;box-shadow:0 12px 26px rgba(90,124,97,.28);}
+.cake-success-title{font-size:1.5rem;font-weight:800;color:#2d1f0f;letter-spacing:-.01em;}
+.cake-success-msg{margin:.75rem auto 0;max-width:420px;font-size:14px;line-height:1.75;color:#5f4633;}
+.cake-success-msg strong{color:#3c2a20;}
+.cake-actions--center{justify-content:center;}
 /* 底部按钮 */
 .cake-actions{display:flex;gap:.8rem;margin-top:1.5rem;}
 .cake-btn{flex:1;min-height:54px;border-radius:999px;font-size:15px;font-weight:700;letter-spacing:.03em;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;transition:background .2s ease,transform .15s ease;}
@@ -724,7 +731,8 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .cake-btn--ghost:hover{background:rgba(79,67,57,.16);}
 /* 我的订单里的蛋糕卡 */
 .my-order-card--cake .my-order-num-badge{background:rgba(196,153,106,.9);}
-.my-order-cake-name{font-size:1rem;font-weight:700;color:#2d1f0f;}
+.my-order-cake-name{margin-top:.7rem;font-size:1rem;font-weight:700;color:#2d1f0f;}
+.my-order-card--cake .cake-pay{margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(45,31,15,.07);}
 .my-order-cake-flavor{font-size:13.5px;color:#7b6556;margin-top:.15rem;}
 .my-order-cake-pickup{margin-top:.6rem;font-size:13.5px;color:#4e3729;}
 .my-order-cake-pickup strong{color:#2d1f0f;}
@@ -2996,6 +3004,7 @@ function renderMyOrdersSection() {
 function refreshMyOrdersSection() {
   const el = document.getElementById('myOrdersSection');
   if (el) el.innerHTML = renderMyOrdersSection();
+  refreshCakeRmb(); // 填充蛋糕订单卡里的人民币实时汇率
 }
 
 async function loadMyOrders() {
@@ -4187,6 +4196,18 @@ function renderCakeReview() {
       <div class="cake-inquiry-warn-title">⚠️ 此处为「询单」，不是最终下单</div>
       <div class="cake-inquiry-warn-body">提交后请<strong>微信联系店家</strong>确认口味 / 自提时间与付款，<strong>确认后才会开始制作</strong>。</div>
     </div>
+    ${cakePayBlockHtml(cake.price)}
+    <div class="cake-actions">
+      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="date">返回</button>
+      <button class="cake-btn cake-btn--primary" type="button" data-cake-submit>提交询单</button>
+    </div>
+  `;
+  refreshCakeRmb();
+}
+
+// 付款方式区块（Venmo / Zelle 可复制 + 人民币实时汇率），询单确认页与订单卡共用。
+function cakePayBlockHtml(price) {
+  return `
     <div class="cake-pay">
       <div class="cake-pay-head">付款方式（任选其一，确认后支付）</div>
       <div class="cake-pay-list">
@@ -4202,17 +4223,26 @@ function renderCakeReview() {
         </button>
         <div class="cake-pay-item cake-pay-item--rmb">
           <span class="cake-pay-brand cake-pay-brand--rmb">人民币</span>
-          <span class="cake-pay-value" id="cakeRmbValue">≈ ¥— · 微信 / 支付宝</span>
-          <span class="cake-pay-rate" id="cakeRmbRate">汇率加载中…</span>
+          <span class="cake-pay-value" data-cake-rmb-price="${Number(price) || 0}">≈ ¥— · 微信 / 支付宝</span>
+          <span class="cake-pay-rate" data-cake-rmb-rate>汇率加载中…</span>
         </div>
       </div>
-    </div>
-    <div class="cake-actions">
-      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="date">返回</button>
-      <button class="cake-btn cake-btn--primary" type="button" data-cake-submit>提交询单</button>
+    </div>`;
+}
+
+// 询单提交成功界面（参考甜品下单成功弹窗，替代原生 alert）
+function renderCakeSuccess() {
+  cakeOverlayBody.innerHTML = `
+    <div class="cake-success">
+      <div class="cake-success-icon">✓</div>
+      <div class="cake-success-title">询单已提交！</div>
+      <div class="cake-success-msg">请微信联系店家确认口味 / 时间与付款，<strong>确认后才会开始制作</strong>。<br>可在右上角「我的」里查看询单进度～</div>
+      <div class="cake-actions cake-actions--center">
+        <button class="cake-btn cake-btn--ghost" type="button" data-cake-success-close>知道了</button>
+        <button class="cake-btn cake-btn--primary" type="button" data-cake-success-orders>查看我的订单</button>
+      </div>
     </div>
   `;
-  updateCakeRmb(cake.price);
 }
 
 let cakeUsdCnyRate = null;
@@ -4226,17 +4256,19 @@ function fetchCakeRmbRate() {
       return cakeUsdCnyRate;
     });
 }
-function updateCakeRmb(price) {
-  const rateEl = document.getElementById('cakeRmbRate');
+// 填充页面上所有付款方式区块的人民币金额（按各自 data-cake-rmb-price 计算），支持多张订单卡。
+function refreshCakeRmb() {
+  if (!document.querySelector('[data-cake-rmb-price]')) return;
   fetchCakeRmbRate().then((rate) => {
-    const valueEl = document.getElementById('cakeRmbValue');
-    const rEl = document.getElementById('cakeRmbRate');
-    if (!rate || !valueEl) return;
-    valueEl.textContent = `≈ ¥${Math.round(price * rate)} · 微信 / 支付宝`;
-    if (rEl) rEl.textContent = `实时汇率 1 USD ≈ ${rate.toFixed(2)} CNY`;
+    if (!rate) throw new Error('no rate');
+    document.querySelectorAll('[data-cake-rmb-price]').forEach((el) => {
+      const price = Number(el.getAttribute('data-cake-rmb-price')) || 0;
+      el.textContent = `≈ ¥${Math.round(price * rate)} · 微信 / 支付宝`;
+      const rateEl = el.parentElement && el.parentElement.querySelector('[data-cake-rmb-rate]');
+      if (rateEl) rateEl.textContent = `实时汇率 1 USD ≈ ${rate.toFixed(2)} CNY`;
+    });
   }).catch(() => {
-    const rEl = document.getElementById('cakeRmbRate');
-    if (rEl) rEl.textContent = '汇率获取失败，请询问店家';
+    document.querySelectorAll('[data-cake-rmb-rate]').forEach((el) => { el.textContent = '汇率获取失败，请询问店家'; });
   });
 }
 
@@ -4264,11 +4296,10 @@ async function submitCakeOrder(button) {
         customer_name: nickname
       }
     });
-    closeCakeOverlay();
-    alert('询单已提交！\n\n请微信联系店家确认口味 / 时间与付款，确认后才会开始制作。\n\n' + getOrderCopy().viewInMyOrders);
+    renderCakeSuccess();
     loadMyOrders();
   } catch (error) {
-    if (button) { button.disabled = false; button.textContent = '提交预定'; }
+    if (button) { button.disabled = false; button.textContent = '提交询单'; }
     alert(error.message || '提交失败，请稍后再试');
   }
 }
@@ -4281,6 +4312,8 @@ function renderCakeOrderCard(order) {
   const totalText = (order.total && order.total.text) || formatMoney(order.unit_price || order.total_amount || 0);
   const cancellable = status === 'pending';
   const reason = String(order.cancel_reason || order.cancelReason || '');
+  const showPay = status !== 'cancelled' && status !== 'completed';
+  const price = Number(order.unit_price || order.total_amount || 0);
   return `
     <div class="my-order-card my-order-card--rich my-order-card--cake">
       <div class="my-order-top">
@@ -4289,7 +4322,7 @@ function renderCakeOrderCard(order) {
           <strong class="my-order-date-value">${escapeHtml(dateText)}</strong>
         </div>
         <div class="my-order-badges">
-          <span class="my-order-num-badge">🎂 蛋糕</span>
+          <span class="my-order-num-badge">蛋糕</span>
           <span class="my-order-status my-order-status--${escapeHtml(status)}">${escapeHtml(label)}</span>
         </div>
       </div>
@@ -4297,7 +4330,8 @@ function renderCakeOrderCard(order) {
       <div class="my-order-cake-flavor">${escapeHtml(flavor)}</div>
       <div class="my-order-cake-pickup">自提日期：<strong>${escapeHtml(cakeFormatDateCn(order.pickup_date || order.pickupDate))}</strong>${(order.preferred_time || order.preferredTime) ? ` · ${escapeHtml(order.preferred_time || order.preferredTime)}` : ''}</div>
       ${status === 'cancelled' && reason ? `<div class="my-order-reason">取消原因：${escapeHtml(reason)}</div>` : ''}
-      ${status !== 'cancelled' && status !== 'completed' ? '<div class="my-order-cake-remind">🕒 请微信联系店家确认自提时间，不确认的订单不会制作。</div>' : ''}
+      ${showPay ? '<div class="my-order-cake-remind">🕒 请微信联系店家确认自提时间，不确认的订单不会制作。</div>' : ''}
+      ${showPay ? cakePayBlockHtml(price) : ''}
       <div class="my-order-foot">
         <span class="my-order-pay">仅自提</span>
         <span class="my-order-total">${escapeHtml(totalText)}</span>
@@ -4377,38 +4411,44 @@ if (cakeOverlay) {
       return;
     }
 
-    const copyEl = event.target.closest('[data-cake-copy]');
-    if (copyEl) {
-      const text = copyEl.getAttribute('data-cake-copy');
-      const badge = copyEl.querySelector('.cake-pay-copy');
-      const done = () => {
-        if (!badge) return;
-        const prev = badge.textContent;
-        badge.textContent = '已复制 ✓';
-        copyEl.classList.add('is-copied');
-        setTimeout(() => { badge.textContent = prev; copyEl.classList.remove('is-copied'); }, 1600);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done).catch(() => {});
-      } else {
-        const ta = document.createElement('textarea');
-        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-        document.body.appendChild(ta); ta.select();
-        try { document.execCommand('copy'); done(); } catch (e) {}
-        document.body.removeChild(ta);
-      }
-      return;
-    }
-
     const submitEl = event.target.closest('[data-cake-submit]');
     if (submitEl) { submitCakeOrder(submitEl); return; }
+
+    const successCloseEl = event.target.closest('[data-cake-success-close]');
+    if (successCloseEl) { closeCakeOverlay(); return; }
+
+    const successOrdersEl = event.target.closest('[data-cake-success-orders]');
+    if (successOrdersEl) { closeCakeOverlay(); renderProfileOverlay(); return; }
   });
 }
 
 // 我的订单里的蛋糕订单取消按钮（委托到 document，因为卡片是动态渲染的）
 document.addEventListener('click', (event) => {
   const cancelEl = event.target.closest('[data-cake-cancel]');
-  if (cancelEl) { cancelCakeOrder(cancelEl.getAttribute('data-cake-cancel')); }
+  if (cancelEl) { cancelCakeOrder(cancelEl.getAttribute('data-cake-cancel')); return; }
+
+  // 付款方式「复制」——委托到 document，询单确认页与「我的订单」蛋糕卡都能用。
+  const copyEl = event.target.closest('[data-cake-copy]');
+  if (copyEl) {
+    const text = copyEl.getAttribute('data-cake-copy');
+    const badge = copyEl.querySelector('.cake-pay-copy');
+    const done = () => {
+      if (!badge) return;
+      const prev = badge.textContent;
+      badge.textContent = '已复制 ✓';
+      copyEl.classList.add('is-copied');
+      setTimeout(() => { badge.textContent = prev; copyEl.classList.remove('is-copied'); }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => {});
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  }
 });
 
 document.querySelectorAll('.hero-links .btn-chip').forEach((link) => {
