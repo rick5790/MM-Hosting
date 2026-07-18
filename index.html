@@ -732,7 +732,16 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 /* 我的订单里的蛋糕卡 */
 .my-order-card--cake .my-order-num-badge{background:rgba(196,153,106,.9);}
 .my-order-cake-name{margin-top:.7rem;font-size:1rem;font-weight:700;color:#2d1f0f;}
-.my-order-card--cake .cake-pay{margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(45,31,15,.07);}
+.my-order-btnrow{display:flex;align-items:center;justify-content:space-between;gap:.7rem;margin-top:.9rem;}
+.my-order-btnrow:has(> :only-child){justify-content:flex-end;}
+.my-order-paybtn{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:.5rem 1.05rem;border-radius:999px;border:1px solid rgba(124,101,97,.25);background:rgba(255,255,255,.7);color:#5f4c3d;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;-webkit-appearance:none;appearance:none;transition:background .15s ease,color .15s ease,border-color .15s ease;}
+.my-order-paybtn:hover{background:#fff;}
+.my-order-paybtn.is-open{background:var(--dark);color:var(--bg);border-color:var(--dark);}
+.my-order-paypanel{margin-top:.7rem;animation:myOrderPayIn .18s ease;}
+.my-order-paypanel[hidden]{display:none;}
+@keyframes myOrderPayIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){.my-order-paypanel{animation:none;}}
+.my-order-paypanel .cake-pay{margin-top:0;}
 .my-order-cake-flavor{font-size:13.5px;color:#7b6556;margin-top:.15rem;}
 .my-order-cake-pickup{margin-top:.6rem;font-size:13.5px;color:#4e3729;}
 .my-order-cake-pickup strong{color:#2d1f0f;}
@@ -2199,8 +2208,11 @@ const orderPortalCopy = {
     noOrders: '还没有订单',
     paymentPaid: '已确认收款',
     paymentUnpaid: '待确认付款',
-    payReminder: '请在团购截单后 6 小时内完成付款哦～逾期订单可能会被取消',
-    payDeadlinePrefix: '付款截止 ',
+    payReminder: '请在开团后 60 小时内完成付款哦～逾期未付款的订单会自动取消',
+    payAutoCancel: '到期未付款订单会自动取消哦',
+    viewPayment: '查看付款方式',
+    hidePayment: '收起付款方式',
+    payMethodsHead: '付款方式（任选其一）',
     payCountdownLabel: '剩余付款时间',
     payCountdownOver: '付款已超时，请尽快微信联系店家确认',
     cancelOrder: '取消订单',
@@ -2281,8 +2293,11 @@ const orderPortalCopy = {
     noOrders: 'No orders yet',
     paymentPaid: 'Payment confirmed',
     paymentUnpaid: 'Awaiting payment',
-    payReminder: 'Please pay within 6 hours after the group-buy closes — unpaid orders may be cancelled.',
-    payDeadlinePrefix: 'Pay by ',
+    payReminder: 'Please pay within 60 hours of the group-buy opening — unpaid orders are cancelled automatically.',
+    payAutoCancel: 'Unpaid orders are auto-cancelled after the deadline',
+    viewPayment: 'View payment methods',
+    hidePayment: 'Hide payment methods',
+    payMethodsHead: 'Payment methods (pick one)',
     payCountdownLabel: 'Time left to pay',
     payCountdownOver: 'Payment window has passed — please contact us on WeChat.',
     cancelOrder: 'Cancel Order',
@@ -2912,9 +2927,20 @@ function renderOrderCard(order, allowCancel) {
           <span class="my-order-paytimer-label">⏳ ${escapeHtml(over ? c.payCountdownOver : c.payCountdownLabel)}</span>
           <span class="my-order-paytimer-value">${over ? '' : escapeHtml(formatPayCountdown(remain))}</span>
         </div>
-        <div class="my-order-paytimer-deadline">${escapeHtml(c.payDeadlinePrefix + formatPayDeadlineText(payDeadlineMs))}</div>
+        <div class="my-order-paytimer-deadline">${escapeHtml(c.payAutoCancel)}</div>
       </div>`;
   }
+
+  // 未付款的本周订单：付款方式默认收起，点按钮展开（与蛋糕订单卡同一套开关）。
+  const payPanelId = `order-${order.id}`;
+  const payMethodsHtml = !paid && String(order.status || '') === 'pending' ? `
+    <div class="my-order-btnrow">
+      <button class="my-order-paybtn" type="button" aria-expanded="false"
+        data-pay-toggle="${escapeHtml(payPanelId)}"
+        data-pay-label-open="${escapeHtml(c.viewPayment)}"
+        data-pay-label-close="${escapeHtml(c.hidePayment)}">${escapeHtml(c.viewPayment)}</button>
+    </div>
+    <div class="my-order-paypanel" data-pay-panel="${escapeHtml(payPanelId)}" hidden>${cakePayBlockHtml(order.total_amount || 0, c.payMethodsHead)}</div>` : '';
 
   const updatedHtml = unread ? `
     <div class="my-order-updated">
@@ -2968,6 +2994,7 @@ function renderOrderCard(order, allowCancel) {
       <div class="my-order-lines">${itemsHtml}</div>
       ${pickupHtml}
       ${payTimerHtml}
+      ${payMethodsHtml}
       ${updatedHtml}
       ${cancelReasonHtml}
       <div class="my-order-foot">
@@ -3319,19 +3346,15 @@ function getWeeklyDeadlineMs() {
   return Number.isFinite(ms) ? ms : 0;
 }
 
-// 付款截止 = 团购截单时间 + 6 小时宽限
-const PAY_GRACE_HOURS = 6;
+// 付款截止 = 开团时间（start_at）+ 60 小时，逾期未付款后端会自动取消。
+// 必须与后端 weeklyOrderService.getPayDeadlineMs 保持一致，否则倒计时会骗人。
+const PAY_WINDOW_HOURS = 60;
 function getPayDeadlineMs() {
-  const d = getWeeklyDeadlineMs();
-  return d ? d + PAY_GRACE_HOURS * 3600 * 1000 : 0;
-}
-function formatPayDeadlineText(ms) {
-  if (!ms) return '';
-  const en = getUiLang() === 'en';
-  return new Intl.DateTimeFormat(en ? 'en-US' : 'zh-CN', {
-    timeZone: LA_TZ, month: 'short', day: 'numeric', weekday: 'short',
-    hour: '2-digit', minute: '2-digit', hour12: en
-  }).format(new Date(ms));
+  const weekly = siteState.weeklyOrder;
+  if (!weekly || !weekly.start_at) return 0;
+  const startMs = parseLaWallClock(weekly.start_at);
+  if (!Number.isFinite(startMs)) return 0;
+  return startMs + PAY_WINDOW_HOURS * 3600 * 1000;
 }
 function formatPayCountdown(remainMs) {
   const s = Math.max(0, Math.floor(remainMs / 1000));
@@ -4206,10 +4229,10 @@ function renderCakeReview() {
 }
 
 // 付款方式区块（Venmo / Zelle 可复制 + 人民币实时汇率），询单确认页与订单卡共用。
-function cakePayBlockHtml(price) {
+function cakePayBlockHtml(price, head) {
   return `
     <div class="cake-pay">
-      <div class="cake-pay-head">付款方式（任选其一，确认后支付）</div>
+      <div class="cake-pay-head">${escapeHtml(head || '付款方式（任选其一，确认后支付）')}</div>
       <div class="cake-pay-list">
         <button class="cake-pay-item" type="button" data-cake-copy="makkiemua">
           <span class="cake-pay-brand cake-pay-brand--venmo">Venmo</span>
@@ -4331,12 +4354,16 @@ function renderCakeOrderCard(order) {
       <div class="my-order-cake-pickup">自提日期：<strong>${escapeHtml(cakeFormatDateCn(order.pickup_date || order.pickupDate))}</strong>${(order.preferred_time || order.preferredTime) ? ` · ${escapeHtml(order.preferred_time || order.preferredTime)}` : ''}</div>
       ${status === 'cancelled' && reason ? `<div class="my-order-reason">取消原因：${escapeHtml(reason)}</div>` : ''}
       ${showPay ? '<div class="my-order-cake-remind">🕒 请微信联系店家确认自提时间，不确认的订单不会制作。</div>' : ''}
-      ${showPay ? cakePayBlockHtml(price) : ''}
       <div class="my-order-foot">
         <span class="my-order-pay">仅自提</span>
         <span class="my-order-total">${escapeHtml(totalText)}</span>
       </div>
-      ${cancellable ? `<div class="my-order-cancel-row"><button class="my-order-cancel-btn" type="button" data-cake-cancel="${escapeHtml(order.id)}">取消预定</button></div>` : ''}
+      ${(showPay || cancellable) ? `
+      <div class="my-order-btnrow">
+        ${showPay ? `<button class="my-order-paybtn" type="button" aria-expanded="false" data-pay-toggle="cake-${escapeHtml(order.id)}">查看付款方式</button>` : ''}
+        ${cancellable ? `<button class="my-order-cancel-btn" type="button" data-cake-cancel="${escapeHtml(order.id)}">取消预定</button>` : ''}
+      </div>` : ''}
+      ${showPay ? `<div class="my-order-paypanel" data-pay-panel="cake-${escapeHtml(order.id)}" hidden>${cakePayBlockHtml(price)}</div>` : ''}
     </div>
   `;
 }
@@ -4426,6 +4453,24 @@ if (cakeOverlay) {
 document.addEventListener('click', (event) => {
   const cancelEl = event.target.closest('[data-cake-cancel]');
   if (cancelEl) { cancelCakeOrder(cancelEl.getAttribute('data-cake-cancel')); return; }
+
+  // 订单卡「查看付款方式」——展开/收起该卡的付款方式（默认隐藏）。甜品卡与蛋糕卡共用。
+  const payToggleEl = event.target.closest('[data-pay-toggle]');
+  if (payToggleEl) {
+    const id = payToggleEl.getAttribute('data-pay-toggle');
+    const panel = document.querySelector(`[data-pay-panel="${CSS.escape(id)}"]`);
+    if (panel) {
+      const willShow = panel.hidden;
+      panel.hidden = !willShow;
+      payToggleEl.textContent = willShow
+        ? (payToggleEl.dataset.payLabelClose || '收起付款方式')
+        : (payToggleEl.dataset.payLabelOpen || '查看付款方式');
+      payToggleEl.classList.toggle('is-open', willShow);
+      payToggleEl.setAttribute('aria-expanded', String(willShow));
+      if (willShow) refreshCakeRmb();
+    }
+    return;
+  }
 
   // 付款方式「复制」——委托到 document，询单确认页与「我的订单」蛋糕卡都能用。
   const copyEl = event.target.closest('[data-cake-copy]');

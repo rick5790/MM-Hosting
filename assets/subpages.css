@@ -1470,7 +1470,7 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .shop-card--soldout .shop-card-media{filter:grayscale(1);opacity:.5;}
 .shop-card--soldout .shop-card-title,.shop-card--soldout .shop-card-desc,.shop-card--soldout .shop-card-price,.shop-card--soldout .shop-card-price strong{color:#a99e95;}
 .shop-card--soldout .shop-stepper{opacity:.5;}
-.shop-card-stock--soldout{background:rgba(124,63,53,.92);}
+.shop-card-stock--soldout,.shop-card-stock--empty{background:rgba(124,63,53,.92);}
 /* 我的订单卡：查看付款方式按钮 */
 .my-order-pay-btn{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(124,101,97,.22);background:rgba(255,255,255,.9);color:#5f4c3d;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;transition:background .18s ease,border-color .18s ease;}
 .my-order-pay-btn:hover{background:#fff;border-color:#7c6561;}
