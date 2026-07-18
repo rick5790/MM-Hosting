@@ -869,7 +869,7 @@
               <div class="shop-card-media">
                 ${soldOut
                   ? `<div class="shop-card-stock shop-card-stock--soldout">${escapeHtml(c.soldOut)}</div>`
-                  : (product.stock != null ? `<div class="shop-card-stock">${escapeHtml(c.stock)} ${product.stock}</div>` : '')}
+                  : (product.stock != null ? `<div class="shop-card-stock ${product.stock - quantity <= 0 ? 'shop-card-stock--empty' : ''}">${escapeHtml(c.stock)} ${Math.max(0, product.stock - quantity)}</div>` : '')}
                 ${product.image
                   ? `<img class="shop-card-image" src="${escapeHtml(product.image)}" alt="${escapeHtml(product.title)}" loading="lazy">`
                   : `<div class="shop-card-placeholder">
@@ -962,6 +962,15 @@
       if (qtyEl) qtyEl.textContent = quantity;
       dec.disabled = quantity <= 0;
       inc.disabled = quantity >= cap;
+      // 库存随 +/- 实时变化：显示剩余库存（总库存 − 已选数量），减到 0 时徽章转红。
+      const badge = product.stock == null
+        ? null
+        : stepper.closest('.shop-card')?.querySelector('.shop-card-stock:not(.shop-card-stock--soldout)');
+      if (badge) {
+        const remain = Math.max(0, product.stock - quantity);
+        badge.textContent = `${c.stock} ${remain}`;
+        badge.classList.toggle('shop-card-stock--empty', remain <= 0);
+      }
     });
     const summary = shopRoot.querySelector('.shop-submit-summary');
     if (summary) {
