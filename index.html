@@ -400,6 +400,9 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .shop-shell--cake .sec-title{margin:.5rem 0 0;font-size:clamp(2.6rem,9vw,3.6rem);line-height:1;font-weight:800;letter-spacing:-.02em;color:#2d1f0f;}
 .shop-shell--cake .sec-sub{margin:1.1rem 0 0;max-width:560px;color:#7b6556;font-size:15px;line-height:1.85;font-weight:400;}
 .shop-cta-arrow{margin-left:.5rem;font-size:1.05em;line-height:1;}
+/* 售罄态标题/说明（定义在响应式断点之前，保证下面的 @media 覆盖能生效）*/
+.shop-closed-title{margin-top:.5rem;font-size:clamp(2.6rem,9vw,3.6rem);line-height:1;font-weight:800;letter-spacing:-.02em;color:#2d1f0f;}
+.shop-closed-sub{margin-top:1.1rem;max-width:560px;color:#7b6556;font-size:15px;line-height:1.85;}
 @media(max-width:820px){
   .shop-entry-duo{grid-template-columns:1fr;gap:1.1rem;}
   .shop-entry-duo .shop-shell{padding:1.7rem 1.4rem;}
@@ -442,8 +445,6 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .shop-error{color:#7c3f35;background:rgba(124,63,53,.08);}
 /* 团购结束（售罄）状态 —— 下次见 + 加微信二维码 */
 .shop-closed{display:flex;flex-direction:column;align-items:center;text-align:center;padding:.5rem 1rem 1rem;}
-.shop-closed-title{margin-top:.5rem;font-size:clamp(2.6rem,9vw,3.6rem);line-height:1;font-weight:800;letter-spacing:-.02em;color:#2d1f0f;}
-.shop-closed-sub{margin-top:1.1rem;max-width:560px;color:#7b6556;font-size:15px;line-height:1.85;}
 /* 预定还未开始：与图四同款按钮，但置灰不可点 */
 .shop-entry-cta--soon{background:rgba(79,67,57,.3);color:#fffaf6;box-shadow:none;cursor:default;}
 .shop-entry-cta--soon:hover{background:rgba(79,67,57,.3);transform:none;}
@@ -552,6 +553,17 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .my-order-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.8rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
 .my-order-pay{font-size:12px;color:#a5744a;}
 .my-order-pay.is-paid{color:#3f6248;}
+/* 付款倒计时（待处理未付款） */
+.my-order-paytimer{margin-top:.7rem;padding:.6rem .8rem;border-radius:12px;background:rgba(196,140,74,.12);border:1px solid rgba(196,140,74,.32);}
+.my-order-paytimer-row{display:flex;align-items:center;justify-content:space-between;gap:.6rem;}
+.my-order-paytimer-label{font-size:12.5px;font-weight:800;color:#8a5a1f;}
+.my-order-paytimer-value{font-size:16px;font-weight:800;color:#8a5a1f;font-variant-numeric:tabular-nums;letter-spacing:.04em;}
+.my-order-paytimer-deadline{margin-top:.3rem;font-size:11.5px;color:#a5744a;}
+.my-order-paytimer.is-over{background:rgba(124,63,53,.1);border-color:rgba(124,63,53,.3);}
+.my-order-paytimer.is-over .my-order-paytimer-label{color:#7c3f35;}
+.my-order-paytimer.is-over .my-order-paytimer-deadline{color:#9a5a4c;}
+/* 结算弹窗付款提醒 */
+.portal-pay-reminder{margin-top:.6rem;padding:.6rem .8rem;border-radius:12px;background:rgba(196,140,74,.12);border:1px solid rgba(196,140,74,.32);color:#8a5a1f;font-size:12.5px;font-weight:600;line-height:1.55;}
 .my-order-total{font-size:1.15rem;font-weight:800;color:#2d1f0f;}
 .my-order-cancel-row{margin-top:.8rem;display:flex;justify-content:flex-end;}
 .my-order-cancel-btn{padding:.5rem 1rem;border-radius:999px;border:1px solid rgba(124,63,53,.28);background:transparent;color:#9a4737;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
@@ -574,6 +586,8 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .portal-note{font-size:12px;color:#8d786b;line-height:1.65;}
 .portal-actions{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:flex-end;margin-top:.2rem;}
 .portal-divider{margin:1rem 0;border-top:1px solid rgba(45,31,15,.08);}
+.portal-or{display:flex;align-items:center;gap:.9rem;margin:1.1rem 0;color:#9a7d65;font-size:12.5px;letter-spacing:.06em;}
+.portal-or::before,.portal-or::after{content:"";flex:1;height:1px;background:rgba(45,31,15,.1);}
 .portal-google-block{display:flex;justify-content:center;margin-top:1rem;min-height:44px;}
 .portal-pickups{display:grid;gap:.75rem;margin-top:.8rem;}
 .portal-pickup{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);color:#2d1f0f;cursor:pointer;-webkit-appearance:none;appearance:none;}
@@ -625,9 +639,10 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .cake-step-head{text-align:center;padding:.2rem 0 1rem;border-bottom:1px solid rgba(45,31,15,.08);margin-bottom:1.3rem;}
 .cake-step-title{font-size:clamp(1.6rem,4.4vw,2.3rem);font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1.05;}
 .cake-step-sub{margin-top:.5rem;font-size:13.5px;color:#7b6556;line-height:1.6;}
-.cake-steps-dots{display:flex;justify-content:center;gap:.4rem;margin-top:.9rem;}
-.cake-steps-dots span{width:7px;height:7px;border-radius:999px;background:rgba(154,125,101,.3);}
+.cake-steps-dots{display:flex;align-items:center;justify-content:center;gap:.3rem;margin-top:.9rem;}
+.cake-steps-dots span{width:7px;height:7px;border-radius:999px;background:rgba(154,125,101,.3);flex:0 0 auto;}
 .cake-steps-dots span.is-on{background:var(--accent);}
+.cake-steps-dots .cake-step-dash{width:16px;height:1px;background:rgba(154,125,101,.28);flex:0 0 auto;}
 .cake-notice{display:flex;gap:.6rem;align-items:flex-start;margin:0 0 1.2rem;padding:.85rem 1rem;border-radius:16px;background:rgba(196,153,106,.12);border:1px solid rgba(196,153,106,.28);color:#5f4633;font-size:13px;line-height:1.6;}
 .cake-notice strong{color:#3c2a20;}
 /* 款式选择 */
@@ -645,6 +660,9 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .cake-flavor-chip{border:1px solid rgba(124,101,97,.2);border-radius:14px;background:rgba(255,249,243,.85);padding:.7rem .5rem;font-size:14px;color:#4e3729;cursor:pointer;text-align:center;transition:all .15s ease;}
 .cake-flavor-chip:hover{border-color:rgba(196,153,106,.5);}
 .cake-flavor-chip.is-active{background:var(--dark);color:var(--bg);border-color:var(--dark);font-weight:700;}
+.cake-single-card{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem .7rem;padding:1.1rem 1rem;border-radius:16px;background:rgba(196,153,106,.1);border:1px dashed rgba(196,153,106,.4);}
+.cake-single-card .cake-layer{font-size:15px;font-weight:700;color:#4e3729;}
+.cake-single-card .cake-layer-plus{font-size:13px;font-weight:700;color:rgba(196,153,106,.85);}
 .cake-single-flavor{text-align:center;color:#5f4633;font-size:14.5px;line-height:1.8;padding:.6rem 0;}
 /* 日历 */
 .cake-cal{max-width:420px;margin:0 auto;}
@@ -671,6 +689,27 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .cake-review-total{display:flex;justify-content:space-between;padding:.8rem 0 0;font-size:1.15rem;font-weight:800;color:var(--text);}
 .cake-confirm-warn{margin:1.1rem 0;padding:1rem 1.1rem;border-radius:16px;background:rgba(198,74,52,.08);border:1px solid rgba(198,74,52,.25);color:#8a3b28;font-size:14px;font-weight:600;line-height:1.6;text-align:center;}
 .cake-pay-note{font-size:12.5px;color:#8a6f5b;text-align:center;margin-top:.4rem;}
+/* 询单提示 */
+.cake-inquiry-warn{margin:1.2rem 0 1rem;padding:.95rem 1.1rem;border-radius:16px;background:rgba(198,74,52,.08);border:1px solid rgba(198,74,52,.25);color:#8a3b28;line-height:1.6;}
+.cake-inquiry-warn-title{font-size:14.5px;font-weight:800;}
+.cake-inquiry-warn-body{margin-top:.35rem;font-size:13px;font-weight:500;color:#7a3826;}
+.cake-inquiry-warn-body strong{color:#8a3b28;font-weight:800;}
+/* 付款方式 */
+.cake-pay{margin-bottom:.4rem;}
+.cake-pay-head{font-size:13px;font-weight:700;color:#5f4633;margin-bottom:.6rem;}
+.cake-pay-list{display:flex;flex-direction:column;gap:.55rem;}
+.cake-pay-item{display:flex;align-items:center;gap:.7rem;width:100%;text-align:left;padding:.7rem .9rem;border-radius:14px;border:1px solid rgba(124,101,97,.2);background:rgba(255,249,243,.9);cursor:pointer;transition:border-color .15s ease,background .15s ease;}
+.cake-pay-item:not(.cake-pay-item--rmb):hover{border-color:rgba(196,153,106,.5);background:#fffdfa;}
+.cake-pay-item.is-copied{border-color:rgba(74,140,88,.55);background:rgba(74,140,88,.08);}
+.cake-pay-item--rmb{cursor:default;align-items:flex-start;flex-wrap:wrap;}
+.cake-pay-brand{flex:0 0 auto;min-width:66px;font-size:12px;font-weight:800;letter-spacing:.02em;padding:.28rem .55rem;border-radius:8px;text-align:center;color:#fff;}
+.cake-pay-brand--venmo{background:#3d95ce;}
+.cake-pay-brand--zelle{background:#6d1ed4;}
+.cake-pay-brand--rmb{background:#c0392b;}
+.cake-pay-value{flex:1;font-size:14px;font-weight:600;color:#2d1f0f;word-break:break-all;}
+.cake-pay-copy{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--accent);}
+.cake-pay-item.is-copied .cake-pay-copy{color:#3f8a54;}
+.cake-pay-rate{flex-basis:100%;font-size:11.5px;color:#8a6f5b;padding-left:calc(66px + .7rem);}
 /* 底部按钮 */
 .cake-actions{display:flex;gap:.8rem;margin-top:1.5rem;}
 .cake-btn{flex:1;min-height:54px;border-radius:999px;font-size:15px;font-weight:700;letter-spacing:.03em;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;transition:background .2s ease,transform .15s ease;}
@@ -1265,7 +1304,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <canvas class="shop-silk-canvas" id="cakeSilkCanvas" aria-hidden="true"></canvas>
     <div class="shop-entry-head">
       <div class="shop-entry-copy">
-        <h2 class="sec-title">蛋糕预定</h2>
+        <h2 class="sec-title">蛋糕询单</h2>
         <p class="sec-sub">整糕至少提前14天预定</p>
         <button class="shop-entry-cta" type="button" data-cake-entry>查看款式和口味 <span class="shop-cta-arrow" aria-hidden="true">&#8594;</span></button>
       </div>
@@ -2106,7 +2145,8 @@ const orderPortalCopy = {
     saveProfile: '保存昵称',
     googleLoginFailed: 'Google 登录失败，请重试',
     nickname: '昵称',
-    nicknamePlaceholder: '请输入你的昵称',
+    nicknamePlaceholder: '请尽量和微信名一样，方便取货哦～',
+    or: '或',
     orderNote: '备注',
     orderNotePlaceholder: '有什么要求可以告诉我们哦～只有Makkie看得到',
     pickupInfo: '自提信息',
@@ -2131,6 +2171,10 @@ const orderPortalCopy = {
     noOrders: '还没有订单',
     paymentPaid: '已确认收款',
     paymentUnpaid: '待确认付款',
+    payReminder: '请在团购截单后 6 小时内完成付款哦～逾期订单可能会被取消',
+    payDeadlinePrefix: '付款截止 ',
+    payCountdownLabel: '剩余付款时间',
+    payCountdownOver: '付款已超时，请尽快微信联系店家确认',
     cancelOrder: '取消订单',
     cancelWarn: '取消后会释放该订单占用的库存，确定要取消吗？',
     cancelConfirmYes: '确认取消',
@@ -2179,7 +2223,8 @@ const orderPortalCopy = {
     saveProfile: 'Save Nickname',
     googleLoginFailed: 'Google sign-in failed, please try again',
     nickname: 'Nickname',
-    nicknamePlaceholder: 'Enter your nickname',
+    nicknamePlaceholder: 'Ideally same as your WeChat name, for pickup',
+    or: 'or',
     orderNote: 'Comment',
     orderNotePlaceholder: 'Anything we should know? Only Makkie can see this.',
     pickupInfo: 'Pickup Info',
@@ -2204,6 +2249,10 @@ const orderPortalCopy = {
     noOrders: 'No orders yet',
     paymentPaid: 'Payment confirmed',
     paymentUnpaid: 'Awaiting payment',
+    payReminder: 'Please pay within 6 hours after the group-buy closes — unpaid orders may be cancelled.',
+    payDeadlinePrefix: 'Pay by ',
+    payCountdownLabel: 'Time left to pay',
+    payCountdownOver: 'Payment window has passed — please contact us on WeChat.',
     cancelOrder: 'Cancel Order',
     cancelWarn: 'Cancelling will release the stock reserved for this order. Are you sure?',
     cancelConfirmYes: 'Yes, cancel',
@@ -2699,6 +2748,7 @@ function renderProfileLoginForm() {
     <div class="portal-title" id="profileOverlayTitle">${escapeHtml(copy.profileTitle)}</div>
     <div class="portal-sub">${escapeHtml(copy.profileSub)}</div>
     <div class="portal-google-block" id="googleSignInButton"></div>
+    <div class="portal-or"><span>${escapeHtml(copy.or || '或')}</span></div>
     <div class="portal-form">
       <label class="portal-field portal-field--center">
         <span class="portal-label">${escapeHtml(copy.nickname)}</span>
@@ -2796,6 +2846,23 @@ function renderOrderCard(order, allowCancel) {
   const unread = isOrderUnread(order);
   const cancelReason = String(order.cancel_reason || order.cancelReason || '');
 
+  // 待处理（pending）且未付款的本周订单，显示付款倒计时（截止 = 团购截单 + 6 小时）
+  const payDeadlineMs = getPayDeadlineMs();
+  const showPayTimer = allowCancel && String(order.status || '') === 'pending' && !paid && payDeadlineMs;
+  let payTimerHtml = '';
+  if (showPayTimer) {
+    const remain = payDeadlineMs - Date.now();
+    const over = remain <= 0;
+    payTimerHtml = `
+      <div class="my-order-paytimer ${over ? 'is-over' : ''}" data-pay-deadline="${payDeadlineMs}">
+        <div class="my-order-paytimer-row">
+          <span class="my-order-paytimer-label">⏳ ${escapeHtml(over ? c.payCountdownOver : c.payCountdownLabel)}</span>
+          <span class="my-order-paytimer-value">${over ? '' : escapeHtml(formatPayCountdown(remain))}</span>
+        </div>
+        <div class="my-order-paytimer-deadline">${escapeHtml(c.payDeadlinePrefix + formatPayDeadlineText(payDeadlineMs))}</div>
+      </div>`;
+  }
+
   const updatedHtml = unread ? `
     <div class="my-order-updated">
       <span class="my-order-updated-icon">🔔</span>
@@ -2847,6 +2914,7 @@ function renderOrderCard(order, allowCancel) {
       </div>
       <div class="my-order-lines">${itemsHtml}</div>
       ${pickupHtml}
+      ${payTimerHtml}
       ${updatedHtml}
       ${cancelReasonHtml}
       <div class="my-order-foot">
@@ -3022,6 +3090,7 @@ function renderOrderReviewOverlay() {
         <textarea id="orderNoteInput" class="portal-textarea" placeholder="${escapeHtml(copy.orderNotePlaceholder)}">${escapeHtml(siteState.note)}</textarea>
       </label>
       <div class="portal-note">Zelle: makkiemua@gmail.com · Venmo: makkiemua</div>
+      <div class="portal-pay-reminder">⏳ ${escapeHtml(copy.payReminder)}</div>
       <div class="portal-actions">
         <button class="shop-secondary-button" type="button" data-order-review-close>${escapeHtml(copy.close)}</button>
         <button class="shop-submit-button" type="button" data-review-action="submit">${escapeHtml(copy.submit)}</button>
@@ -3067,7 +3136,7 @@ async function submitWebOrder() {
   closeOverlay(orderReviewOverlay, orderReviewBody);
   // 重新拉取产品，让库存立即反映刚下的这单（否则显示的是下单前的旧库存）。
   await loadShopData();
-  alert(copy.submitSuccess);
+  alert(copy.submitSuccess + '\n\n' + copy.payReminder);
 }
 
 function renderAdminOverlay() {
@@ -3164,6 +3233,50 @@ function getWeeklyDeadlineMs() {
   const ms = parseLaWallClock(raw);
   return Number.isFinite(ms) ? ms : 0;
 }
+
+// 付款截止 = 团购截单时间 + 6 小时宽限
+const PAY_GRACE_HOURS = 6;
+function getPayDeadlineMs() {
+  const d = getWeeklyDeadlineMs();
+  return d ? d + PAY_GRACE_HOURS * 3600 * 1000 : 0;
+}
+function formatPayDeadlineText(ms) {
+  if (!ms) return '';
+  const en = getUiLang() === 'en';
+  return new Intl.DateTimeFormat(en ? 'en-US' : 'zh-CN', {
+    timeZone: LA_TZ, month: 'short', day: 'numeric', weekday: 'short',
+    hour: '2-digit', minute: '2-digit', hour12: en
+  }).format(new Date(ms));
+}
+function formatPayCountdown(remainMs) {
+  const s = Math.max(0, Math.floor(remainMs / 1000));
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
+}
+let payCountdownTimer = null;
+function tickPayCountdowns() {
+  const nodes = document.querySelectorAll('[data-pay-deadline]');
+  if (!nodes.length) return;
+  const c = getOrderCopy();
+  const now = Date.now();
+  nodes.forEach((node) => {
+    const remain = Number(node.getAttribute('data-pay-deadline')) - now;
+    const valueEl = node.querySelector('.my-order-paytimer-value');
+    const labelEl = node.querySelector('.my-order-paytimer-label');
+    if (remain <= 0) {
+      node.classList.add('is-over');
+      if (valueEl) valueEl.textContent = '';
+      if (labelEl) labelEl.textContent = '⏳ ' + c.payCountdownOver;
+    } else {
+      if (valueEl) valueEl.textContent = formatPayCountdown(remain);
+    }
+  });
+}
+function startPayCountdownTicker() {
+  if (payCountdownTimer) return;
+  payCountdownTimer = window.setInterval(tickPayCountdowns, 1000);
+}
+startPayCountdownTicker();
 
 function isGroupBuyActive() {
   const weekly = siteState.weeklyOrder;
@@ -3856,7 +3969,10 @@ function getCakeById(id) { return CAKE_CATALOG.find((c) => c.id === id) || null;
 
 function cakeStepDots(active) {
   const steps = ['pick', 'flavor', 'date', 'review'];
-  return `<div class="cake-steps-dots">${steps.map((s) => `<span class="${s === active ? 'is-on' : ''}"></span>`).join('')}</div>`;
+  return `<div class="cake-steps-dots">${steps.map((s, i) => {
+    const dot = `<span class="${s === active ? 'is-on' : ''}"></span>`;
+    return i < steps.length - 1 ? `${dot}<i class="cake-step-dash"></i>` : dot;
+  }).join('')}</div>`;
 }
 
 function renderCakeStep() {
@@ -3869,7 +3985,7 @@ function renderCakeStep() {
 function renderCakePick() {
   cakeOverlayBody.innerHTML = `
     <div class="cake-step-head">
-      <div class="cake-step-title" id="cakeOverlayTitle">蛋糕预定</div>
+      <div class="cake-step-title" id="cakeOverlayTitle">蛋糕询单</div>
       <div class="cake-step-sub">整糕至少提前 2 周预定 · 仅自提</div>
       ${cakeStepDots('pick')}
     </div>
@@ -3891,12 +4007,17 @@ function renderCakePick() {
 function renderCakeFlavor() {
   const cake = getCakeById(cakeFlow.cakeId);
   if (!cake) { cakeFlow.step = 'pick'; return renderCakeStep(); }
-  const body = cake.flavors.length
-    ? `<div class="cake-flavor-grid">${cake.flavors.map((f) => `
+  const isSingle = !cake.flavors.length;
+  const components = isSingle ? String(cake.flavorNote || '').split(/\s*·\s*/).filter(Boolean) : [];
+  const body = isSingle
+    ? `<div class="cake-single-card">
+        ${components.map((c, i) => `${i ? '<span class="cake-layer-plus">+</span>' : ''}<span class="cake-layer">${escapeHtml(c)}</span>`).join('')}
+      </div>`
+    : `<div class="cake-flavor-grid">${cake.flavors.map((f) => `
         <button class="cake-flavor-chip ${cakeFlow.flavor === f ? 'is-active' : ''}" type="button" data-cake-flavor="${escapeHtml(f)}">${escapeHtml(f)}</button>
-      `).join('')}</div>`
-    : `<div class="cake-single-flavor">这款为单一口味：<br><strong>${escapeHtml(cake.flavorNote || '')}</strong></div>`;
-  const canNext = cake.flavors.length ? Boolean(cakeFlow.flavor) : true;
+      `).join('')}</div>`;
+  const canNext = isSingle ? true : Boolean(cakeFlow.flavor);
+  const heading = isSingle ? '这款为单一口味 · 一次尝到四层' : '选择口味';
   cakeOverlayBody.innerHTML = `
     <div class="cake-step-head">
       <div class="cake-step-title">${escapeHtml(cake.name)}</div>
@@ -3904,7 +4025,7 @@ function renderCakeFlavor() {
       ${cakeStepDots('flavor')}
     </div>
     <div class="cake-notice"><span>🕒</span><div>请至少<strong>提前 2 周</strong>预定，蛋糕<strong>仅支持自提</strong>。</div></div>
-    ${cake.flavors.length ? '<div class="cake-step-sub" style="margin-bottom:.8rem;">选择口味</div>' : ''}
+    <div class="cake-step-sub" style="margin-bottom:.8rem;">${heading}</div>
     ${body}
     <div class="cake-actions">
       <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="pick">返回</button>
@@ -3967,8 +4088,7 @@ function renderCakeReview() {
   if (!cake || !cakeFlow.selected) { cakeFlow.step = 'date'; return renderCakeStep(); }
   cakeOverlayBody.innerHTML = `
     <div class="cake-step-head">
-      <div class="cake-step-title">确认订单</div>
-      <div class="cake-step-sub">确认后请微信联系店家确认时间</div>
+      <div class="cake-step-title">确认询单</div>
       ${cakeStepDots('review')}
     </div>
     <div class="cake-review">
@@ -3982,13 +4102,61 @@ function renderCakeReview() {
       <label for="cakeNotes">备注（选填）</label>
       <textarea id="cakeNotes" class="cake-textarea" placeholder="口味调整、字牌、过敏原等">${escapeHtml(cakeFlow.notes)}</textarea>
     </div>
-    <div class="cake-confirm-warn">⚠️ 请下单后微信联系店家确认时间哦，不确认的订单不会制作。</div>
-    <div class="cake-pay-note">付款方式：Zelle makkiemua@gmail.com · Venmo makkiemua</div>
+    <div class="cake-inquiry-warn">
+      <div class="cake-inquiry-warn-title">⚠️ 此处为「询单」，不是最终下单</div>
+      <div class="cake-inquiry-warn-body">提交后请<strong>微信联系店家</strong>确认口味 / 自提时间与付款，<strong>确认后才会开始制作</strong>。</div>
+    </div>
+    <div class="cake-pay">
+      <div class="cake-pay-head">付款方式（任选其一，确认后支付）</div>
+      <div class="cake-pay-list">
+        <button class="cake-pay-item" type="button" data-cake-copy="makkiemua">
+          <span class="cake-pay-brand cake-pay-brand--venmo">Venmo</span>
+          <span class="cake-pay-value">makkiemua</span>
+          <span class="cake-pay-copy">复制</span>
+        </button>
+        <button class="cake-pay-item" type="button" data-cake-copy="makkiemua@gmail.com">
+          <span class="cake-pay-brand cake-pay-brand--zelle">Zelle</span>
+          <span class="cake-pay-value">makkiemua@gmail.com</span>
+          <span class="cake-pay-copy">复制</span>
+        </button>
+        <div class="cake-pay-item cake-pay-item--rmb">
+          <span class="cake-pay-brand cake-pay-brand--rmb">人民币</span>
+          <span class="cake-pay-value" id="cakeRmbValue">≈ ¥— · 微信 / 支付宝</span>
+          <span class="cake-pay-rate" id="cakeRmbRate">汇率加载中…</span>
+        </div>
+      </div>
+    </div>
     <div class="cake-actions">
       <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="date">返回</button>
-      <button class="cake-btn cake-btn--primary" type="button" data-cake-submit>提交预定</button>
+      <button class="cake-btn cake-btn--primary" type="button" data-cake-submit>提交询单</button>
     </div>
   `;
+  updateCakeRmb(cake.price);
+}
+
+let cakeUsdCnyRate = null;
+function fetchCakeRmbRate() {
+  if (cakeUsdCnyRate) return Promise.resolve(cakeUsdCnyRate);
+  return fetch('https://open.er-api.com/v6/latest/USD')
+    .then((res) => res.json())
+    .then((data) => {
+      const rate = data && data.rates && data.rates.CNY;
+      if (rate) cakeUsdCnyRate = rate;
+      return cakeUsdCnyRate;
+    });
+}
+function updateCakeRmb(price) {
+  const rateEl = document.getElementById('cakeRmbRate');
+  fetchCakeRmbRate().then((rate) => {
+    const valueEl = document.getElementById('cakeRmbValue');
+    const rEl = document.getElementById('cakeRmbRate');
+    if (!rate || !valueEl) return;
+    valueEl.textContent = `≈ ¥${Math.round(price * rate)} · 微信 / 支付宝`;
+    if (rEl) rEl.textContent = `实时汇率 1 USD ≈ ${rate.toFixed(2)} CNY`;
+  }).catch(() => {
+    const rEl = document.getElementById('cakeRmbRate');
+    if (rEl) rEl.textContent = '汇率获取失败，请询问店家';
+  });
 }
 
 async function submitCakeOrder(button) {
@@ -4016,7 +4184,7 @@ async function submitCakeOrder(button) {
       }
     });
     closeCakeOverlay();
-    alert('预定已提交！请微信联系店家确认时间哦，不确认的订单不会制作。');
+    alert('询单已提交！请微信联系店家确认口味 / 时间与付款，确认后才会开始制作。');
     loadMyOrders();
   } catch (error) {
     if (button) { button.disabled = false; button.textContent = '提交预定'; }
@@ -4125,6 +4293,29 @@ if (cakeOverlay) {
       if (timeEl) cakeFlow.preferredTime = timeEl.value;
       cakeFlow.step = nextEl.getAttribute('data-cake-next');
       renderCakeStep();
+      return;
+    }
+
+    const copyEl = event.target.closest('[data-cake-copy]');
+    if (copyEl) {
+      const text = copyEl.getAttribute('data-cake-copy');
+      const badge = copyEl.querySelector('.cake-pay-copy');
+      const done = () => {
+        if (!badge) return;
+        const prev = badge.textContent;
+        badge.textContent = '已复制 ✓';
+        copyEl.classList.add('is-copied');
+        setTimeout(() => { badge.textContent = prev; copyEl.classList.remove('is-copied'); }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(() => {});
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
       return;
     }
 
