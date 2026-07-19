@@ -1208,14 +1208,21 @@
       .then((res) => (res.ok ? res.json() : null))
       .then((payload) => {
         const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
-        const mapped = groups.map((g, i) => ({
-          id: 'cat-' + i,
-          title: { zh: g.group || '', en: g.group || '' },
-          subtitle: { zh: '', en: '' },
-          items: (g.items || [])
-            .map((it) => ({ title: { zh: it.name || '', en: it.name_en || it.name || '' }, image: it.image_url || '' }))
-            .filter((it) => it.image)
-        })).filter((g) => g.items.length);
+        // 后台只有中文分类名（collection_items 没有 category_en），直接拿它当英文会让
+        // 英文版图鉴的分类标题全是中文。这里按中文名回查硬编码兜底，取回英文标题与副标题；
+        // 后台新增的分类查不到时才退回中文。
+        const localized = new Map(collectionGroups.map((g) => [g.title.zh, g]));
+        const mapped = groups.map((g, i) => {
+          const fallback = localized.get(g.group || '');
+          return {
+            id: 'cat-' + i,
+            title: { zh: g.group || '', en: (fallback && fallback.title.en) || g.group || '' },
+            subtitle: fallback ? fallback.subtitle : { zh: '', en: '' },
+            items: (g.items || [])
+              .map((it) => ({ title: { zh: it.name || '', en: it.name_en || it.name || '' }, image: it.image_url || '' }))
+              .filter((it) => it.image)
+          };
+        }).filter((g) => g.items.length);
         if (!mapped.length) return;
         collectionGroups = mapped;
         renderCollectionPage();
