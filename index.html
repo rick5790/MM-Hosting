@@ -1339,9 +1339,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <canvas class="shop-silk-canvas" id="cakeSilkCanvas" aria-hidden="true"></canvas>
     <div class="shop-entry-head">
       <div class="shop-entry-copy">
-        <h2 class="sec-title">蛋糕询单</h2>
-        <p class="sec-sub">整糕至少提前14天预定</p>
-        <button class="shop-entry-cta" type="button" data-cake-entry>查看款式和口味 <span class="shop-cta-arrow" aria-hidden="true">&#8594;</span></button>
+        <h2 class="sec-title" id="cakeEntryTitle">蛋糕询单</h2>
+        <p class="sec-sub" id="cakeEntrySub">整糕至少提前14天预定</p>
+        <button class="shop-entry-cta" type="button" data-cake-entry><span id="cakeEntryCta">查看款式和口味</span> <span class="shop-cta-arrow" aria-hidden="true">&#8594;</span></button>
       </div>
     </div>
   </div>
@@ -4683,6 +4683,11 @@ const bilingualCopy = {
       sub: '请期待下次团购哦，关注我们的社交媒体获得下次通知',
       cta: '预定'
     },
+    cakeEntry: {
+      title: '蛋糕询单',
+      sub: '整糕至少提前14天预定',
+      cta: '查看款式和口味'
+    },
     seo: {
       title: 'Makkie Mua | 手作创意甜品 | Los Angeles & Orange County',
       description: 'Makkie Mua 是位于 Los Angeles 与 Orange County 的手作创意甜品品牌，提供巴斯克、Makkie 胖曲奇、戚风三明治、米布丁、布丁奶糕等每周预订甜品。',
@@ -4821,6 +4826,11 @@ const bilingualCopy = {
       title: 'Weekly Drop',
       sub: 'Stay tuned for our next Weekly Order — follow our social media for the next announcement',
       cta: 'Open Order'
+    },
+    cakeEntry: {
+      title: 'Whole Cake Inquiry',
+      sub: 'Whole cakes need at least 14 days’ notice',
+      cta: 'View styles & flavors'
     },
     seo: {
       title: 'Makkie Mua | Handmade Creative Desserts | Los Angeles & Orange County',
@@ -5058,6 +5068,9 @@ function applyBilingualLanguage(lang) {
   bilingualSetText('#shopEntryTitle', copy.shopEntry.title);
   bilingualSetText('#shopEntrySub', copy.shopEntry.sub);
   bilingualSetText('#shopEntryCta', copy.shopEntry.cta);
+  bilingualSetText('#cakeEntryTitle', copy.cakeEntry.title);
+  bilingualSetText('#cakeEntrySub', copy.cakeEntry.sub);
+  bilingualSetText('#cakeEntryCta', copy.cakeEntry.cta);
   bilingualSetAttr('.hero-logo', 'aria-label', copy.hero.videoAria);
   bilingualSetText('.hero-eyebrow', copy.hero.eyebrow);
   bilingualSetHTML('.hero-sub', copy.hero.sub);
