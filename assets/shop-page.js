@@ -115,13 +115,10 @@
   function saveOrderSeen(map) {
     try { localStorage.setItem(ORDER_SEEN_KEY, JSON.stringify(map)); } catch (e) {}
   }
-  // 「本周」= 团购开始日(group_id 是 YYYYMMDD)起 7 天内；超过 7 天自动归入历史。
+  // 当前订单 = 下单后 12 小时内；超过后自动归入历史订单，不改变订单状态。
   function isThisWeek(order) {
-    const gid = String(order.group_id || order.groupId || '');
-    const m = gid.match(/^(\d{4})(\d{2})(\d{2})$/);
-    if (!m) return false;
-    const startMs = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
-    return Date.now() < startMs + 7 * 24 * 60 * 60 * 1000;
+    const createdMs = parseUtcTimestamp(order && (order.created_at || order.createdAt));
+    return Number.isFinite(createdMs) && Date.now() < createdMs + 12 * 60 * 60 * 1000;
   }
   function isOrderUnread(order) {
     const status = String((order && order.status) || 'pending');
@@ -210,10 +207,10 @@
       viewMyOrders: '查看我的订单',
       successClose: '知道了',
       myOrders: '我的订单',
-      thisWeekOrders: '本周订单',
+      thisWeekOrders: '当前订单',
       historyOrders: '历史订单',
       noOrders: '还没有订单',
-      noThisWeekOrders: '本周还没有订单',
+      noThisWeekOrders: '当前还没有订单',
       historyEmpty: '还没有历史订单',
       viewHistory: '查看历史订单',
       backToOrders: '返回',
@@ -325,10 +322,10 @@
       viewMyOrders: 'View My Orders',
       successClose: 'Got it',
       myOrders: 'My Orders',
-      thisWeekOrders: 'This Week',
+      thisWeekOrders: 'Current Orders',
       historyOrders: 'Order History',
       noOrders: 'No orders yet',
-      noThisWeekOrders: 'No orders this week yet',
+      noThisWeekOrders: 'No current orders yet',
       historyEmpty: 'No past orders yet',
       viewHistory: 'View Order History',
       backToOrders: 'Back',

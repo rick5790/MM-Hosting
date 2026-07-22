@@ -2190,9 +2190,9 @@ const orderPortalCopy = {
     subtotal: '合计',
     emptyCart: '请先选择数量',
     myOrders: '我的订单',
-    thisWeekOrders: '本周订单',
+    thisWeekOrders: '当前订单',
     historyOrders: '历史订单',
-    noThisWeekOrders: '本周还没有订单',
+    noThisWeekOrders: '当前还没有订单',
     historyEmpty: '还没有历史订单',
     viewHistory: '查看历史订单',
     backToOrders: '返回',
@@ -2275,9 +2275,9 @@ const orderPortalCopy = {
     subtotal: 'Total',
     emptyCart: 'Select at least one item first',
     myOrders: 'My Orders',
-    thisWeekOrders: 'This Week',
+    thisWeekOrders: 'Current Orders',
     historyOrders: 'Order History',
-    noThisWeekOrders: 'No orders this week yet',
+    noThisWeekOrders: 'No current orders yet',
     historyEmpty: 'No past orders yet',
     viewHistory: 'View Order History',
     backToOrders: 'Back',
@@ -2396,10 +2396,10 @@ function loadOrderSeen() {
 function saveOrderSeen(map) {
   try { localStorage.setItem(ORDER_SEEN_KEY, JSON.stringify(map)); } catch (e) {}
 }
-// 「本周」= 属于当前开放的团购档期（group_id 匹配 weeklyOrder 的 active_group_id/group_no）。
+// 当前订单 = 下单后 12 小时内；超过后自动归入历史订单，不改变订单状态。
 function isThisWeek(order) {
-  const activeGroup = String((siteState.weeklyOrder && (siteState.weeklyOrder.active_group_id || siteState.weeklyOrder.group_no)) || '');
-  return Boolean(activeGroup) && String(order.group_id || order.groupId || '') === activeGroup;
+  const createdMs = parseUtcTimestamp(order && (order.created_at || order.createdAt));
+  return Number.isFinite(createdMs) && Date.now() < createdMs + 12 * 60 * 60 * 1000;
 }
 function isOrderUnread(order) {
   const status = String((order && order.status) || 'pending');
