@@ -2208,8 +2208,8 @@ const orderPortalCopy = {
     noOrders: '还没有订单',
     paymentPaid: '已确认收款',
     paymentUnpaid: '待确认付款',
-    payReminder: '请在开团后 60 小时内完成付款哦～逾期未付款的订单会自动取消',
-    payAutoCancel: '到期未付款订单会自动取消哦',
+    payReminder: '请在下单后 60 小时内完成付款，逾期未付款的订单会自动取消。',
+    payAutoCancel: '请在下单后 60 小时内完成付款，到期未付款订单会自动取消。',
     viewPayment: '查看付款方式',
     hidePayment: '收起付款方式',
     payMethodsHead: '付款方式（任选其一）',
@@ -2293,8 +2293,8 @@ const orderPortalCopy = {
     noOrders: 'No orders yet',
     paymentPaid: 'Payment confirmed',
     paymentUnpaid: 'Awaiting payment',
-    payReminder: 'Please pay within 60 hours of the group-buy opening — unpaid orders are cancelled automatically.',
-    payAutoCancel: 'Unpaid orders are auto-cancelled after the deadline',
+    payReminder: 'Please pay within 60 hours of placing your order. Unpaid orders are cancelled automatically.',
+    payAutoCancel: 'Please pay within 60 hours of placing your order. Unpaid orders are cancelled automatically.',
     viewPayment: 'View payment methods',
     hidePayment: 'Hide payment methods',
     payMethodsHead: 'Payment methods (pick one)',
@@ -2914,8 +2914,8 @@ function renderOrderCard(order, allowCancel) {
   const unread = isOrderUnread(order);
   const cancelReason = String(order.cancel_reason || order.cancelReason || '');
 
-  // 待处理（pending）且未付款的本周订单，显示付款倒计时（截止 = 团购截单 + 6 小时）
-  const payDeadlineMs = getPayDeadlineMs();
+  // 每笔待付款订单从下单时起有 60 小时付款窗口。
+  const payDeadlineMs = getPayDeadlineMs(order);
   const showPayTimer = allowCancel && String(order.status || '') === 'pending' && !paid && payDeadlineMs;
   let payTimerHtml = '';
   if (showPayTimer) {
@@ -3346,15 +3346,13 @@ function getWeeklyDeadlineMs() {
   return Number.isFinite(ms) ? ms : 0;
 }
 
-// 付款截止 = 开团时间（start_at）+ 60 小时，逾期未付款后端会自动取消。
-// 必须与后端 weeklyOrderService.getPayDeadlineMs 保持一致，否则倒计时会骗人。
+// 付款截止 = 每笔订单的下单时间 + 60 小时；后端以相同规则自动取消逾期未付款订单。
 const PAY_WINDOW_HOURS = 60;
-function getPayDeadlineMs() {
-  const weekly = siteState.weeklyOrder;
-  if (!weekly || !weekly.start_at) return 0;
-  const startMs = parseLaWallClock(weekly.start_at);
-  if (!Number.isFinite(startMs)) return 0;
-  return startMs + PAY_WINDOW_HOURS * 3600 * 1000;
+function getPayDeadlineMs(order) {
+  const createdAt = order && (order.created_at || order.createdAt);
+  const createdMs = parseUtcTimestamp(createdAt);
+  if (!Number.isFinite(createdMs)) return 0;
+  return createdMs + PAY_WINDOW_HOURS * 3600 * 1000;
 }
 function formatPayCountdown(remainMs) {
   const s = Math.max(0, Math.floor(remainMs / 1000));
