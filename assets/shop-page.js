@@ -68,6 +68,43 @@
     return Date.parse(s + 'Z');
   }
 
+  const PAY_WINDOW_HOURS = 60;
+  function getPayDeadlineMs(order) {
+    const createdAt = order && (order.created_at || order.createdAt);
+    const createdMs = parseUtcTimestamp(createdAt);
+    if (!Number.isFinite(createdMs)) return 0;
+    return createdMs + PAY_WINDOW_HOURS * 3600 * 1000;
+  }
+
+  function formatPayCountdown(remainMs) {
+    const seconds = Math.max(0, Math.floor(remainMs / 1000));
+    const pad = (value) => String(value).padStart(2, '0');
+    return `${pad(Math.floor(seconds / 3600))}:${pad(Math.floor((seconds % 3600) / 60))}:${pad(seconds % 60)}`;
+  }
+
+  function tickPayCountdowns() {
+    const now = Date.now();
+    const c = copy();
+    document.querySelectorAll('[data-pay-deadline]').forEach((node) => {
+      const remain = Number(node.getAttribute('data-pay-deadline')) - now;
+      const value = node.querySelector('.my-order-paytimer-value');
+      const label = node.querySelector('.my-order-paytimer-label');
+      if (remain <= 0) {
+        node.classList.add('is-over');
+        if (value) value.textContent = '';
+        if (label) label.textContent = `⏳ ${c.payCountdownOver}`;
+      } else if (value) {
+        value.textContent = formatPayCountdown(remain);
+      }
+    });
+  }
+
+  function startPayCountdownTicker() {
+    if (payCountdownTimer) return;
+    payCountdownTimer = window.setInterval(tickPayCountdowns, 1000);
+  }
+  startPayCountdownTicker();
+
   // ===== 订单状态「未读」小红点 =====
   // 记录每个订单「上次已读的状态」；当前状态与已读不同、且不是 pending（下单初始态）就算未读。
   // 顾客点卡片即标记为已读。跨页共用同一个 localStorage key。
@@ -202,6 +239,9 @@
       cancelReasonLabel: '取消理由：',
       paymentPaid: '已确认收款',
       paymentUnpaid: '待确认付款',
+      payCountdownLabel: '剩余付款时间',
+      payCountdownOver: '付款已超时，请尽快微信联系店家确认',
+      payAutoCancel: '请在下单后 60 小时内完成付款，到期未付款订单会自动取消。',
       adminTitle: '隐藏管理员入口',
       adminSub: '这里可以查看当前预定状态，并手动切换开放与关闭。',
       adminOpenLabel: '预定状态',
@@ -314,6 +354,9 @@
       cancelReasonLabel: 'Cancellation reason: ',
       paymentPaid: 'Payment confirmed',
       paymentUnpaid: 'Awaiting payment',
+      payCountdownLabel: 'Time left to pay',
+      payCountdownOver: 'Payment time has expired. Please contact Makkie on WeChat.',
+      payAutoCancel: 'Please pay within 60 hours of placing your order. Unpaid orders are cancelled automatically.',
       adminTitle: 'Hidden Admin Entry',
       adminSub: 'Use this panel to check the preorder state and switch it on or off manually.',
       adminOpenLabel: 'Preorder Status',
@@ -349,6 +392,7 @@
   };
 
   let countdownTimer = null;
+  let payCountdownTimer = null;
   let adminTapCount = 0;
   let adminTapTimer = null;
 
@@ -1112,6 +1156,17 @@
     const busy = Number(state.cancelBusyId) === Number(order.id);
     const unread = isOrderUnread(order);
     const cancelReason = String(order.cancel_reason || order.cancelReason || '');
+    const payDeadlineMs = getPayDeadlineMs(order);
+    const showPayTimer = allowCancel && String(order.status || '') === 'pending' && !paid && payDeadlineMs;
+    const remain = payDeadlineMs - Date.now();
+    const payTimerHtml = showPayTimer ? `
+      <div class="my-order-paytimer ${remain <= 0 ? 'is-over' : ''}" data-pay-deadline="${payDeadlineMs}">
+        <div class="my-order-paytimer-row">
+          <span class="my-order-paytimer-label">⏳ ${escapeHtml(remain <= 0 ? c.payCountdownOver : c.payCountdownLabel)}</span>
+          <span class="my-order-paytimer-value">${remain <= 0 ? '' : escapeHtml(formatPayCountdown(remain))}</span>
+        </div>
+        <div class="my-order-paytimer-deadline">${escapeHtml(c.payAutoCancel)}</div>
+      </div>` : '';
 
     // 状态变更提示条（未读时显示）；已取消则显示取消理由。
     const updatedHtml = unread ? `
@@ -1173,6 +1228,7 @@
       </div>
         <div class="my-order-lines">${itemsHtml}</div>
         ${pickupHtml}
+        ${payTimerHtml}
         ${updatedHtml}
         ${cancelReasonHtml}
         <div class="my-order-foot">
