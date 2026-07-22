@@ -68,6 +68,7 @@
     return Date.parse(s + 'Z');
   }
 
+  let payCountdownTimer = null;
   const PAY_WINDOW_HOURS = 60;
   function getPayDeadlineMs(order) {
     const createdAt = order && (order.created_at || order.createdAt);
@@ -398,7 +399,6 @@
   };
 
   let countdownTimer = null;
-  let payCountdownTimer = null;
   let adminTapCount = 0;
   let adminTapTimer = null;
   let logoHomeTimer = null;
