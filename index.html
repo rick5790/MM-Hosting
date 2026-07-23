@@ -2401,6 +2401,19 @@ function isThisWeek(order) {
   const createdMs = parseUtcTimestamp(order && (order.created_at || order.createdAt));
   return Number.isFinite(createdMs) && Date.now() < createdMs + 12 * 60 * 60 * 1000;
 }
+// 蛋糕订单只有在已取消或已完成后才开始计时；12 小时后归入历史订单。
+function isCurrentCakeOrder(order) {
+  const status = String((order && order.status) || 'pending');
+  if (status !== 'cancelled' && status !== 'completed') return true;
+  const endedAt = order && (
+    order.status_updated_at || order.statusUpdatedAt ||
+    order.cancelled_at || order.cancelledAt ||
+    order.completed_at || order.completedAt ||
+    order.updated_at || order.updatedAt
+  );
+  const endedMs = parseUtcTimestamp(endedAt);
+  return !Number.isFinite(endedMs) || Date.now() < endedMs + 12 * 60 * 60 * 1000;
+}
 function isOrderUnread(order) {
   const status = String((order && order.status) || 'pending');
   if (status === 'pending') return false;
@@ -3011,18 +3024,20 @@ function renderMyOrdersSection() {
   if (siteState.myOrdersLoading) return `<div class="empty compact">${escapeHtml(c.ordersLoading)}</div>`;
   if (siteState.myOrdersError) return `<div class="empty compact">${escapeHtml(siteState.myOrdersError)}</div>`;
   const orders = Array.isArray(siteState.myOrders) ? siteState.myOrders : [];
+  const cakeOrders = Array.isArray(siteState.myCakeOrders) ? siteState.myCakeOrders : [];
 
   const hint = (list) => countUnreadOrders(list) ? `<div class="my-orders-hint">${escapeHtml(c.readHint)}</div>` : '';
 
   if (siteState.profileView === 'history') {
     const history = orders.filter((order) => !isThisWeek(order));
-    if (!history.length) return `<div class="empty compact">${escapeHtml(c.historyEmpty)}</div>`;
-    return `<div class="my-orders-list">${history.map((order) => renderOrderCard(order, false)).join('')}</div>${hint(history)}`;
+    const cakeHistory = cakeOrders.filter((order) => !isCurrentCakeOrder(order));
+    if (!history.length && !cakeHistory.length) return `<div class="empty compact">${escapeHtml(c.historyEmpty)}</div>`;
+    return `<div class="my-orders-list">${cakeHistory.map((order) => renderCakeOrderCard(order, false)).join('')}${history.map((order) => renderOrderCard(order, false)).join('')}</div>${hint(history)}`;
   }
 
   const live = orders.filter(isThisWeek);
-  const cakeOrders = Array.isArray(siteState.myCakeOrders) ? siteState.myCakeOrders : [];
-  const cakeHtml = cakeOrders.map((order) => renderCakeOrderCard(order)).join('');
+  const liveCakeOrders = cakeOrders.filter(isCurrentCakeOrder);
+  const cakeHtml = liveCakeOrders.map((order) => renderCakeOrderCard(order, true)).join('');
   if (!live.length && !cakeHtml) return `<div class="empty compact">${escapeHtml(c.noThisWeekOrders)}</div>`;
   const liveHtml = live.map((order) => renderOrderCard(order, true)).join('');
   return `<div class="my-orders-list">${cakeHtml}${liveHtml}</div>${hint(live)}`;
@@ -4325,15 +4340,15 @@ async function submitCakeOrder(button) {
   }
 }
 
-function renderCakeOrderCard(order) {
+function renderCakeOrderCard(order, allowActions) {
   const status = String(order.status || 'pending');
   const label = CAKE_STATUS_LABELS[status] || status;
   const dateText = formatOrderDate(order.created_at || order.createdAt);
   const flavor = order.flavor || '单一口味';
   const totalText = (order.total && order.total.text) || formatMoney(order.unit_price || order.total_amount || 0);
-  const cancellable = status === 'pending';
+  const cancellable = allowActions && status === 'pending';
   const reason = String(order.cancel_reason || order.cancelReason || '');
-  const showPay = status !== 'cancelled' && status !== 'completed';
+  const showPay = allowActions && status !== 'cancelled' && status !== 'completed';
   const price = Number(order.unit_price || order.total_amount || 0);
   return `
     <div class="my-order-card my-order-card--rich my-order-card--cake">
