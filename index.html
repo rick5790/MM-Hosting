@@ -508,6 +508,21 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .profile-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.2rem 0 .4rem;}
 .profile-head-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;}
 .profile-head-name{margin-top:.2rem;font-size:1.4rem;font-weight:800;color:#2d1f0f;}
+.account-balance-reminder{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1rem;border-radius:16px;background:linear-gradient(135deg,rgba(249,240,230,.98),rgba(255,250,246,.98));border:1px solid rgba(92,56,32,.28);color:#5c3820;box-shadow:0 10px 24px rgba(92,56,32,.08);}
+.account-balance-reminder-copy{font-size:12px;line-height:1.55;color:#7c6561;}
+.account-balance-reminder-copy strong{display:block;color:#5c3820;font-size:14px;}
+.account-balance-reminder-amount{flex:0 0 auto;font-size:1.25rem;font-weight:900;color:#2d1f0f;}
+.checkout-balance-card{display:flex;flex-direction:column;gap:.8rem;margin-top:1rem;padding:1rem;border-radius:18px;background:linear-gradient(135deg,rgba(249,240,230,.98),rgba(255,250,246,.98));border:1px solid rgba(92,56,32,.28);box-shadow:0 10px 24px rgba(92,56,32,.08);}
+.checkout-balance-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.checkout-balance-copy{font-size:12px;line-height:1.55;color:#7c6561;}
+.checkout-balance-copy strong{display:block;color:#5c3820;font-size:14px;}
+.checkout-balance-toggle{flex:0 0 auto;min-height:42px;padding:.62rem .9rem;border-radius:999px;border:1px solid rgba(92,56,32,.28);background:#fffaf6;color:#5c3820;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+.checkout-balance-toggle.is-active{background:#5c3820;color:#fffaf6;}
+.checkout-balance-math{display:flex;flex-direction:column;gap:.42rem;padding-top:.7rem;border-top:1px solid rgba(92,56,32,.14);}
+.checkout-balance-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;color:#7c6561;font-size:13px;}
+.checkout-balance-row strong{color:#5c3820;}
+.checkout-balance-row.is-due{padding-top:.45rem;border-top:1px dashed rgba(92,56,32,.18);font-size:15px;font-weight:800;color:#2d1f0f;}
+.checkout-balance-note{font-size:11px;line-height:1.5;color:#9a7d65;}
 .profile-stack{display:flex;flex-direction:column;gap:1rem;}
 .profile-stack .portal-divider{margin:.2rem 0;}
 .profile-history-entry{display:flex;align-items:center;justify-content:space-between;gap:.6rem;width:100%;padding:.8rem 1rem;border-radius:16px;border:1px solid rgba(124,101,97,.16);background:rgba(255,255,255,.7);color:#5f4c3d;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
@@ -525,6 +540,9 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .my-order-card{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);}
 .my-order-card--rich{position:relative;padding:1rem 1.1rem;background:rgba(124,101,97,.05);}
 .my-order-card--rich.is-unread{border-color:rgba(224,72,61,.4);box-shadow:0 0 0 1px rgba(224,72,61,.14);cursor:pointer;}
+.my-order-deposit{display:flex;flex-direction:column;gap:.35rem;margin-top:.75rem;padding:.7rem .8rem;border-radius:12px;background:rgba(92,56,32,.07);color:#7c6561;font-size:12px;}
+.my-order-deposit-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.my-order-deposit-row strong{color:#5c3820;}
 .my-order-dot{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#e0483d;border:3px solid #fff;box-shadow:0 2px 6px rgba(224,72,61,.4);}
 .my-order-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
 .my-order-status{flex:0 0 auto;padding:.25rem .7rem;border-radius:999px;font-size:11px;font-weight:800;background:rgba(124,101,97,.14);color:#5f4c3d;}
@@ -2215,6 +2233,17 @@ const orderPortalCopy = {
     payMethodsHead: '付款方式（任选其一）',
     payCountdownLabel: '剩余付款时间',
     payCountdownOver: '付款已超时，请尽快微信联系店家确认',
+    balanceReminderTitle: '账户有可用余额',
+    balanceReminderText: '确认订单时可选择使用；余额不会自动抵扣。',
+    balanceUseTitle: '使用账户余额',
+    balanceUseAvailable: '可用余额',
+    balanceUseApply: '使用全部余额',
+    balanceUseRemove: '本单不使用',
+    balanceUseApplied: '本单余额抵扣',
+    balanceAfterOrder: '下单后剩余余额',
+    amountDue: '还需支付',
+    balanceCovered: '余额已覆盖本单，无需另外付款。',
+    balanceUseNote: '只能选择使用全部可用余额或不使用，不能输入部分金额。余额高于订单金额时只扣本单金额。',
     cancelOrder: '取消订单',
     cancelWarn: '取消后会释放该订单占用的库存，确定要取消吗？',
     cancelConfirmYes: '确认取消',
@@ -2300,6 +2329,17 @@ const orderPortalCopy = {
     payMethodsHead: 'Payment methods (pick one)',
     payCountdownLabel: 'Time left to pay',
     payCountdownOver: 'Payment window has passed — please contact us on WeChat.',
+    balanceReminderTitle: 'Account balance available',
+    balanceReminderText: 'Choose whether to use it at checkout. It is never applied automatically.',
+    balanceUseTitle: 'Use account balance',
+    balanceUseAvailable: 'Available balance',
+    balanceUseApply: 'Use full balance',
+    balanceUseRemove: 'Do not use',
+    balanceUseApplied: 'Balance applied',
+    balanceAfterOrder: 'Balance after order',
+    amountDue: 'Amount due',
+    balanceCovered: 'Your balance covers this order. No additional payment is needed.',
+    balanceUseNote: 'Use all available balance or none; partial amounts are not supported. If your balance exceeds the order total, only the order total is deducted.',
     cancelOrder: 'Cancel Order',
     cancelWarn: 'Cancelling will release the stock reserved for this order. Are you sure?',
     cancelConfirmYes: 'Yes, cancel',
@@ -2335,6 +2375,7 @@ const siteState = {
   cartQuantities: {},
   pickupIndex: 0,
   note: '',
+  useDeposit: false,
   error: '',
   loading: true,
   profileEditMode: false,
@@ -2534,7 +2575,7 @@ async function siteApiRequest(url, options = {}) {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok || payload.ok === false) {
-    throw new Error(payload.message || `Request failed (${response.status})`);
+    throw new Error(payload.message || payload.detail || `Request failed (${response.status})`);
   }
   return payload.data !== undefined ? payload.data : payload;
 }
@@ -2620,7 +2661,7 @@ function getCartTotalQuantity() {
 }
 
 function isWeeklyOpen() {
-  return Boolean(siteState.weeklyOrder && siteState.weeklyOrder.is_open && siteState.products.length);
+  return isGroupBuyActive();
 }
 
 function updateShopEntryStatus() {
@@ -2794,6 +2835,25 @@ function getSavedNickname() {
   return (u.profile && u.profile.nickname) || u.nickname || '';
 }
 
+function getDepositBalance() {
+  const user = siteState.auth && siteState.auth.user;
+  return Math.max(0, Number(user && (user.deposit_balance ?? user.depositBalance)) || 0);
+}
+
+function renderBalanceReminder() {
+  const balance = getDepositBalance();
+  if (balance <= 0) return '';
+  const c = getOrderCopy();
+  return `
+    <div class="account-balance-reminder" role="status">
+      <div class="account-balance-reminder-copy">
+        <strong>${escapeHtml(c.balanceReminderTitle)}</strong>
+        ${escapeHtml(c.balanceReminderText)}
+      </div>
+      <span class="account-balance-reminder-amount">${escapeHtml(formatMoney(balance))}</span>
+    </div>`;
+}
+
 function renderProfileOverlay() {
   // 每次打开都从主界面开始，清掉未完成的取消确认。
   siteState.profileView = 'main';
@@ -2866,6 +2926,7 @@ function renderProfileLoggedIn() {
         </div>
         <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
       </div>
+      ${renderBalanceReminder()}
       <button class="profile-history-entry" type="button" data-profile-view="history">
         <span>${escapeHtml(c.viewHistory)}</span>
         <span class="profile-history-arrow">›</span>
@@ -2920,8 +2981,16 @@ function renderOrderCard(order, allowCancel) {
   const dateText = formatOrderDate(order.created_at || order.createdAt);
   const nickname = order.userNickname || order.customer_name || getSavedNickname();
   const pickup = order.pickup || {};
-  const totalText = (order.total && order.total.text) || formatMoney(order.total_amount || 0);
-  const cancellable = allowCancel && String(order.status || '') === 'pending';
+  const grossAmount = Math.max(0, Number(order.total_amount) || 0);
+  const depositApplied = Math.max(0, Number(order.deposit_applied ?? order.depositApplied) || 0);
+  const dueValue = order.amount_due ?? order.amountDue;
+  const amountDue = dueValue == null ? grossAmount : Math.max(0, Number(dueValue) || 0);
+  const totalText = depositApplied > 0
+    ? formatMoney(amountDue)
+    : ((order.total && order.total.text) || formatMoney(grossAmount));
+  const cancellable = allowCancel
+    && String(order.status || '') === 'pending'
+    && order.customer_can_cancel === true;
   const prompting = cancellable && Number(siteState.cancelPromptId) === Number(order.id);
   const busy = Number(siteState.cancelBusyId) === Number(order.id);
   const unread = isOrderUnread(order);
@@ -2953,7 +3022,7 @@ function renderOrderCard(order, allowCancel) {
         data-pay-label-open="${escapeHtml(c.viewPayment)}"
         data-pay-label-close="${escapeHtml(c.hidePayment)}">${escapeHtml(c.viewPayment)}</button>
     </div>
-    <div class="my-order-paypanel" data-pay-panel="${escapeHtml(payPanelId)}" hidden>${cakePayBlockHtml(order.total_amount || 0, c.payMethodsHead)}</div>` : '';
+    <div class="my-order-paypanel" data-pay-panel="${escapeHtml(payPanelId)}" hidden>${cakePayBlockHtml(amountDue, c.payMethodsHead)}</div>` : '';
 
   const updatedHtml = unread ? `
     <div class="my-order-updated">
@@ -2974,6 +3043,13 @@ function renderOrderCard(order, allowCancel) {
       ${pickup.name ? `<div class="my-order-pickup-name">${escapeHtml(pickup.name)}</div>` : ''}
       ${pickup.time ? `<div class="my-order-pickup-line">${escapeHtml(localizePickupTime(pickup.time))}</div>` : ''}
       ${pickup.address ? `<div class="my-order-pickup-line">${escapeHtml(pickup.address)}</div>` : ''}
+    </div>` : '';
+
+  const depositHtml = depositApplied > 0 ? `
+    <div class="my-order-deposit">
+      <div class="my-order-deposit-row"><span>${escapeHtml(c.subtotal)}</span><strong>${escapeHtml(formatMoney(grossAmount))}</strong></div>
+      <div class="my-order-deposit-row"><span>${escapeHtml(c.balanceUseApplied)}</span><strong>−${escapeHtml(formatMoney(depositApplied))}</strong></div>
+      <div class="my-order-deposit-row"><span>${escapeHtml(c.amountDue)}</span><strong>${escapeHtml(formatMoney(amountDue))}</strong></div>
     </div>` : '';
 
   const cancelHtml = !cancellable ? '' : (prompting ? `
@@ -3006,6 +3082,7 @@ function renderOrderCard(order, allowCancel) {
       </div>
       <div class="my-order-lines">${itemsHtml}</div>
       ${pickupHtml}
+      ${depositHtml}
       ${payTimerHtml}
       ${payMethodsHtml}
       ${updatedHtml}
@@ -3060,6 +3137,10 @@ async function loadMyOrders() {
       siteApiRequest(`/api/cake-orders/user/${siteState.auth.user.id}`).catch(() => null)
     ]);
     siteState.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+    if (data && data.user && siteState.auth && siteState.auth.user
+      && Number(data.user.id) === Number(siteState.auth.user.id)) {
+      saveSiteAuth({ ...siteState.auth, user: { ...siteState.auth.user, ...data.user } });
+    }
     siteState.myCakeOrders = cakeData && Array.isArray(cakeData.orders) ? cakeData.orders : [];
     updateNavUnreadDot(countUnreadOrders(siteState.myOrders));
   } catch (error) {
@@ -3076,6 +3157,10 @@ async function refreshNavUnread() {
   try {
     const data = await siteApiRequest(`/api/orders/user/${siteState.auth.user.id}`);
     siteState.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+    if (data && data.user && siteState.auth && siteState.auth.user
+      && Number(data.user.id) === Number(siteState.auth.user.id)) {
+      saveSiteAuth({ ...siteState.auth, user: { ...siteState.auth.user, ...data.user } });
+    }
     updateNavUnreadDot(countUnreadOrders(siteState.myOrders));
   } catch (error) {}
 }
@@ -3145,15 +3230,47 @@ async function saveProfileFromOverlay() {
   renderShop();
 }
 
-function renderOrderReviewOverlay() {
+function renderCheckoutBalance(total) {
+  const balance = getDepositBalance();
+  if (balance <= 0) return '';
+  const copy = getOrderCopy();
+  const applied = siteState.useDeposit ? Math.min(balance, total) : 0;
+  const balanceAfter = Math.max(0, balance - applied);
+  const amountDue = Math.max(0, total - applied);
+  return `
+    <div class="checkout-balance-card">
+      <div class="checkout-balance-head">
+        <div class="checkout-balance-copy">
+          <strong>${escapeHtml(copy.balanceUseTitle)}</strong>
+          ${escapeHtml(copy.balanceUseAvailable)}：${escapeHtml(formatMoney(balance))}
+        </div>
+        <button class="checkout-balance-toggle ${siteState.useDeposit ? 'is-active' : ''}" type="button" data-review-action="deposit" aria-pressed="${siteState.useDeposit ? 'true' : 'false'}">
+          ${escapeHtml(siteState.useDeposit ? copy.balanceUseRemove : copy.balanceUseApply)}
+        </button>
+      </div>
+      ${siteState.useDeposit ? `
+        <div class="checkout-balance-math" role="status">
+          <div class="checkout-balance-row"><span>${escapeHtml(copy.subtotal)}</span><strong>${escapeHtml(formatMoney(total))}</strong></div>
+          <div class="checkout-balance-row"><span>${escapeHtml(copy.balanceUseApplied)}</span><strong>−${escapeHtml(formatMoney(applied))}</strong></div>
+          <div class="checkout-balance-row"><span>${escapeHtml(copy.balanceAfterOrder)}</span><strong>${escapeHtml(formatMoney(balanceAfter))}</strong></div>
+          <div class="checkout-balance-row is-due"><span>${escapeHtml(copy.amountDue)}</span><strong>${escapeHtml(formatMoney(amountDue))}</strong></div>
+        </div>` : ''}
+      <div class="checkout-balance-note">${escapeHtml(copy.balanceUseNote)}</div>
+    </div>`;
+}
+
+function renderOrderReviewOverlay(resetDeposit = false) {
   const copy = getOrderCopy();
   const items = getSelectedItems();
   if (!items.length) {
     alert(copy.emptyCart);
     return;
   }
+  if (resetDeposit) siteState.useDeposit = false;
   const pickup = getPickup();
   const total = items.reduce((sum, item) => sum + (item.unitPrice || parseMoney(item.price)) * item.quantity, 0);
+  const previewApplied = siteState.useDeposit ? Math.min(getDepositBalance(), total) : 0;
+  const previewAmountDue = Math.max(0, total - previewApplied);
   orderReviewBody.innerHTML = `
     <div class="portal-title" id="orderReviewTitle">${escapeHtml(copy.reviewOrder)}</div>
     <div class="portal-sub">${escapeHtml(copy.pickupInfo)}</div>
@@ -3178,13 +3295,14 @@ function renderOrderReviewOverlay() {
         <span>${formatMoney(total)}</span>
       </div>
     </div>
+    ${renderCheckoutBalance(total)}
     <div class="portal-form">
       <label class="portal-field">
         <span class="portal-label">${escapeHtml(copy.orderNote)}</span>
         <textarea id="orderNoteInput" class="portal-textarea" placeholder="${escapeHtml(copy.orderNotePlaceholder)}">${escapeHtml(siteState.note)}</textarea>
       </label>
       <div class="portal-note">Zelle: makkiemua@gmail.com · Venmo: makkiemua</div>
-      <div class="portal-pay-reminder">⏳ ${escapeHtml(copy.payReminder)}</div>
+      <div class="portal-pay-reminder">${previewApplied > 0 && previewAmountDue === 0 ? '✓' : '⏳'} ${escapeHtml(previewApplied > 0 && previewAmountDue === 0 ? copy.balanceCovered : copy.payReminder)}</div>
       <div class="portal-actions">
         <button class="shop-secondary-button" type="button" data-order-review-close>${escapeHtml(copy.close)}</button>
         <button class="shop-submit-button" type="button" data-review-action="submit">${escapeHtml(copy.submit)}</button>
@@ -3209,7 +3327,7 @@ async function submitWebOrder() {
   if (noteInput) siteState.note = noteInput.value;
   const pickup = getPickup();
   const nickname = siteState.auth && siteState.auth.user ? (siteState.auth.user.profile?.nickname || siteState.auth.user.nickname || '') : '';
-  await siteApiRequest('/api/orders', {
+  const result = await siteApiRequest('/api/orders', {
     method: 'POST',
     body: {
       pickup_location_id: pickup ? pickup.id : '',
@@ -3217,6 +3335,7 @@ async function submitWebOrder() {
       pickup_snapshot: pickup || {},
       customer_name: nickname,
       notes: siteState.note,
+      use_deposit: siteState.useDeposit === true,
       cart_items: items.map((item) => ({
         product_id: item.productId || item.id,
         product_name: item.title,
@@ -3225,12 +3344,23 @@ async function submitWebOrder() {
       }))
     }
   });
+  if (result && result.user && siteState.auth && siteState.auth.user) {
+    saveSiteAuth({ ...siteState.auth, user: { ...siteState.auth.user, ...result.user } });
+  }
+  const createdOrder = result && result.order ? result.order : null;
+  const depositApplied = Math.max(0, Number(createdOrder && createdOrder.deposit_applied) || 0);
+  const amountDue = Math.max(0, Number(createdOrder && createdOrder.amount_due));
   siteState.cartQuantities = {};
   siteState.note = '';
+  siteState.useDeposit = false;
   closeOverlay(orderReviewOverlay, orderReviewBody);
   // 重新拉取产品，让库存立即反映刚下的这单（否则显示的是下单前的旧库存）。
   await loadShopData();
-  alert(copy.submitSuccess + '\n\n' + copy.payReminder + '\n\n' + copy.viewInMyOrders);
+  const balanceResult = depositApplied > 0
+    ? `\n\n${copy.balanceUseApplied}：${formatMoney(depositApplied)}\n${copy.amountDue}：${formatMoney(amountDue)}`
+    : '';
+  const paymentMessage = depositApplied > 0 && amountDue === 0 ? copy.balanceCovered : copy.payReminder;
+  alert(copy.submitSuccess + balanceResult + '\n\n' + paymentMessage + '\n\n' + copy.viewInMyOrders);
 }
 
 function renderAdminOverlay() {
@@ -3356,6 +3486,8 @@ async function logoutSite() {
 function getWeeklyDeadlineMs() {
   const weekly = siteState.weeklyOrder;
   if (!weekly) return 0;
+  const extraMs = parseUtcTimestamp(weekly.extra_order_until || '');
+  if (Number.isFinite(extraMs) && extraMs > Date.now()) return extraMs;
   const raw = weekly.order_deadline_at || weekly.end_at || weekly.close_at || '';
   const ms = parseLaWallClock(raw);
   return Number.isFinite(ms) ? ms : 0;
@@ -3401,8 +3533,11 @@ startPayCountdownTicker();
 
 function isGroupBuyActive() {
   const weekly = siteState.weeklyOrder;
-  if (!weekly || !weekly.is_open || !siteState.products.length) return false;
+  if (!weekly || !siteState.products.length) return false;
   const nowMs = Date.now();
+  const extraMs = parseUtcTimestamp(weekly.extra_order_until || '');
+  if (Number.isFinite(extraMs) && extraMs > nowMs) return true;
+  if (!weekly.is_open) return false;
   if (weekly.start_at) {
     const startMs = parseLaWallClock(weekly.start_at);
     if (Number.isFinite(startMs) && startMs > nowMs) return false;
@@ -3462,7 +3597,11 @@ function updateShopEntryCountdown() {
   };
 
   const title = document.getElementById('shopEntryCountdownTitle');
-  if (title) title.textContent = labels.title;
+  const extraMs = parseUtcTimestamp(siteState.weeklyOrder && siteState.weeklyOrder.extra_order_until);
+  const isExtraWindow = Number.isFinite(extraMs) && extraMs > Date.now();
+  if (title) title.textContent = isExtraWindow
+    ? (lang === 'en' ? 'Extra ordering closes in' : '加单窗口结束还有')
+    : labels.title;
   Object.keys(values).forEach((key) => {
     const valueEl = widget.querySelector(`[data-cd-value="${key}"]`);
     if (valueEl) valueEl.textContent = String(values[key]).padStart(2, '0');
@@ -3535,12 +3674,19 @@ if (shopRoot) {
       return;
     }
     if (shopAction === 'review') {
-      renderOrderReviewOverlay();
+      renderOrderReviewOverlay(true);
     }
   });
 }
 
 document.addEventListener('click', async (event) => {
+  const profileClose = event.target.closest('[data-profile-close]');
+  if (profileClose) {
+    siteState.profileEditMode = false;
+    siteState.profileView = 'main';
+    closeOverlay(profileOverlay, profileOverlayBody);
+    return;
+  }
   const profileAction = event.target.closest('[data-profile-action]');
   const reviewAction = event.target.closest('[data-review-action]');
   const adminAction = event.target.closest('[data-admin-action]');
@@ -3588,7 +3734,15 @@ document.addEventListener('click', async (event) => {
   }
   if (reviewAction) {
     if (reviewAction.dataset.reviewAction === 'pickup') {
+      const noteInput = document.getElementById('orderNoteInput');
+      if (noteInput) siteState.note = noteInput.value;
       siteState.pickupIndex = Number(reviewAction.dataset.index) || 0;
+      renderOrderReviewOverlay();
+    }
+    if (reviewAction.dataset.reviewAction === 'deposit') {
+      const noteInput = document.getElementById('orderNoteInput');
+      if (noteInput) siteState.note = noteInput.value;
+      siteState.useDeposit = !siteState.useDeposit;
       renderOrderReviewOverlay();
     }
     if (reviewAction.dataset.reviewAction === 'submit') {
