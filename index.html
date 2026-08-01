@@ -508,6 +508,7 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .profile-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.2rem 0 .4rem;}
 .profile-head-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;}
 .profile-head-name{margin-top:.2rem;font-size:1.4rem;font-weight:800;color:#2d1f0f;}
+.profile-head-identity{cursor:pointer;user-select:none;-webkit-user-select:none;}
 .account-balance-reminder{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1rem;border-radius:16px;background:linear-gradient(135deg,rgba(249,240,230,.98),rgba(255,250,246,.98));border:1px solid rgba(92,56,32,.28);color:#5c3820;box-shadow:0 10px 24px rgba(92,56,32,.08);}
 .account-balance-reminder-copy{font-size:12px;line-height:1.55;color:#7c6561;}
 .account-balance-reminder-copy strong{display:block;color:#5c3820;font-size:14px;}
@@ -2218,6 +2219,8 @@ const orderPortalCopy = {
     idLabel: 'ID',
     orderNumberLabel: '订单号',
     loggedInAs: '当前昵称',
+    userIdLabel: 'User ID',
+    identityToggleHint: '双击切换昵称与 User ID',
     editNickname: '修改昵称',
     logout: '退出登录',
     logoutConfirm: '确定要退出登录吗？退出后需要重新登录或填写昵称。',
@@ -2314,6 +2317,8 @@ const orderPortalCopy = {
     idLabel: 'ID',
     orderNumberLabel: 'Order',
     loggedInAs: 'Nickname',
+    userIdLabel: 'User ID',
+    identityToggleHint: 'Double-click to switch between nickname and User ID',
     editNickname: 'Edit Nickname',
     logout: 'Log out',
     logoutConfirm: 'Log out? You’ll need to sign in or enter a nickname again.',
@@ -2379,6 +2384,7 @@ const siteState = {
   error: '',
   loading: true,
   profileEditMode: false,
+  profileShowsUserId: false,
   profileView: 'main',
   cancelPromptId: null,
   cancelBusyId: null,
@@ -2835,6 +2841,12 @@ function getSavedNickname() {
   return (u.profile && u.profile.nickname) || u.nickname || '';
 }
 
+function getProfileUserId() {
+  const user = siteState.auth && siteState.auth.user;
+  if (!user) return '';
+  return String(user.uuid || user.userUuid || `M${String(user.id || '').padStart(6, '0')}`);
+}
+
 function getDepositBalance() {
   const user = siteState.auth && siteState.auth.user;
   return Math.max(0, Number(user && (user.deposit_balance ?? user.depositBalance)) || 0);
@@ -2904,6 +2916,8 @@ function renderProfileLoginForm() {
 function renderProfileLoggedIn() {
   const c = getOrderCopy();
   const nickname = getSavedNickname();
+  const identityLabel = siteState.profileShowsUserId ? c.userIdLabel : c.loggedInAs;
+  const identityValue = siteState.profileShowsUserId ? getProfileUserId() : nickname;
 
   if (siteState.profileView === 'history') {
     profileOverlayBody.innerHTML = `
@@ -2921,8 +2935,10 @@ function renderProfileLoggedIn() {
     <div class="profile-stack">
       <div class="profile-head">
         <div>
-          <div class="profile-head-label">${escapeHtml(c.loggedInAs)}</div>
-          <div class="profile-head-name">${escapeHtml(nickname)}</div>
+          <div class="profile-head-identity" data-profile-identity title="${escapeHtml(c.identityToggleHint)}">
+            <div class="profile-head-label">${escapeHtml(identityLabel)}</div>
+            <div class="profile-head-name">${escapeHtml(identityValue)}</div>
+          </div>
         </div>
         <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
       </div>
@@ -3759,6 +3775,14 @@ document.addEventListener('click', async (event) => {
       await toggleWeeklyOrderState().catch((error) => alert(error.message));
     }
   }
+});
+
+document.addEventListener('dblclick', (event) => {
+  const identity = event.target.closest('[data-profile-identity]');
+  if (!identity || !siteState.auth || !siteState.auth.user) return;
+  event.preventDefault();
+  siteState.profileShowsUserId = !siteState.profileShowsUserId;
+  renderProfileLoggedIn();
 });
 
 document.querySelectorAll('[data-order-review-close]').forEach((button) => {

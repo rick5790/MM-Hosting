@@ -1451,6 +1451,21 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .confirm-pay-copy:hover{background:#6a544f;}
 .confirm-pay-copy.is-copied{background:#5a7c61;}
 .confirm-pay-instruction{margin-top:.8rem;padding:.8rem 1rem;border-radius:14px;background:rgba(124,101,97,.07);font-size:13px;line-height:1.7;color:#6f5a4c;}
+.account-balance-reminder{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1rem;border-radius:16px;background:linear-gradient(135deg,rgba(249,240,230,.98),rgba(255,250,246,.98));border:1px solid rgba(92,56,32,.28);color:#5c3820;box-shadow:0 10px 24px rgba(92,56,32,.08);}
+.account-balance-reminder-copy{font-size:12px;line-height:1.55;color:#7c6561;}
+.account-balance-reminder-copy strong{display:block;color:#5c3820;font-size:14px;}
+.account-balance-reminder-amount{flex:0 0 auto;font-size:1.25rem;font-weight:900;color:#2d1f0f;}
+.checkout-balance-card{display:flex;flex-direction:column;gap:.8rem;padding:1rem;border-radius:18px;background:linear-gradient(135deg,rgba(249,240,230,.98),rgba(255,250,246,.98));border:1px solid rgba(92,56,32,.28);box-shadow:0 10px 24px rgba(92,56,32,.08);}
+.checkout-balance-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.checkout-balance-copy{font-size:12px;line-height:1.55;color:#7c6561;}
+.checkout-balance-copy strong{display:block;color:#5c3820;font-size:14px;}
+.checkout-balance-toggle{flex:0 0 auto;min-height:42px;padding:.62rem .9rem;border-radius:999px;border:1px solid rgba(92,56,32,.28);background:#fffaf6;color:#5c3820;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+.checkout-balance-toggle.is-active{background:#5c3820;color:#fffaf6;}
+.checkout-balance-math{display:flex;flex-direction:column;gap:.42rem;padding-top:.7rem;border-top:1px solid rgba(92,56,32,.14);}
+.checkout-balance-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;color:#7c6561;font-size:13px;}
+.checkout-balance-row strong{color:#5c3820;}
+.checkout-balance-row.is-due{padding-top:.45rem;border-top:1px dashed rgba(92,56,32,.18);font-size:15px;font-weight:800;color:#2d1f0f;}
+.checkout-balance-note{font-size:11px;line-height:1.5;color:#9a7d65;}
 .confirm-total-cur{font-size:.92rem;font-weight:700;color:#9a7d65;margin-left:.15rem;}
 /* 支付宝实时汇率卡片 */
 .confirm-pay-card--alipay{align-items:center;}
@@ -1491,6 +1506,7 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .profile-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.2rem 0 .4rem;}
 .profile-head-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;}
 .profile-head-name{margin-top:.2rem;font-size:1.4rem;font-weight:800;color:#2d1f0f;}
+.profile-head-identity{cursor:pointer;user-select:none;-webkit-user-select:none;}
 .my-orders-group{margin-top:1.2rem;}
 .my-orders-group-title{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;margin-bottom:.6rem;}
 .my-order-card{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);margin-bottom:.65rem;}
@@ -1505,6 +1521,9 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .my-order-status--cancelled{background:rgba(124,63,53,.14);color:#7c3f35;}
 /* 状态变更未读：卡片红点 + 提示条 + 取消理由 + 已读提示 */
 .my-order-card--rich.is-unread{border-color:rgba(224,72,61,.4);box-shadow:0 0 0 1px rgba(224,72,61,.14);cursor:pointer;}
+.my-order-deposit{display:flex;flex-direction:column;gap:.35rem;margin-top:.75rem;padding:.7rem .8rem;border-radius:12px;background:rgba(92,56,32,.07);color:#7c6561;font-size:12px;}
+.my-order-deposit-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.my-order-deposit-row strong{color:#5c3820;}
 .my-order-dot{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#e0483d;border:3px solid #fff;box-shadow:0 2px 6px rgba(224,72,61,.4);}
 .my-order-updated{display:flex;align-items:center;gap:.5rem;margin-top:.7rem;padding:.7rem .85rem;border-radius:14px;background:rgba(224,72,61,.08);border:1px solid rgba(224,72,61,.18);font-size:13px;font-weight:700;color:#b23a30;}
 .my-order-updated-icon{flex:0 0 auto;}

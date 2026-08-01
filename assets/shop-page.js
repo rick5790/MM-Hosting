@@ -145,6 +145,7 @@
     zh: {
       syncing: '同步中',
       open: '本周预定开放中',
+      extraOpen: '临时加单开放中',
       closed: '本周暂未开放',
       closedHint: '请关注我们的社交媒体获得最新更新',
       loading: '正在读取本周菜单...',
@@ -229,6 +230,8 @@
       logout: '退出登录',
       logoutConfirm: '确定要退出登录吗？退出后需要重新登录或填写昵称。',
       loggedInAs: '当前昵称',
+      userIdLabel: 'User ID',
+      identityToggleHint: '双击切换昵称与 User ID',
       orderNumberLabel: '订单号',
       pickupSelect: '选择自提',
       pickupChange: '更改自提地点',
@@ -249,6 +252,17 @@
       payCountdownLabel: '剩余付款时间',
       payCountdownOver: '付款已超时，请尽快微信联系店家确认',
       payAutoCancel: '请在下单后 60 小时内完成付款，到期未付款订单会自动取消。',
+      balanceReminderTitle: '账户有可用余额',
+      balanceReminderText: '确认订单时可选择使用；余额不会自动抵扣。',
+      balanceUseTitle: '使用账户余额',
+      balanceUseAvailable: '可用余额',
+      balanceUseApply: '使用全部余额',
+      balanceUseRemove: '本单不使用',
+      balanceUseApplied: '本单余额抵扣',
+      balanceAfterOrder: '下单后剩余余额',
+      amountDue: '还需支付',
+      balanceCovered: '余额已覆盖本单，无需另外付款。',
+      balanceUseNote: '只能选择使用全部可用余额或不使用，不能输入部分金额。余额高于订单金额时只扣本单金额。',
       adminTitle: '隐藏管理员入口',
       adminSub: '这里可以查看当前预定状态，并手动切换开放与关闭。',
       adminOpenLabel: '预定状态',
@@ -260,6 +274,7 @@
     en: {
       syncing: 'Syncing',
       open: 'Weekly preorder is open',
+      extraOpen: 'Extra ordering is open',
       closed: 'Weekly preorder is closed',
       closedHint: 'Follow our social media for the latest updates',
       loading: 'Loading weekly menu...',
@@ -344,6 +359,8 @@
       logout: 'Log out',
       logoutConfirm: 'Log out? You’ll need to sign in or enter a nickname again.',
       loggedInAs: 'Nickname',
+      userIdLabel: 'User ID',
+      identityToggleHint: 'Double-click to switch between nickname and User ID',
       orderNumberLabel: 'Order',
       pickupSelect: 'Choose Pickup',
       pickupChange: 'Change Pickup',
@@ -364,6 +381,17 @@
       payCountdownLabel: 'Time left to pay',
       payCountdownOver: 'Payment time has expired. Please contact Makkie on WeChat.',
       payAutoCancel: 'Please pay within 60 hours of placing your order. Unpaid orders are cancelled automatically.',
+      balanceReminderTitle: 'Account balance available',
+      balanceReminderText: 'Choose whether to use it at checkout. It is never applied automatically.',
+      balanceUseTitle: 'Use account balance',
+      balanceUseAvailable: 'Available balance',
+      balanceUseApply: 'Use full balance',
+      balanceUseRemove: 'Do not use',
+      balanceUseApplied: 'Balance applied',
+      balanceAfterOrder: 'Balance after order',
+      amountDue: 'Amount due',
+      balanceCovered: 'Your balance covers this order. No additional payment is needed.',
+      balanceUseNote: 'Use all available balance or none; partial amounts are not supported. If your balance exceeds the order total, only the order total is deducted.',
       adminTitle: 'Hidden Admin Entry',
       adminSub: 'Use this panel to check the preorder state and switch it on or off manually.',
       adminOpenLabel: 'Preorder Status',
@@ -382,11 +410,14 @@
     cartQuantities: {},
     pickupIndex: 0,
     note: '',
+    useDeposit: false,
+    lastCreatedOrder: null,
     error: '',
     pickupConfirmed: false,
     loading: true,
     pendingSubmit: false,
     profileEditMode: false,
+    profileShowsUserId: false,
     profileView: 'main',
     cancelPromptId: null,
     cancelBusyId: null,
@@ -470,7 +501,7 @@
     });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok || payload.ok === false) {
-      throw new Error(payload.message || `Request failed (${response.status})`);
+      throw new Error(payload.message || payload.detail || `Request failed (${response.status})`);
     }
     return payload.data !== undefined ? payload.data : payload;
   }
@@ -807,6 +838,8 @@
   function getWeeklyDeadlineMs() {
     const weekly = state.weeklyOrder;
     if (!weekly) return 0;
+    const extraMs = parseUtcTimestamp(weekly.extra_order_until || '');
+    if (Number.isFinite(extraMs) && extraMs > Date.now()) return extraMs;
     const raw = weekly.order_deadline_at || weekly.end_at || weekly.close_at || '';
     const ms = parseLaWallClock(raw);
     return Number.isFinite(ms) ? ms : 0;
@@ -814,8 +847,11 @@
 
   function isWeeklyOpen() {
     const weekly = state.weeklyOrder;
-    if (!weekly || !weekly.is_open || !state.products.length) return false;
+    if (!weekly || !state.products.length) return false;
     const nowMs = Date.now();
+    const extraMs = parseUtcTimestamp(weekly.extra_order_until || '');
+    if (Number.isFinite(extraMs) && extraMs > nowMs) return true;
+    if (!weekly.is_open) return false;
     // 尚未到开团时间：视为未开放
     if (weekly.start_at) {
       const startMs = parseLaWallClock(weekly.start_at);
@@ -830,8 +866,10 @@
     if (!shopEntryStatus) return;
     const c = copy();
     const deadlineText = getShopDeadlineText();
+    const extraMs = parseUtcTimestamp(state.weeklyOrder && state.weeklyOrder.extra_order_until);
+    const isExtraWindow = Number.isFinite(extraMs) && extraMs > Date.now();
     const statusText = isWeeklyOpen()
-      ? `${c.open}${deadlineText ? ` · ${deadlineText}` : ''}`
+      ? `${isExtraWindow ? c.extraOpen : c.open}${!isExtraWindow && deadlineText ? ` · ${deadlineText}` : ''}`
       : c.closed;
     updateShopHeroMeta();
     shopEntryStatus.innerHTML = `<span class="shop-pill ${isWeeklyOpen() ? 'is-open' : 'is-closed'}">${escapeHtml(statusText)}</span>`;
@@ -1093,6 +1131,8 @@
   function renderProfileLoggedIn() {
     const c = copy();
     const nickname = getSavedNickname();
+    const identityLabel = state.profileShowsUserId ? c.userIdLabel : c.loggedInAs;
+    const identityValue = state.profileShowsUserId ? getProfileUserId() : nickname;
 
     // 历史订单单独 view：从主界面点「查看历史订单」进入，可返回。
     if (state.profileView === 'history') {
@@ -1112,11 +1152,14 @@
       <div class="profile-stack">
         <div class="profile-head">
           <div>
-            <div class="profile-head-label">${escapeHtml(c.loggedInAs)}</div>
-            <div class="profile-head-name">${escapeHtml(nickname)}</div>
+            <div class="profile-head-identity" data-profile-identity title="${escapeHtml(c.identityToggleHint)}">
+              <div class="profile-head-label">${escapeHtml(identityLabel)}</div>
+              <div class="profile-head-name">${escapeHtml(identityValue)}</div>
+            </div>
           </div>
           <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
         </div>
+        ${renderBalanceReminder()}
         <button class="profile-history-entry" type="button" data-profile-view="history">
           <span>${escapeHtml(c.viewHistory)}</span>
           <span class="profile-history-arrow">›</span>
@@ -1157,8 +1200,16 @@
     const dateText = formatOrderDate(order.created_at || order.createdAt);
     const nickname = order.userNickname || order.customer_name || getSavedNickname();
     const pickup = order.pickup || {};
-    const totalText = (order.total && order.total.text) || formatMoney(order.total_amount || 0);
-    const cancellable = allowCancel && String(order.status || '') === 'pending';
+    const grossAmount = Math.max(0, Number(order.total_amount) || 0);
+    const depositApplied = Math.max(0, Number(order.deposit_applied ?? order.depositApplied) || 0);
+    const dueValue = order.amount_due ?? order.amountDue;
+    const amountDue = dueValue == null ? grossAmount : Math.max(0, Number(dueValue) || 0);
+    const totalText = depositApplied > 0
+      ? formatMoney(amountDue)
+      : ((order.total && order.total.text) || formatMoney(grossAmount));
+    const cancellable = allowCancel
+      && String(order.status || '') === 'pending'
+      && order.customer_can_cancel === true;
     const prompting = cancellable && Number(state.cancelPromptId) === Number(order.id);
     const busy = Number(state.cancelBusyId) === Number(order.id);
     const unread = isOrderUnread(order);
@@ -1197,9 +1248,16 @@
         ${pickup.address ? `<div class="my-order-pickup-line">${escapeHtml(pickup.address)}</div>` : ''}
       </div>` : '';
 
-    const totalNum = Number(order.total_amount) || 0;
+    const depositHtml = depositApplied > 0 ? `
+      <div class="my-order-deposit">
+        <div class="my-order-deposit-row"><span>${escapeHtml(c.subtotal)}</span><strong>${escapeHtml(formatMoney(grossAmount))}</strong></div>
+        <div class="my-order-deposit-row"><span>${escapeHtml(c.balanceUseApplied)}</span><strong>−${escapeHtml(formatMoney(depositApplied))}</strong></div>
+        <div class="my-order-deposit-row"><span>${escapeHtml(c.amountDue)}</span><strong>${escapeHtml(formatMoney(amountDue))}</strong></div>
+      </div>` : '';
+
+    const totalNum = amountDue;
     // 已有订单：查看付款方式（含实时汇率），active 卡片始终提供，便于二次付款。
-    const paymentBtn = allowCancel
+    const paymentBtn = allowCancel && totalNum > 0
       ? `<button class="my-order-pay-btn" type="button" data-order-payment="${escapeHtml(String(totalNum))}">${escapeHtml(c.viewPayment)}</button>`
       : '';
 
@@ -1235,6 +1293,7 @@
       </div>
         <div class="my-order-lines">${itemsHtml}</div>
         ${pickupHtml}
+        ${depositHtml}
         ${payTimerHtml}
         ${updatedHtml}
         ${cancelReasonHtml}
@@ -1297,6 +1356,11 @@
     try {
       const data = await siteApiRequest(`/api/orders/user/${state.auth.user.id}`);
       state.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+      if (data && data.user && state.auth && state.auth.user
+        && Number(data.user.id) === Number(state.auth.user.id)) {
+        saveSiteAuth({ ...state.auth, user: { ...state.auth.user, ...data.user } });
+        if (profileOverlay && !profileOverlay.hidden && state.profileView === 'main') renderProfileLoggedIn();
+      }
       updateNavUnreadDot(countUnreadOrders(state.myOrders));
     } catch (error) {
       state.myOrdersError = error.message || copy().ordersFailed;
@@ -1313,16 +1377,29 @@
     try {
       const data = await siteApiRequest(`/api/orders/user/${state.auth.user.id}`);
       state.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+      if (data && data.user && state.auth && state.auth.user
+        && Number(data.user.id) === Number(state.auth.user.id)) {
+        saveSiteAuth({ ...state.auth, user: { ...state.auth.user, ...data.user } });
+      }
       updateNavUnreadDot(countUnreadOrders(state.myOrders));
     } catch (error) {}
   }
 
   function renderOrderSuccessOverlay() {
     const c = copy();
+    const order = state.lastCreatedOrder;
+    const depositApplied = Math.max(0, Number(order && (order.deposit_applied ?? order.depositApplied)) || 0);
+    const amountDue = Math.max(0, Number(order && (order.amount_due ?? order.amountDue)) || 0);
+    const fullyCovered = depositApplied > 0 && amountDue === 0;
     orderSuccessBody.innerHTML = `
       <div class="order-success-icon">✓</div>
       <div class="portal-title">${escapeHtml(c.successTitle)}</div>
-      <div class="portal-sub">${escapeHtml(c.successMessage)}</div>
+      <div class="portal-sub">${escapeHtml(fullyCovered ? c.balanceCovered : c.successMessage)}</div>
+      ${depositApplied > 0 ? `
+        <div class="checkout-balance-math" style="margin-top:1rem;">
+          <div class="checkout-balance-row"><span>${escapeHtml(c.balanceUseApplied)}</span><strong>−${escapeHtml(formatMoney(depositApplied))}</strong></div>
+          <div class="checkout-balance-row is-due"><span>${escapeHtml(c.amountDue)}</span><strong>${escapeHtml(formatMoney(amountDue))}</strong></div>
+        </div>` : ''}
       <div class="portal-actions" style="justify-content:center;margin-top:1.4rem;">
         <button class="shop-secondary-button" type="button" data-order-success-close>${escapeHtml(c.successClose)}</button>
         <button class="shop-submit-button" type="button" data-order-success-orders>${escapeHtml(c.viewMyOrders)}</button>
@@ -1357,7 +1434,8 @@
       if (state.pendingSubmit) {
         state.pendingSubmit = false;
         closeOverlay(profileOverlay, profileOverlayBody);
-        await submitWebOrder().catch((error) => alert(error.message));
+        state.useDeposit = false;
+        renderOrderConfirmOverlay();
         return;
       }
       // Google 登录后让用户确认/调整昵称，再进入“我的订单”。
@@ -1406,7 +1484,8 @@
       state.pendingSubmit = false;
       state.profileEditMode = false;
       closeOverlay(profileOverlay, profileOverlayBody);
-      await submitWebOrder().catch((error) => alert(error.message));
+      state.useDeposit = false;
+      renderOrderConfirmOverlay();
       return;
     }
     state.profileEditMode = false;
@@ -1415,7 +1494,7 @@
 
   // 提交前的最终确认页：订单内容、总额、付款方式（Zelle/Venmo/支付宝）、截单规则，
   // 与小程序 order-notice-panel 保持一致。点“确认提交订单”才真正下单。
-  function renderOrderConfirmOverlay() {
+  function renderOrderConfirmOverlay(resetDeposit = false) {
     const c = copy();
     const items = getSelectedItems();
     if (!items.length) {
@@ -1424,6 +1503,9 @@
     }
     const pickup = getPickup();
     const total = items.reduce((sum, item) => sum + (item.unitPrice || 0) * item.quantity, 0);
+    if (resetDeposit) state.useDeposit = false;
+    const depositApplied = state.useDeposit ? Math.min(getDepositBalance(), total) : 0;
+    const amountDue = Math.max(0, total - depositApplied);
     const pickupMeta = pickup ? [getPickupTimeText(pickup), getPickupAddress(pickup)].filter(Boolean).join(' · ') : '';
     const noteInput = document.getElementById('shopOrderNoteInput');
     if (noteInput) state.note = noteInput.value;
@@ -1446,10 +1528,12 @@
           <span class="confirm-heading">${escapeHtml(c.total)}</span>
           <span class="confirm-total">${escapeHtml(formatMoney(total))} <span class="confirm-total-cur">USD</span></span>
         </div>
+        ${getDepositBalance() > 0 ? `<div class="confirm-section">${renderCheckoutBalance(total)}</div>` : ''}
         <div class="confirm-section">
           <div class="confirm-heading">${escapeHtml(c.payment)}</div>
-          ${renderPaymentMethods(total)}
-          <div class="confirm-pay-instruction">${escapeHtml(c.confirmLine1)}</div>
+          ${amountDue > 0
+            ? `${renderPaymentMethods(amountDue)}<div class="confirm-pay-instruction">${escapeHtml(c.confirmLine1)}</div>`
+            : `<div class="confirm-pay-instruction">✓ ${escapeHtml(c.balanceCovered)}</div>`}
         </div>
         <div class="confirm-section">
           <div class="confirm-pickup-head">
@@ -1464,13 +1548,13 @@
         </div>
       </div>
       <div class="confirm-actionbar">
-        <button class="shop-submit-button confirm-place-btn" type="button" data-confirm-action="submit">${escapeHtml(c.placeOrder)} · ${escapeHtml(formatMoney(total))}</button>
+        <button class="shop-submit-button confirm-place-btn" type="button" data-confirm-action="submit">${escapeHtml(c.placeOrder)} · ${escapeHtml(formatMoney(amountDue))}</button>
         <button class="confirm-back-btn" type="button" data-order-confirm-close>${escapeHtml(c.backToEdit)}</button>
       </div>
     `;
     openOverlay(orderConfirmOverlay);
     // 打开即拉取实时汇率，到达后只刷新支付宝卡片。
-    loadExchangeRate().then((rate) => { if (rate) refreshFxSlots(); });
+    if (amountDue > 0) loadExchangeRate().then((rate) => { if (rate) refreshFxSlots(); });
   }
 
   // 已有订单点“查看付款方式”：只展示付款方式（含实时汇率折算），供二次付款参考。
@@ -1498,6 +1582,60 @@
     return state.auth.user.profile?.nickname || state.auth.user.nickname || '';
   }
 
+  function getProfileUserId() {
+    const user = state.auth && state.auth.user;
+    if (!user) return '';
+    return String(user.uuid || user.userUuid || `M${String(user.id || '').padStart(6, '0')}`);
+  }
+
+  function getDepositBalance() {
+    const user = state.auth && state.auth.user;
+    return Math.max(0, Number(user && (user.deposit_balance ?? user.depositBalance)) || 0);
+  }
+
+  function renderBalanceReminder() {
+    const balance = getDepositBalance();
+    if (balance <= 0) return '';
+    const c = copy();
+    return `
+      <div class="account-balance-reminder" role="status">
+        <div class="account-balance-reminder-copy">
+          <strong>${escapeHtml(c.balanceReminderTitle)}</strong>
+          ${escapeHtml(c.balanceReminderText)}
+        </div>
+        <span class="account-balance-reminder-amount">${escapeHtml(formatMoney(balance))}</span>
+      </div>`;
+  }
+
+  function renderCheckoutBalance(total) {
+    const balance = getDepositBalance();
+    if (balance <= 0) return '';
+    const c = copy();
+    const applied = state.useDeposit ? Math.min(balance, total) : 0;
+    const balanceAfter = Math.max(0, balance - applied);
+    const amountDue = Math.max(0, total - applied);
+    return `
+      <div class="checkout-balance-card">
+        <div class="checkout-balance-head">
+          <div class="checkout-balance-copy">
+            <strong>${escapeHtml(c.balanceUseTitle)}</strong>
+            ${escapeHtml(c.balanceUseAvailable)}：${escapeHtml(formatMoney(balance))}
+          </div>
+          <button class="checkout-balance-toggle ${state.useDeposit ? 'is-active' : ''}" type="button" data-confirm-action="deposit" aria-pressed="${state.useDeposit ? 'true' : 'false'}">
+            ${escapeHtml(state.useDeposit ? c.balanceUseRemove : c.balanceUseApply)}
+          </button>
+        </div>
+        ${state.useDeposit ? `
+          <div class="checkout-balance-math" role="status">
+            <div class="checkout-balance-row"><span>${escapeHtml(c.total)}</span><strong>${escapeHtml(formatMoney(total))}</strong></div>
+            <div class="checkout-balance-row"><span>${escapeHtml(c.balanceUseApplied)}</span><strong>−${escapeHtml(formatMoney(applied))}</strong></div>
+            <div class="checkout-balance-row"><span>${escapeHtml(c.balanceAfterOrder)}</span><strong>${escapeHtml(formatMoney(balanceAfter))}</strong></div>
+            <div class="checkout-balance-row is-due"><span>${escapeHtml(c.amountDue)}</span><strong>${escapeHtml(formatMoney(amountDue))}</strong></div>
+          </div>` : ''}
+        <div class="checkout-balance-note">${escapeHtml(c.balanceUseNote)}</div>
+      </div>`;
+  }
+
   async function submitWebOrder() {
     const c = copy();
     const items = getSelectedItems();
@@ -1517,7 +1655,7 @@
     const noteInput = document.getElementById('shopOrderNoteInput');
     if (noteInput) state.note = noteInput.value;
     const pickup = getPickup();
-    await siteApiRequest('/api/orders', {
+    const result = await siteApiRequest('/api/orders', {
       method: 'POST',
       body: {
         pickup_location_id: pickup ? pickup.id : '',
@@ -1526,6 +1664,7 @@
         pickup_time: pickup ? getPickupTimeText(pickup) : "",
         customer_name: nickname,
         notes: state.note,
+        use_deposit: state.useDeposit === true,
         cart_items: items.map((item) => ({
           product_id: item.productId || item.id,
           product_name: item.title,
@@ -1534,8 +1673,13 @@
         }))
       }
     });
+    if (result && result.user && state.auth && state.auth.user) {
+      saveSiteAuth({ ...state.auth, user: { ...state.auth.user, ...result.user } });
+    }
+    state.lastCreatedOrder = result && result.order ? result.order : null;
     state.cartQuantities = {};
     state.note = '';
+    state.useDeposit = false;
     closeOverlay(orderConfirmOverlay, orderConfirmBody);
     // 重新拉取产品，让库存立即反映刚下的这单（否则显示的是下单前的旧库存）。
     await loadShopData();
@@ -1698,7 +1842,7 @@
         updateEntryStatus();
         const countdownWrap = document.querySelector('[data-shop-countdown]');
         if (countdownWrap) {
-          countdownWrap.innerHTML = renderCountdown(state.weeklyOrder.order_deadline_at || state.weeklyOrder.end_at || state.weeklyOrder.close_at);
+          countdownWrap.innerHTML = renderCountdown(state.weeklyOrder.extra_order_until || state.weeklyOrder.order_deadline_at || state.weeklyOrder.end_at || state.weeklyOrder.close_at);
         }
       }
     }, 1000);
@@ -1731,7 +1875,7 @@
         renderPickupOverlay();
         return;
       }
-      renderOrderConfirmOverlay();
+      renderOrderConfirmOverlay(true);
     }
   });
 
@@ -1834,6 +1978,10 @@
       }
     }
     if (confirmAction) {
+      if (confirmAction.dataset.confirmAction === 'deposit') {
+        state.useDeposit = !state.useDeposit;
+        renderOrderConfirmOverlay();
+      }
       if (confirmAction.dataset.confirmAction === 'submit') {
         await submitWebOrder().catch((error) => alert(error.message));
       }
@@ -1848,6 +1996,14 @@
         await toggleWeeklyOrderState().catch((error) => alert(error.message));
       }
     }
+  });
+
+  document.addEventListener('dblclick', (event) => {
+    const identity = event.target.closest('[data-profile-identity]');
+    if (!identity || !state.auth || !state.auth.user) return;
+    event.preventDefault();
+    state.profileShowsUserId = !state.profileShowsUserId;
+    renderProfileLoggedIn();
   });
 
   document.addEventListener('keydown', (event) => {
