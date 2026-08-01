@@ -508,6 +508,10 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .profile-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.2rem 0 .4rem;}
 .profile-head-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;}
 .profile-head-name{margin-top:.2rem;font-size:1.4rem;font-weight:800;color:#2d1f0f;}
+.account-balance-reminder{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1rem;border-radius:16px;background:linear-gradient(135deg,rgba(249,240,230,.98),rgba(255,250,246,.98));border:1px solid rgba(92,56,32,.28);color:#5c3820;box-shadow:0 10px 24px rgba(92,56,32,.08);}
+.account-balance-reminder-copy{font-size:12px;line-height:1.55;color:#7c6561;}
+.account-balance-reminder-copy strong{display:block;color:#5c3820;font-size:14px;}
+.account-balance-reminder-amount{flex:0 0 auto;font-size:1.25rem;font-weight:900;color:#2d1f0f;}
 .profile-stack{display:flex;flex-direction:column;gap:1rem;}
 .profile-stack .portal-divider{margin:.2rem 0;}
 .profile-history-entry{display:flex;align-items:center;justify-content:space-between;gap:.6rem;width:100%;padding:.8rem 1rem;border-radius:16px;border:1px solid rgba(124,101,97,.16);background:rgba(255,255,255,.7);color:#5f4c3d;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
@@ -2215,6 +2219,8 @@ const orderPortalCopy = {
     payMethodsHead: '付款方式（任选其一）',
     payCountdownLabel: '剩余付款时间',
     payCountdownOver: '付款已超时，请尽快微信联系店家确认',
+    balanceReminderTitle: '账户有可用余额',
+    balanceReminderText: '付款时可联系 Makkie 使用；余额不会自动抵扣订单。',
     cancelOrder: '取消订单',
     cancelWarn: '取消后会释放该订单占用的库存，确定要取消吗？',
     cancelConfirmYes: '确认取消',
@@ -2300,6 +2306,8 @@ const orderPortalCopy = {
     payMethodsHead: 'Payment methods (pick one)',
     payCountdownLabel: 'Time left to pay',
     payCountdownOver: 'Payment window has passed — please contact us on WeChat.',
+    balanceReminderTitle: 'Account balance available',
+    balanceReminderText: 'Contact Makkie to use it when paying. It is not applied automatically.',
     cancelOrder: 'Cancel Order',
     cancelWarn: 'Cancelling will release the stock reserved for this order. Are you sure?',
     cancelConfirmYes: 'Yes, cancel',
@@ -2534,7 +2542,7 @@ async function siteApiRequest(url, options = {}) {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok || payload.ok === false) {
-    throw new Error(payload.message || `Request failed (${response.status})`);
+    throw new Error(payload.message || payload.detail || `Request failed (${response.status})`);
   }
   return payload.data !== undefined ? payload.data : payload;
 }
@@ -2620,7 +2628,7 @@ function getCartTotalQuantity() {
 }
 
 function isWeeklyOpen() {
-  return Boolean(siteState.weeklyOrder && siteState.weeklyOrder.is_open && siteState.products.length);
+  return isGroupBuyActive();
 }
 
 function updateShopEntryStatus() {
@@ -2794,6 +2802,25 @@ function getSavedNickname() {
   return (u.profile && u.profile.nickname) || u.nickname || '';
 }
 
+function getDepositBalance() {
+  const user = siteState.auth && siteState.auth.user;
+  return Math.max(0, Number(user && (user.deposit_balance ?? user.depositBalance)) || 0);
+}
+
+function renderBalanceReminder() {
+  const balance = getDepositBalance();
+  if (balance <= 0) return '';
+  const c = getOrderCopy();
+  return `
+    <div class="account-balance-reminder" role="status">
+      <div class="account-balance-reminder-copy">
+        <strong>${escapeHtml(c.balanceReminderTitle)}</strong>
+        ${escapeHtml(c.balanceReminderText)}
+      </div>
+      <span class="account-balance-reminder-amount">${escapeHtml(formatMoney(balance))}</span>
+    </div>`;
+}
+
 function renderProfileOverlay() {
   // 每次打开都从主界面开始，清掉未完成的取消确认。
   siteState.profileView = 'main';
@@ -2866,6 +2893,7 @@ function renderProfileLoggedIn() {
         </div>
         <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
       </div>
+      ${renderBalanceReminder()}
       <button class="profile-history-entry" type="button" data-profile-view="history">
         <span>${escapeHtml(c.viewHistory)}</span>
         <span class="profile-history-arrow">›</span>
@@ -2921,7 +2949,9 @@ function renderOrderCard(order, allowCancel) {
   const nickname = order.userNickname || order.customer_name || getSavedNickname();
   const pickup = order.pickup || {};
   const totalText = (order.total && order.total.text) || formatMoney(order.total_amount || 0);
-  const cancellable = allowCancel && String(order.status || '') === 'pending';
+  const cancellable = allowCancel
+    && String(order.status || '') === 'pending'
+    && order.customer_can_cancel === true;
   const prompting = cancellable && Number(siteState.cancelPromptId) === Number(order.id);
   const busy = Number(siteState.cancelBusyId) === Number(order.id);
   const unread = isOrderUnread(order);
@@ -3060,6 +3090,10 @@ async function loadMyOrders() {
       siteApiRequest(`/api/cake-orders/user/${siteState.auth.user.id}`).catch(() => null)
     ]);
     siteState.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+    if (data && data.user && siteState.auth && siteState.auth.user
+      && Number(data.user.id) === Number(siteState.auth.user.id)) {
+      saveSiteAuth({ ...siteState.auth, user: { ...siteState.auth.user, ...data.user } });
+    }
     siteState.myCakeOrders = cakeData && Array.isArray(cakeData.orders) ? cakeData.orders : [];
     updateNavUnreadDot(countUnreadOrders(siteState.myOrders));
   } catch (error) {
@@ -3076,6 +3110,10 @@ async function refreshNavUnread() {
   try {
     const data = await siteApiRequest(`/api/orders/user/${siteState.auth.user.id}`);
     siteState.myOrders = data && Array.isArray(data.orders) ? data.orders : [];
+    if (data && data.user && siteState.auth && siteState.auth.user
+      && Number(data.user.id) === Number(siteState.auth.user.id)) {
+      saveSiteAuth({ ...siteState.auth, user: { ...siteState.auth.user, ...data.user } });
+    }
     updateNavUnreadDot(countUnreadOrders(siteState.myOrders));
   } catch (error) {}
 }
@@ -3178,6 +3216,7 @@ function renderOrderReviewOverlay() {
         <span>${formatMoney(total)}</span>
       </div>
     </div>
+    ${renderBalanceReminder()}
     <div class="portal-form">
       <label class="portal-field">
         <span class="portal-label">${escapeHtml(copy.orderNote)}</span>
@@ -3356,6 +3395,8 @@ async function logoutSite() {
 function getWeeklyDeadlineMs() {
   const weekly = siteState.weeklyOrder;
   if (!weekly) return 0;
+  const extraMs = parseUtcTimestamp(weekly.extra_order_until || '');
+  if (Number.isFinite(extraMs) && extraMs > Date.now()) return extraMs;
   const raw = weekly.order_deadline_at || weekly.end_at || weekly.close_at || '';
   const ms = parseLaWallClock(raw);
   return Number.isFinite(ms) ? ms : 0;
@@ -3401,8 +3442,11 @@ startPayCountdownTicker();
 
 function isGroupBuyActive() {
   const weekly = siteState.weeklyOrder;
-  if (!weekly || !weekly.is_open || !siteState.products.length) return false;
+  if (!weekly || !siteState.products.length) return false;
   const nowMs = Date.now();
+  const extraMs = parseUtcTimestamp(weekly.extra_order_until || '');
+  if (Number.isFinite(extraMs) && extraMs > nowMs) return true;
+  if (!weekly.is_open) return false;
   if (weekly.start_at) {
     const startMs = parseLaWallClock(weekly.start_at);
     if (Number.isFinite(startMs) && startMs > nowMs) return false;
@@ -3462,7 +3506,11 @@ function updateShopEntryCountdown() {
   };
 
   const title = document.getElementById('shopEntryCountdownTitle');
-  if (title) title.textContent = labels.title;
+  const extraMs = parseUtcTimestamp(siteState.weeklyOrder && siteState.weeklyOrder.extra_order_until);
+  const isExtraWindow = Number.isFinite(extraMs) && extraMs > Date.now();
+  if (title) title.textContent = isExtraWindow
+    ? (lang === 'en' ? 'Extra ordering closes in' : '加单窗口结束还有')
+    : labels.title;
   Object.keys(values).forEach((key) => {
     const valueEl = widget.querySelector(`[data-cd-value="${key}"]`);
     if (valueEl) valueEl.textContent = String(values[key]).padStart(2, '0');
@@ -3541,6 +3589,13 @@ if (shopRoot) {
 }
 
 document.addEventListener('click', async (event) => {
+  const profileClose = event.target.closest('[data-profile-close]');
+  if (profileClose) {
+    siteState.profileEditMode = false;
+    siteState.profileView = 'main';
+    closeOverlay(profileOverlay, profileOverlayBody);
+    return;
+  }
   const profileAction = event.target.closest('[data-profile-action]');
   const reviewAction = event.target.closest('[data-review-action]');
   const adminAction = event.target.closest('[data-admin-action]');
