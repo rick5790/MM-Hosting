@@ -230,6 +230,8 @@
       logout: '退出登录',
       logoutConfirm: '确定要退出登录吗？退出后需要重新登录或填写昵称。',
       loggedInAs: '当前昵称',
+      userIdLabel: 'User ID',
+      identityToggleHint: '双击切换昵称与 User ID',
       orderNumberLabel: '订单号',
       pickupSelect: '选择自提',
       pickupChange: '更改自提地点',
@@ -357,6 +359,8 @@
       logout: 'Log out',
       logoutConfirm: 'Log out? You’ll need to sign in or enter a nickname again.',
       loggedInAs: 'Nickname',
+      userIdLabel: 'User ID',
+      identityToggleHint: 'Double-click to switch between nickname and User ID',
       orderNumberLabel: 'Order',
       pickupSelect: 'Choose Pickup',
       pickupChange: 'Change Pickup',
@@ -413,6 +417,7 @@
     loading: true,
     pendingSubmit: false,
     profileEditMode: false,
+    profileShowsUserId: false,
     profileView: 'main',
     cancelPromptId: null,
     cancelBusyId: null,
@@ -1126,6 +1131,8 @@
   function renderProfileLoggedIn() {
     const c = copy();
     const nickname = getSavedNickname();
+    const identityLabel = state.profileShowsUserId ? c.userIdLabel : c.loggedInAs;
+    const identityValue = state.profileShowsUserId ? getProfileUserId() : nickname;
 
     // 历史订单单独 view：从主界面点「查看历史订单」进入，可返回。
     if (state.profileView === 'history') {
@@ -1145,8 +1152,10 @@
       <div class="profile-stack">
         <div class="profile-head">
           <div>
-            <div class="profile-head-label">${escapeHtml(c.loggedInAs)}</div>
-            <div class="profile-head-name">${escapeHtml(nickname)}</div>
+            <div class="profile-head-identity" data-profile-identity title="${escapeHtml(c.identityToggleHint)}">
+              <div class="profile-head-label">${escapeHtml(identityLabel)}</div>
+              <div class="profile-head-name">${escapeHtml(identityValue)}</div>
+            </div>
           </div>
           <button class="shop-secondary-button shop-secondary-button--compact" type="button" data-profile-action="edit">${escapeHtml(c.editNickname)}</button>
         </div>
@@ -1573,6 +1582,12 @@
     return state.auth.user.profile?.nickname || state.auth.user.nickname || '';
   }
 
+  function getProfileUserId() {
+    const user = state.auth && state.auth.user;
+    if (!user) return '';
+    return String(user.uuid || user.userUuid || `M${String(user.id || '').padStart(6, '0')}`);
+  }
+
   function getDepositBalance() {
     const user = state.auth && state.auth.user;
     return Math.max(0, Number(user && (user.deposit_balance ?? user.depositBalance)) || 0);
@@ -1981,6 +1996,14 @@
         await toggleWeeklyOrderState().catch((error) => alert(error.message));
       }
     }
+  });
+
+  document.addEventListener('dblclick', (event) => {
+    const identity = event.target.closest('[data-profile-identity]');
+    if (!identity || !state.auth || !state.auth.user) return;
+    event.preventDefault();
+    state.profileShowsUserId = !state.profileShowsUserId;
+    renderProfileLoggedIn();
   });
 
   document.addEventListener('keydown', (event) => {

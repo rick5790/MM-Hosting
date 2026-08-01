@@ -1506,6 +1506,7 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .profile-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.2rem 0 .4rem;}
 .profile-head-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;}
 .profile-head-name{margin-top:.2rem;font-size:1.4rem;font-weight:800;color:#2d1f0f;}
+.profile-head-identity{cursor:pointer;user-select:none;-webkit-user-select:none;}
 .my-orders-group{margin-top:1.2rem;}
 .my-orders-group-title{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a7d65;margin-bottom:.6rem;}
 .my-order-card{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);margin-bottom:.65rem;}
