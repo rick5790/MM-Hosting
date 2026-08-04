@@ -467,6 +467,7 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .shop-chip{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:.55rem 1rem;border-radius:999px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.06);color:#7c6561;font-size:13px;font-weight:600;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease;}
 .shop-chip:hover{transform:translateY(-1px);}
 .shop-chip.is-active{background:#7c6561;color:#fffaf6;border-color:#7c6561;}
+.shop-chip.is-unavailable,.shop-chip:disabled{background:rgba(124,101,97,.04);color:#aaa09a;border-color:rgba(124,101,97,.1);cursor:not-allowed;opacity:.58;filter:grayscale(1);transform:none;}
 .shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:1.35rem;}
 .shop-card{display:flex;flex-direction:column;overflow:hidden;border-radius:26px;background:#fffaf6;border:1px solid rgba(124,101,97,.1);box-shadow:0 14px 34px rgba(45,31,15,.06);}
 .shop-card-image{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:#efe3d1;}
@@ -615,8 +616,11 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .portal-pickups{display:grid;gap:.75rem;margin-top:.8rem;}
 .portal-pickup{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);color:#2d1f0f;cursor:pointer;-webkit-appearance:none;appearance:none;}
 .portal-pickup.is-active{background:rgba(124,101,97,.09);border-color:#7c6561;}
+.portal-pickup.is-unavailable,.portal-pickup:disabled{background:rgba(124,101,97,.035);border-color:rgba(124,101,97,.1);color:#a89d96;cursor:not-allowed;opacity:.58;filter:grayscale(1);}
 .portal-pickup-title{font-weight:700;text-align:center;color:inherit;}
 .portal-pickup-meta{margin-top:.22rem;color:#8a7467;font-size:13px;line-height:1.65;text-align:center;}
+.portal-pickup.is-unavailable .portal-pickup-meta{color:#aaa09a;}
+.portal-pickup-unavailable{margin-top:.35rem;font-size:12px;font-weight:800;letter-spacing:.04em;text-align:center;color:#9b8f88;}
 .portal-summary{display:flex;flex-direction:column;gap:.65rem;margin-top:1rem;}
 .portal-summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
 .portal-summary-total{font-size:1rem;font-weight:800;color:#2d1f0f;}
@@ -2604,14 +2608,24 @@ async function pickupApiRequest(url, options = {}) {
 
 function normalizePickupLocation(location, index) {
   const label = location.name || location.label || (index === 0 ? 'Irvine Pickup' : 'LA Pickup');
+  const activeValue = location.is_active;
   return {
     id: location.id || location.key || label,
     label,
     time: location.time || location.pickup_time || location.window || '',
     zipcode: location.zipcode || location.area || '',
     address: location.address || '',
-    note: location.note || location.remark || ''
+    note: location.note || location.remark || '',
+    isAvailable: activeValue == null || activeValue === true || Number(activeValue) === 1
   };
+}
+
+function isPickupAvailable(pickup) {
+  return Boolean(pickup && pickup.isAvailable !== false);
+}
+
+function getPickupUnavailableLabel() {
+  return getUiLang() === 'en' ? 'Unavailable this week' : '本周不可选';
 }
 
 function toCloudUrl(value) {
@@ -2653,7 +2667,9 @@ function normalizeProduct(product) {
 }
 
 function getPickup() {
-  return siteState.pickups[siteState.pickupIndex] || siteState.pickups[0] || null;
+  const selected = siteState.pickups[siteState.pickupIndex];
+  if (isPickupAvailable(selected)) return selected;
+  return siteState.pickups.find(isPickupAvailable) || null;
 }
 
 function getSelectedItems() {
@@ -2763,8 +2779,8 @@ function renderShop() {
     <div class="shop-toolbar">
       <div class="shop-pickups">
         ${siteState.pickups.map((option, index) => `
-          <button class="shop-chip ${index === siteState.pickupIndex ? 'is-active' : ''}" type="button" data-shop-action="pickup" data-index="${index}">
-            ${escapeHtml(option.label)}
+          <button class="shop-chip ${index === siteState.pickupIndex && isPickupAvailable(option) ? 'is-active' : ''} ${isPickupAvailable(option) ? '' : 'is-unavailable'}" type="button" data-shop-action="pickup" data-index="${index}" ${isPickupAvailable(option) ? '' : 'disabled aria-disabled="true"'}>
+            ${escapeHtml(option.label)}${isPickupAvailable(option) ? '' : ` · ${escapeHtml(getPickupUnavailableLabel())}`}
           </button>
         `).join('')}
       </div>
@@ -3292,9 +3308,10 @@ function renderOrderReviewOverlay(resetDeposit = false) {
     <div class="portal-sub">${escapeHtml(copy.pickupInfo)}</div>
     <div class="portal-pickups">
       ${siteState.pickups.map((option, index) => `
-        <button class="portal-pickup ${index === siteState.pickupIndex ? 'is-active' : ''}" type="button" data-review-action="pickup" data-index="${index}">
+        <button class="portal-pickup ${index === siteState.pickupIndex && isPickupAvailable(option) ? 'is-active' : ''} ${isPickupAvailable(option) ? '' : 'is-unavailable'}" type="button" data-review-action="pickup" data-index="${index}" ${isPickupAvailable(option) ? '' : 'disabled aria-disabled="true"'}>
           <div class="portal-pickup-title">${escapeHtml(option.label)}</div>
           <div class="portal-pickup-meta">${escapeHtml(getPickupGuideText(option))}</div>
+          ${isPickupAvailable(option) ? '' : `<div class="portal-pickup-unavailable">${escapeHtml(getPickupUnavailableLabel())}</div>`}
         </button>
       `).join('')}
     </div>
@@ -3435,7 +3452,7 @@ async function loadShopData() {
     const [weeklyPayload, productsPayload, pickupPayload] = await Promise.all([
       siteApiRequest('/api/weekly-order'),
       siteApiRequest('/api/products'),
-      pickupApiRequest('/api/pickup-locations')
+      pickupApiRequest('/api/pickup-locations?include_inactive=1')
     ]);
     const weeklyOrder = weeklyPayload && weeklyPayload.weekly_order ? weeklyPayload.weekly_order : weeklyPayload;
     const products = productsPayload && Array.isArray(productsPayload.products) ? productsPayload.products : [];
@@ -3445,8 +3462,10 @@ async function loadShopData() {
     siteState.weeklyOrder = weeklyOrder || null;
     siteState.products = products.map(normalizeProduct);
     siteState.pickups = pickups.map(normalizePickupLocation);
-    if (!siteState.pickups.length) siteState.pickups = [{ id: 'pickup', label: 'Pickup', time: '', zipcode: '', address: '', note: '' }];
-    if (siteState.pickupIndex >= siteState.pickups.length) siteState.pickupIndex = 0;
+    const currentPickup = siteState.pickups[siteState.pickupIndex];
+    if (!isPickupAvailable(currentPickup)) {
+      siteState.pickupIndex = siteState.pickups.findIndex(isPickupAvailable);
+    }
   } catch (error) {
     siteState.error = error.message || copy.loadFailed;
   } finally {
@@ -3673,7 +3692,9 @@ if (shopRoot) {
     if (!trigger) return;
     const { shopAction, id, index } = trigger.dataset;
     if (shopAction === 'pickup') {
-      siteState.pickupIndex = Number(index) || 0;
+      const nextIndex = Number(index) || 0;
+      if (!isPickupAvailable(siteState.pickups[nextIndex])) return;
+      siteState.pickupIndex = nextIndex;
       renderShop();
       return;
     }
@@ -3752,7 +3773,9 @@ document.addEventListener('click', async (event) => {
     if (reviewAction.dataset.reviewAction === 'pickup') {
       const noteInput = document.getElementById('orderNoteInput');
       if (noteInput) siteState.note = noteInput.value;
-      siteState.pickupIndex = Number(reviewAction.dataset.index) || 0;
+      const nextIndex = Number(reviewAction.dataset.index) || 0;
+      if (!isPickupAvailable(siteState.pickups[nextIndex])) return;
+      siteState.pickupIndex = nextIndex;
       renderOrderReviewOverlay();
     }
     if (reviewAction.dataset.reviewAction === 'deposit') {
