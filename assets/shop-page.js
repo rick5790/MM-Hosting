@@ -630,14 +630,24 @@
 
   function normalizePickupLocation(location, index) {
     const label = location.name || location.label || (index === 0 ? 'Irvine' : 'Los Angeles');
+    const activeValue = location.is_active;
     return {
       id: location.id || location.key || label,
       label,
       time: location.time || location.pickup_time || location.window || '',
       zipcode: location.zipcode || location.area || '',
       address: location.address || '',
-      note: location.note || location.remark || ''
+      note: location.note || location.remark || '',
+      isAvailable: activeValue == null || activeValue === true || Number(activeValue) === 1
     };
+  }
+
+  function isPickupAvailable(pickup) {
+    return Boolean(pickup && pickup.isAvailable !== false);
+  }
+
+  function getPickupUnavailableLabel() {
+    return getLang() === 'en' ? 'Unavailable this week' : '本周不可选';
   }
 
   function normalizeProduct(product) {
@@ -805,7 +815,9 @@
   }
 
   function getPickup() {
-    return state.pickups[state.pickupIndex] || state.pickups[0] || null;
+    const selected = state.pickups[state.pickupIndex];
+    if (isPickupAvailable(selected)) return selected;
+    return state.pickups.find(isPickupAvailable) || null;
   }
 
   function getShopDeadlineText() {
@@ -1448,19 +1460,21 @@
 
   function renderPickupOverlay() {
     const c = copy();
+    const hasAvailablePickup = state.pickups.some(isPickupAvailable);
     pickupOverlayBody.innerHTML = `
       <div class="portal-title">${escapeHtml(c.pickupIntroTitle)}</div>
       ${c.pickupIntroSub ? `<div class="portal-sub">${escapeHtml(c.pickupIntroSub)}</div>` : ''}
       <div class="portal-pickups">
         ${state.pickups.map((option, index) => `
-          <button class="portal-pickup ${index === state.pickupIndex ? 'is-active' : ''}" type="button" data-pickup-action="select" data-index="${index}">
+          <button class="portal-pickup ${index === state.pickupIndex && isPickupAvailable(option) ? 'is-active' : ''} ${isPickupAvailable(option) ? '' : 'is-unavailable'}" type="button" data-pickup-action="select" data-index="${index}" ${isPickupAvailable(option) ? '' : 'disabled aria-disabled="true"'}>
             <div class="portal-pickup-title">${escapeHtml(getPickupLabel(option))}</div>
             <div class="portal-pickup-meta">${escapeHtml([getPickupTimeText(option), getPickupAddress(option)].filter(Boolean).join(" · "))}</div>
+            ${isPickupAvailable(option) ? '' : `<div class="portal-pickup-unavailable">${escapeHtml(getPickupUnavailableLabel())}</div>`}
           </button>
         `).join('')}
       </div>
       <div class="portal-actions" style="margin-top:1rem;">
-        <button class="shop-submit-button" type="button" data-pickup-action="confirm">${escapeHtml(c.pickupConfirm)}</button>
+        <button class="shop-submit-button" type="button" data-pickup-action="confirm" ${hasAvailablePickup ? '' : 'disabled'}>${escapeHtml(c.pickupConfirm)}</button>
       </div>
     `;
     openOverlay(pickupOverlay);
@@ -1767,7 +1781,7 @@
       const [weeklyPayload, productsPayload, pickupPayload] = await Promise.all([
         siteApiRequest('/api/weekly-order'),
         siteApiRequest('/api/products'),
-        pickupApiRequest('/api/pickup-locations')
+        pickupApiRequest('/api/pickup-locations?include_inactive=1')
       ]);
       const weeklyOrder = weeklyPayload && weeklyPayload.weekly_order ? weeklyPayload.weekly_order : weeklyPayload;
       const products = productsPayload && Array.isArray(productsPayload.products) ? productsPayload.products : [];
@@ -1777,10 +1791,10 @@
       state.weeklyOrder = weeklyOrder || null;
       state.products = products.map(normalizeProduct);
       state.pickups = pickups.map(normalizePickupLocation);
-      if (!state.pickups.length) {
-        state.pickups = [{ id: 'pickup', label: 'Pickup', time: '', zipcode: '', address: '', note: '' }];
+      const currentPickup = state.pickups[state.pickupIndex];
+      if (!isPickupAvailable(currentPickup)) {
+        state.pickupIndex = state.pickups.findIndex(isPickupAvailable);
       }
-      if (state.pickupIndex >= state.pickups.length) state.pickupIndex = 0;
     } catch (error) {
       state.error = error.message || copy().loadFailed;
     } finally {
@@ -1965,12 +1979,15 @@
     }
     if (pickupAction) {
       if (pickupAction.dataset.pickupAction === 'select') {
-        state.pickupIndex = Number(pickupAction.dataset.index) || 0;
+        const nextIndex = Number(pickupAction.dataset.index) || 0;
+        if (!isPickupAvailable(state.pickups[nextIndex])) return;
+        state.pickupIndex = nextIndex;
         renderPickupOverlay();
         renderShop();
         if (orderConfirmOverlay && !orderConfirmOverlay.hidden) renderOrderConfirmOverlay();
       }
       if (pickupAction.dataset.pickupAction === 'confirm') {
+        if (!getPickup()) return;
         state.pickupConfirmed = true;
         closeOverlay(pickupOverlay, pickupOverlayBody);
         renderShop();

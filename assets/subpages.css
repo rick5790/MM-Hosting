@@ -1429,8 +1429,11 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .portal-pickups{display:grid;gap:.75rem;margin-top:.8rem;}
 .portal-pickup{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);color:#2d1f0f;cursor:pointer;-webkit-appearance:none;appearance:none;}
 .portal-pickup.is-active{background:rgba(124,101,97,.09);border-color:#7c6561;}
+.portal-pickup.is-unavailable,.portal-pickup:disabled{background:rgba(124,101,97,.035);border-color:rgba(124,101,97,.1);color:#a89d96;cursor:not-allowed;opacity:.58;filter:grayscale(1);}
 .portal-pickup-title{font-weight:700;text-align:center;color:inherit;}
 .portal-pickup-meta{margin-top:.22rem;color:#8a7467;font-size:13px;line-height:1.65;text-align:center;}
+.portal-pickup.is-unavailable .portal-pickup-meta{color:#aaa09a;}
+.portal-pickup-unavailable{margin-top:.35rem;font-size:12px;font-weight:800;letter-spacing:.04em;text-align:center;color:#9b8f88;}
 .portal-summary{display:flex;flex-direction:column;gap:.65rem;margin-top:1rem;}
 .portal-summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
 .portal-summary-total{font-size:1rem;font-weight:800;color:#2d1f0f;}
