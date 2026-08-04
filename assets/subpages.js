@@ -283,22 +283,22 @@
 
   const instagramPosts = [
     {
-      href: 'https://www.instagram.com/p/DalwPhMj4os/',
-      image: 'assets/images/social/instagram-latest-20260709.jpg',
-      date: '2026.07.09',
-      title: { zh: '抹茶双重麻薯', en: 'Duo Mochi Matcha' }
+      href: 'https://www.instagram.com/p/Dbm9hBqB24Z/',
+      image: 'assets/images/social/instagram-latest-20260803.jpg',
+      date: '2026.08.03',
+      title: { zh: 'Makkie Mua!', en: 'Makkie Mua!' }
     },
     {
-      href: 'https://www.instagram.com/p/DadiTX8DyJr/',
-      image: 'assets/images/social/instagram-latest-20260707.jpg',
-      date: '2026.07.07',
-      title: { zh: '接骨木花奇异果糯糯拿破仑酥', en: 'Elderflower Kiwi Mochi Mille-Feuille' }
+      href: 'https://www.instagram.com/p/DbeAayYvuBC/',
+      image: 'assets/images/social/instagram-latest-20260731-rose.jpg',
+      date: '2026.07.31',
+      title: { zh: '玫瑰奶冻清酒草莓米布丁', en: 'Rose Panna Cotta Sake Strawberry Rice Pudding' }
     },
     {
-      href: 'https://www.instagram.com/p/DZ29qH1D6yj/',
-      image: 'assets/images/social/instagram-latest-20260621.jpg',
-      date: '2026.06.21',
-      title: { zh: '黑松露流心巴斯克', en: 'Black Truffle Lava Basque' }
+      href: 'https://www.instagram.com/p/DbeAYVlPAa-/',
+      image: 'assets/images/social/instagram-latest-20260731-matcha.jpg',
+      date: '2026.07.31',
+      title: { zh: '双重浓抹 Duo 麻薯', en: 'Double Matcha Duo Mochi' }
     },
     {
       href: 'https://www.instagram.com/p/DZGBNk7D6LV/',
@@ -1230,5 +1230,4 @@
       .catch(() => {});
   }
 })();
-
 
