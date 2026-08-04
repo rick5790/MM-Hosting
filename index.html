@@ -1716,14 +1716,6 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
       <a href="https://www.instagram.com/makkiemua/" class="btn-dark" target="_blank" rel="noreferrer">查看主页</a>
     </div>
     <div class="social-grid">
-      <a class="ig-card" href="https://www.instagram.com/p/Dbm9hBqB24Z/" target="_blank" rel="noreferrer">
-        <img src="assets/images/social/instagram-latest-20260803.jpg" alt="Instagram post from August 3, 2026 featuring Makkie Mua" loading="lazy">
-        <div class="ig-card-body">
-          <div class="ig-card-date">2026.08.03</div>
-          <div class="ig-card-title">Makkie Mua!</div>
-          <div class="ig-card-link">点开看完整帖子</div>
-        </div>
-      </a>
       <a class="ig-card" href="https://www.instagram.com/p/DbeAayYvuBC/" target="_blank" rel="noreferrer">
         <img src="assets/images/social/instagram-latest-20260731-rose.jpg" alt="Instagram dessert post from July 31, 2026 featuring 玫瑰奶冻清酒草莓米布丁" loading="lazy">
         <div class="ig-card-body">
@@ -1737,6 +1729,14 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
         <div class="ig-card-body">
           <div class="ig-card-date">2026.07.31</div>
           <div class="ig-card-title">双重浓抹 Duo 麻薯</div>
+          <div class="ig-card-link">点开看完整帖子</div>
+        </div>
+      </a>
+      <a class="ig-card" href="https://www.instagram.com/p/DalwPhMj4os/" target="_blank" rel="noreferrer">
+        <img src="assets/images/social/instagram-latest-20260709.jpg" alt="Instagram dessert post from July 9, 2026 featuring 抹茶双重麻薯" loading="lazy">
+        <div class="ig-card-body">
+          <div class="ig-card-date">2026.07.09</div>
+          <div class="ig-card-title">抹茶双重麻薯</div>
           <div class="ig-card-link">点开看完整帖子</div>
         </div>
       </a>
@@ -2257,7 +2257,7 @@ const orderPortalCopy = {
     cancelKeep: '暂不取消',
     cancelSuccess: '订单已取消，库存已释放。',
     cancelFailed: '取消失败，请稍后再试。',
-    statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '可自提', completed: '已完成', cancelled: '已取消' },
+    statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '可自提', completed: '已完成', activity: '活动单', cancelled: '已取消' },
     statusUpdatedPrefix: '订单状态已更新为「',
     statusUpdatedSuffix: '」',
     readHint: '👆 点击卡片任意位置表示已阅读，红点会消失',
@@ -2355,7 +2355,7 @@ const orderPortalCopy = {
     cancelKeep: 'Keep order',
     cancelSuccess: 'Order cancelled. The stock has been released.',
     cancelFailed: 'Failed to cancel. Please try again later.',
-    statusLabels: { pending: 'Pending', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', cancelled: 'Cancelled' },
+    statusLabels: { pending: 'Pending', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', activity: 'Promo order', cancelled: 'Cancelled' },
     statusUpdatedPrefix: 'Order status updated to "',
     statusUpdatedSuffix: '"',
     readHint: '👆 Tap the card anywhere to mark as read — the dot will clear',
@@ -3889,13 +3889,6 @@ checkLocalAuth().finally(async () => {
 
 const latestInstagramPosts = [
   {
-    href: 'https://www.instagram.com/p/Dbm9hBqB24Z/',
-    image: 'assets/images/social/instagram-latest-20260803.jpg',
-    alt: 'Instagram post from August 3, 2026 featuring Makkie Mua',
-    date: '2026.08.03',
-    title: 'Makkie Mua!'
-  },
-  {
     href: 'https://www.instagram.com/p/DbeAayYvuBC/',
     image: 'assets/images/social/instagram-latest-20260731-rose.jpg',
     alt: 'Instagram dessert post from July 31, 2026 featuring 玫瑰奶冻清酒草莓米布丁',
@@ -3908,6 +3901,13 @@ const latestInstagramPosts = [
     alt: 'Instagram dessert post from July 31, 2026 featuring 双重浓抹 Duo 麻薯',
     date: '2026.07.31',
     title: '双重浓抹 Duo 麻薯'
+  },
+  {
+    href: 'https://www.instagram.com/p/DalwPhMj4os/',
+    image: 'assets/images/social/instagram-latest-20260709.jpg',
+    alt: 'Instagram dessert post from July 9, 2026 featuring 抹茶双重麻薯',
+    date: '2026.07.09',
+    title: '抹茶双重麻薯'
   },
   {
     href: 'https://www.instagram.com/p/DZGBNk7D6LV/',
@@ -5178,13 +5178,6 @@ const bilingualCopy = {
 
 const bilingualInstagramPosts = [
   {
-    href: 'https://www.instagram.com/p/Dbm9hBqB24Z/',
-    image: 'assets/images/social/instagram-latest-20260803.jpg',
-    date: '2026.08.03',
-    title: { zh: 'Makkie Mua!', en: 'Makkie Mua!' },
-    alt: { zh: 'Instagram 2026 年 8 月 3 日品牌帖子：Makkie Mua', en: 'Instagram brand post from August 3, 2026 featuring Makkie Mua' }
-  },
-  {
     href: 'https://www.instagram.com/p/DbeAayYvuBC/',
     image: 'assets/images/social/instagram-latest-20260731-rose.jpg',
     date: '2026.07.31',
@@ -5197,6 +5190,13 @@ const bilingualInstagramPosts = [
     date: '2026.07.31',
     title: { zh: '双重浓抹 Duo 麻薯', en: 'Double Matcha Duo Mochi' },
     alt: { zh: 'Instagram 2026 年 7 月 31 日甜品帖子：双重浓抹 Duo 麻薯', en: 'Instagram dessert post from July 31, 2026 featuring Double Matcha Duo Mochi' }
+  },
+  {
+    href: 'https://www.instagram.com/p/DalwPhMj4os/',
+    image: 'assets/images/social/instagram-latest-20260709.jpg',
+    date: '2026.07.09',
+    title: { zh: '抹茶双重麻薯', en: 'Duo Mochi Matcha' },
+    alt: { zh: 'Instagram 2026 年 7 月 9 日甜品帖子：抹茶双重麻薯', en: 'Instagram dessert post from July 9, 2026 featuring Duo Mochi Matcha' }
   },
   {
     href: 'https://www.instagram.com/p/DZGBNk7D6LV/',

@@ -283,12 +283,6 @@
 
   const instagramPosts = [
     {
-      href: 'https://www.instagram.com/p/Dbm9hBqB24Z/',
-      image: 'assets/images/social/instagram-latest-20260803.jpg',
-      date: '2026.08.03',
-      title: { zh: 'Makkie Mua!', en: 'Makkie Mua!' }
-    },
-    {
       href: 'https://www.instagram.com/p/DbeAayYvuBC/',
       image: 'assets/images/social/instagram-latest-20260731-rose.jpg',
       date: '2026.07.31',
@@ -299,6 +293,12 @@
       image: 'assets/images/social/instagram-latest-20260731-matcha.jpg',
       date: '2026.07.31',
       title: { zh: '双重浓抹 Duo 麻薯', en: 'Double Matcha Duo Mochi' }
+    },
+    {
+      href: 'https://www.instagram.com/p/DalwPhMj4os/',
+      image: 'assets/images/social/instagram-latest-20260709.jpg',
+      date: '2026.07.09',
+      title: { zh: '抹茶双重麻薯', en: 'Duo Mochi Matcha' }
     },
     {
       href: 'https://www.instagram.com/p/DZGBNk7D6LV/',
@@ -1230,4 +1230,3 @@
       .catch(() => {});
   }
 })();
-
