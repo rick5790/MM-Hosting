@@ -570,9 +570,13 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .my-order-line{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;font-size:14px;color:#4f423b;}
 .my-order-line-name{min-width:0;}
 .my-order-line-price{flex:0 0 auto;font-weight:700;color:#2d1f0f;}
-.my-order-pickup{margin-top:.7rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
-.my-order-pickup-name{font-size:14px;font-weight:800;color:#3f342c;}
-.my-order-pickup-line{font-size:12px;color:#8a7467;line-height:1.5;margin-top:.1rem;}
+.my-order-pickup{margin-top:.85rem;padding:1rem;border:1px solid rgba(107,75,49,.14);border-radius:16px;background:#fffaf4;}
+.my-order-pickup-title{font-size:13px;font-weight:800;color:#9a6841;letter-spacing:.04em;margin-bottom:.45rem;}
+.my-order-pickup-name{font-size:17px;font-weight:850;color:#2f241c;}
+.my-order-pickup-line{font-size:15px;color:#6f594b;line-height:1.55;margin-top:.18rem;}
+.my-order-map-links{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.75rem;}
+.my-order-map-link{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:.4rem .7rem;border:1px solid rgba(107,75,49,.18);border-radius:999px;background:#fff;color:#62442f;font-size:12px;font-weight:750;text-decoration:none;}
+.my-order-map-link:hover{background:#f3e8dc;}
 .my-order-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.8rem;padding-top:.7rem;border-top:1px solid rgba(45,31,15,.07);}
 .my-order-pay{font-size:12px;color:#a5744a;}
 .my-order-pay.is-paid{color:#3f6248;}
@@ -2208,6 +2212,10 @@ const orderPortalCopy = {
     orderNote: '备注',
     orderNotePlaceholder: '有什么要求可以告诉我们哦～只有Makkie看得到',
     pickupInfo: '自提信息',
+    pickupAddressTime: '自提地址时间',
+    wechatMap: '微信地图',
+    appleMap: '苹果地图',
+    googleMap: '谷歌地图',
     submit: '提交订单',
     close: '关闭',
     subtotal: '合计',
@@ -2306,6 +2314,10 @@ const orderPortalCopy = {
     orderNote: 'Comment',
     orderNotePlaceholder: 'Anything we should know? Only Makkie can see this.',
     pickupInfo: 'Pickup Info',
+    pickupAddressTime: 'Pickup address & time',
+    wechatMap: 'WeChat Map',
+    appleMap: 'Apple Maps',
+    googleMap: 'Google Maps',
     submit: 'Submit Order',
     close: 'Close',
     subtotal: 'Total',
@@ -3005,6 +3017,17 @@ function localizePickupTime(value) {
   return text;
 }
 
+function getOrderPickupMapLinks(pickup) {
+  const query = [pickup && pickup.address, pickup && (pickup.name || pickup.label)].filter(Boolean).join(' ');
+  if (!query) return null;
+  const encoded = encodeURIComponent(query);
+  return {
+    wechat: `https://apis.map.qq.com/uri/v1/search?keyword=${encoded}&region=United%20States&referer=MakkieMua`,
+    apple: `https://maps.apple.com/?daddr=${encoded}`,
+    google: `https://www.google.com/maps/dir/?api=1&destination=${encoded}`
+  };
+}
+
 function renderOrderCard(order, allowCancel) {
   const c = getOrderCopy();
   const info = getOrderStatusInfo(order);
@@ -3070,11 +3093,18 @@ function renderOrderCard(order, allowCancel) {
       <span class="my-order-line-price">${escapeHtml(it.subtotalText || formatMoney(it.subtotal || 0))}</span>
     </div>`).join('');
 
+  const pickupMapLinks = getOrderPickupMapLinks(pickup);
   const pickupHtml = (pickup.name || pickup.time || pickup.address) ? `
     <div class="my-order-pickup">
+      <div class="my-order-pickup-title">${escapeHtml(c.pickupAddressTime)}</div>
       ${pickup.name ? `<div class="my-order-pickup-name">${escapeHtml(pickup.name)}</div>` : ''}
       ${pickup.time ? `<div class="my-order-pickup-line">${escapeHtml(localizePickupTime(pickup.time))}</div>` : ''}
       ${pickup.address ? `<div class="my-order-pickup-line">${escapeHtml(pickup.address)}</div>` : ''}
+      ${pickupMapLinks ? `<div class="my-order-map-links">
+        <a class="my-order-map-link" href="${escapeHtml(pickupMapLinks.wechat)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.wechatMap)}</a>
+        <a class="my-order-map-link" href="${escapeHtml(pickupMapLinks.apple)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.appleMap)}</a>
+        <a class="my-order-map-link" href="${escapeHtml(pickupMapLinks.google)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.googleMap)}</a>
+      </div>` : ''}
     </div>` : '';
 
   const depositHtml = depositApplied > 0 ? `

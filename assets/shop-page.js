@@ -198,6 +198,10 @@
       rules: '截单规则',
       rulesLine: '🍪 秉承不浪费食物的原则 截单后不接受临时取消订单',
       pickupInfo: '自提信息',
+      pickupAddressTime: '自提地址时间',
+      wechatMap: '微信地图',
+      appleMap: '苹果地图',
+      googleMap: '谷歌地图',
       pickupTime: '自提时间',
       subtotal: '合计',
       emptyCart: '请先选择数量',
@@ -327,6 +331,10 @@
       rules: 'Cancellation Policy',
       rulesLine: '🍪 To avoid food waste, temporary cancellations are not accepted after the deadline.',
       pickupInfo: 'Pickup Info',
+      pickupAddressTime: 'Pickup address & time',
+      wechatMap: 'WeChat Map',
+      appleMap: 'Apple Maps',
+      googleMap: 'Google Maps',
       pickupTime: 'Pickup Time',
       subtotal: 'Total',
       emptyCart: 'Select at least one item first',
@@ -800,6 +808,17 @@
     return `https://www.google.com/maps/search/?api=1&query=${query}`;
   }
 
+  function getOrderPickupMapLinks(pickup) {
+    const query = [pickup && pickup.address, pickup && (pickup.name || pickup.label)].filter(Boolean).join(' ');
+    if (!query) return null;
+    const encoded = encodeURIComponent(query);
+    return {
+      wechat: `https://apis.map.qq.com/uri/v1/search?keyword=${encoded}&region=United%20States&referer=MakkieMua`,
+      apple: `https://maps.apple.com/?daddr=${encoded}`,
+      google: `https://www.google.com/maps/dir/?api=1&destination=${encoded}`
+    };
+  }
+
   function getPickupTimeText(pickup) {
     if (!pickup) return '';
     const raw = cleanPickupText(localizePickupTime(localizePickupText(String(pickup.time || pickup.pickup_time || ''))));
@@ -1253,11 +1272,18 @@
         <span class="my-order-line-price">${escapeHtml(it.subtotalText || formatMoney(it.subtotal || 0))}</span>
       </div>`).join('');
 
+    const pickupMapLinks = getOrderPickupMapLinks(pickup);
     const pickupHtml = (pickup.name || pickup.time || pickup.address) ? `
       <div class="my-order-pickup">
+        <div class="my-order-pickup-title">${escapeHtml(c.pickupAddressTime)}</div>
         ${pickup.name ? `<div class="my-order-pickup-name">${escapeHtml(pickup.name)}</div>` : ''}
         ${pickup.time ? `<div class="my-order-pickup-line">${escapeHtml(localizePickupTime(pickup.time))}</div>` : ''}
         ${pickup.address ? `<div class="my-order-pickup-line">${escapeHtml(pickup.address)}</div>` : ''}
+        ${pickupMapLinks ? `<div class="my-order-map-links">
+          <a class="my-order-map-link" href="${escapeHtml(pickupMapLinks.wechat)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.wechatMap)}</a>
+          <a class="my-order-map-link" href="${escapeHtml(pickupMapLinks.apple)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.appleMap)}</a>
+          <a class="my-order-map-link" href="${escapeHtml(pickupMapLinks.google)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.googleMap)}</a>
+        </div>` : ''}
       </div>` : '';
 
     const depositHtml = depositApplied > 0 ? `
