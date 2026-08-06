@@ -1226,6 +1226,7 @@
   function renderOrderCard(order, allowCancel) {
     const c = copy();
     const info = getOrderStatusInfo(order);
+    const cancelled = info.status === 'cancelled';
     const paid = String(order.payment_status || order.paymentStatus || 'non_paid') === 'paid';
     const num = order.groupOrderNumberText || (order.orderNumber ? `${order.orderNumber}` : `${order.id}`);
     const dateText = formatOrderDate(order.created_at || order.createdAt);
@@ -1296,7 +1297,7 @@
     const totalNum = amountDue;
     // 已有订单：查看付款方式（含实时汇率），active 卡片始终提供，便于二次付款。
     const paymentBtn = allowCancel && totalNum > 0
-      ? `<button class="my-order-pay-btn" type="button" data-order-payment="${escapeHtml(String(totalNum))}">${escapeHtml(c.viewPayment)}</button>`
+      ? `<button class="my-order-pay-btn" type="button" data-order-payment="${escapeHtml(String(totalNum))}" ${cancelled ? 'disabled aria-disabled="true"' : ''}>${escapeHtml(c.viewPayment)}</button>`
       : '';
 
     const cancelHtml = !cancellable ? (paymentBtn ? `
@@ -1314,7 +1315,7 @@
       </div>`);
 
     return `
-      <div class="my-order-card my-order-card--rich ${unread ? 'is-unread' : ''}" data-order-read="${escapeHtml(order.id)}">
+      <div class="my-order-card my-order-card--rich ${cancelled ? 'is-cancelled' : ''} ${unread ? 'is-unread' : ''}" data-order-read="${escapeHtml(order.id)}">
         ${unread ? '<span class="my-order-dot" aria-hidden="true"></span>' : ''}
         <div class="my-order-top">
           <div class="my-order-date">
@@ -1949,6 +1950,8 @@
         updateNavUnreadDot(countUnreadOrders(state.myOrders));
       }
     }
+
+    if (orderPayment && (orderPayment.disabled || orderPayment.closest('.is-cancelled'))) return;
 
     if (profileClose) {
       state.profileEditMode = false;

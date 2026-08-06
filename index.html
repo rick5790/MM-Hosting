@@ -541,6 +541,7 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .my-orders-list{display:flex;flex-direction:column;gap:.8rem;}
 .my-order-card{padding:.9rem 1rem;border-radius:18px;border:1px solid rgba(124,101,97,.12);background:rgba(124,101,97,.04);}
 .my-order-card--rich{position:relative;padding:1rem 1.1rem;background:rgba(124,101,97,.05);}
+.my-order-card--rich.is-cancelled,.my-order-card--rich.is-cancelled.is-unread{background:rgba(124,101,97,.12);border-color:rgba(124,101,97,.2);box-shadow:none;filter:grayscale(1);opacity:.68;}
 .my-order-card--rich.is-unread{border-color:rgba(224,72,61,.4);box-shadow:0 0 0 1px rgba(224,72,61,.14);cursor:pointer;}
 .my-order-deposit{display:flex;flex-direction:column;gap:.35rem;margin-top:.75rem;padding:.7rem .8rem;border-radius:12px;background:rgba(92,56,32,.07);color:#7c6561;font-size:12px;}
 .my-order-deposit-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;}
@@ -597,9 +598,11 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .my-order-cancel-btn:hover{background:rgba(124,63,53,.08);}
 .my-order-cancel-confirm{margin-top:.8rem;padding:.8rem .9rem;border-radius:14px;background:rgba(154,71,55,.08);border:1px solid rgba(154,71,55,.2);}
 .my-order-cancel-warn{font-size:13px;line-height:1.5;color:#7c3f35;}
-.my-order-cancel-actions{margin-top:.7rem;display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap;}
+.my-order-cancel-actions{margin-top:.7rem;display:grid;grid-template-columns:minmax(0,1fr);gap:.6rem;}
+.my-order-cancel-actions .shop-secondary-button,.my-order-cancel-actions .my-order-cancel-yes{width:100%;min-height:48px;}
 .my-order-cancel-yes{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.55rem 1.1rem;border-radius:999px;border:none;background:#9a4737;color:#fffaf6;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;}
 .my-order-cancel-yes[disabled]{opacity:.6;cursor:default;}
+.my-order-card--rich.is-cancelled .my-order-pay-btn,.my-order-card--rich.is-cancelled .my-order-paybtn{cursor:not-allowed;pointer-events:none;}
 .empty.compact{padding:1rem;border-radius:16px;background:rgba(124,101,97,.05);color:#8a7467;font-size:14px;text-align:center;}
 .portal-title{font-size:clamp(1.5rem,4vw,2.2rem);line-height:1.05;font-weight:700;text-align:center;}
 .portal-sub{margin-top:.65rem;color:#8a7467;font-size:14px;line-height:1.7;text-align:center;}
@@ -3031,6 +3034,7 @@ function getOrderPickupMapLinks(pickup) {
 function renderOrderCard(order, allowCancel) {
   const c = getOrderCopy();
   const info = getOrderStatusInfo(order);
+  const cancelled = info.status === 'cancelled';
   const paid = String(order.payment_status || order.paymentStatus || 'non_paid') === 'paid';
   const num = order.groupOrderNumberText || (order.orderNumber ? `${order.orderNumber}` : `${order.id}`);
   const dateText = formatOrderDate(order.created_at || order.createdAt);
@@ -3070,12 +3074,12 @@ function renderOrderCard(order, allowCancel) {
 
   // 未付款的本周订单：付款方式默认收起，点按钮展开（与蛋糕订单卡同一套开关）。
   const payPanelId = `order-${order.id}`;
-  const payMethodsHtml = !paid && String(order.status || '') === 'pending' ? `
+  const payMethodsHtml = !paid && (String(order.status || '') === 'pending' || cancelled) ? `
     <div class="my-order-btnrow">
       <button class="my-order-paybtn" type="button" aria-expanded="false"
         data-pay-toggle="${escapeHtml(payPanelId)}"
         data-pay-label-open="${escapeHtml(c.viewPayment)}"
-        data-pay-label-close="${escapeHtml(c.hidePayment)}">${escapeHtml(c.viewPayment)}</button>
+        data-pay-label-close="${escapeHtml(c.hidePayment)}" ${cancelled ? 'disabled aria-disabled="true"' : ''}>${escapeHtml(c.viewPayment)}</button>
     </div>
     <div class="my-order-paypanel" data-pay-panel="${escapeHtml(payPanelId)}" hidden>${cakePayBlockHtml(amountDue, c.payMethodsHead)}</div>` : '';
 
@@ -3127,7 +3131,7 @@ function renderOrderCard(order, allowCancel) {
     </div>`);
 
   return `
-    <div class="my-order-card my-order-card--rich ${unread ? 'is-unread' : ''}" data-order-read="${escapeHtml(order.id)}">
+    <div class="my-order-card my-order-card--rich ${cancelled ? 'is-cancelled' : ''} ${unread ? 'is-unread' : ''}" data-order-read="${escapeHtml(order.id)}">
       ${unread ? '<span class="my-order-dot" aria-hidden="true"></span>' : ''}
       <div class="my-order-top">
         <div class="my-order-date">
@@ -4701,6 +4705,7 @@ document.addEventListener('click', (event) => {
   // 订单卡「查看付款方式」——展开/收起该卡的付款方式（默认隐藏）。甜品卡与蛋糕卡共用。
   const payToggleEl = event.target.closest('[data-pay-toggle]');
   if (payToggleEl) {
+    if (payToggleEl.disabled || payToggleEl.closest('.is-cancelled')) return;
     const id = payToggleEl.getAttribute('data-pay-toggle');
     const panel = document.querySelector(`[data-pay-panel="${CSS.escape(id)}"]`);
     if (panel) {
