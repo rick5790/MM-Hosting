@@ -24,3 +24,7 @@ node_modules/
 
 # Backend lives in its own repo (Makkie-Backend), not here.
 lightsail-backend/
+
+# Local Codex deployment/QA staging artifacts.
+.codex-stage-*/
+design-qa.md
