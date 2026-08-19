@@ -4300,6 +4300,9 @@ function cakeHolidaySet() {
   const y = Number(cakeLaToday().slice(0, 4));
   return new Set([...cakeFederalHolidays(y), ...cakeFederalHolidays(y + 1)]);
 }
+function cakeIsSaturday(str) {
+  return new Date(`${str}T00:00:00Z`).getUTCDay() === 6;
+}
 function cakeFormatDateCn(str) {
   if (!str) return '';
   const [y, m, d] = str.split('-');
@@ -4410,7 +4413,7 @@ function renderCakeDate() {
   for (let i = 0; i < firstDow; i += 1) cells += '<div class="cake-cal-cell is-empty"></div>';
   for (let d = 1; d <= daysInMonth; d += 1) {
     const ds = cakeYmd(y, m, d);
-    const disabled = ds < earliest || holidays.has(ds);
+    const disabled = ds < earliest || holidays.has(ds) || cakeIsSaturday(ds);
     const selected = ds === cakeFlow.selected;
     cells += `<button class="cake-cal-cell ${disabled ? 'is-disabled' : ''} ${selected ? 'is-selected' : ''}" type="button" ${disabled ? 'disabled' : `data-cake-date="${ds}"`}>${d}</button>`;
   }
@@ -4431,7 +4434,7 @@ function renderCakeDate() {
         ${dows.map((w) => `<div class="cake-cal-dow">${w}</div>`).join('')}
         ${cells}
       </div>
-      <div class="cake-cal-legend">灰色删除线 = 不可选（14 天内或美国节假日）</div>
+      <div class="cake-cal-legend">灰色删除线 = 不可选（14 天内、每周六或美国节假日）</div>
       <div class="cake-time-field">
         <label for="cakePreferredTime">期望自提时间（选填）</label>
         <input id="cakePreferredTime" class="cake-input" type="text" placeholder="例：下午 2-3 点" value="${escapeHtml(cakeFlow.preferredTime)}">
