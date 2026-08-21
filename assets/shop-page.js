@@ -69,6 +69,7 @@
   }
 
   let payCountdownTimer = null;
+  // 倒计时结束后订单继续保留，仅显示「超时未付款」。
   const PAY_WINDOW_HOURS = 60;
   function getPayDeadlineMs(order) {
     const createdAt = order && (order.created_at || order.createdAt);
@@ -246,7 +247,7 @@
       stock: '库存',
       soldOut: '售罄',
       limit: '限购',
-      statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '可自提', completed: '已完成', activity: '活动单', cancelled: '已取消' },
+      statusLabels: { pending: '待付款', timeout_unpaid: '超时未付款', paid: '已付款', making: '制作中', ready: '可自提', completed: '已完成', activity: '活动单', cancelled: '已取消' },
       statusUpdatedPrefix: '订单状态已更新为「',
       statusUpdatedSuffix: '」',
       readHint: '👆 点击卡片任意位置表示已阅读，红点会消失',
@@ -254,8 +255,8 @@
       paymentPaid: '已确认收款',
       paymentUnpaid: '待确认付款',
       payCountdownLabel: '剩余付款时间',
-      payCountdownOver: '付款已超时，请尽快微信联系店家确认',
-      payAutoCancel: '请在下单后 60 小时内完成付款，到期未付款订单会自动取消。',
+      payCountdownOver: '付款倒计时已结束，请及时付款',
+      payAutoCancel: '请在下单后 60 小时内完成付款；倒计时结束后订单仍会保留。',
       balanceReminderTitle: '账户有可用余额',
       balanceReminderText: '确认订单时可选择使用；余额不会自动抵扣。',
       balanceUseTitle: '使用账户余额',
@@ -379,7 +380,7 @@
       stock: 'Stock',
       soldOut: 'Sold out',
       limit: 'Limit',
-      statusLabels: { pending: 'Pending', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', activity: 'Promo order', cancelled: 'Cancelled' },
+      statusLabels: { pending: 'Pending', timeout_unpaid: 'Payment overdue', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', activity: 'Promo order', cancelled: 'Cancelled' },
       statusUpdatedPrefix: 'Order status updated to "',
       statusUpdatedSuffix: '"',
       readHint: '👆 Tap the card anywhere to mark as read — the dot will clear',
@@ -387,8 +388,8 @@
       paymentPaid: 'Payment confirmed',
       paymentUnpaid: 'Awaiting payment',
       payCountdownLabel: 'Time left to pay',
-      payCountdownOver: 'Payment time has expired. Please contact Makkie on WeChat.',
-      payAutoCancel: 'Please pay within 60 hours of placing your order. Unpaid orders are cancelled automatically.',
+      payCountdownOver: 'Payment countdown has ended. Please complete payment as soon as possible.',
+      payAutoCancel: 'Please pay within 60 hours. Your order remains active after the countdown ends.',
       balanceReminderTitle: 'Account balance available',
       balanceReminderText: 'Choose whether to use it at checkout. It is never applied automatically.',
       balanceUseTitle: 'Use account balance',
@@ -1247,7 +1248,7 @@
     const unread = isOrderUnread(order);
     const cancelReason = String(order.cancel_reason || order.cancelReason || '');
     const payDeadlineMs = getPayDeadlineMs(order);
-    const showPayTimer = allowCancel && String(order.status || '') === 'pending' && !paid && payDeadlineMs;
+    const showPayTimer = allowCancel && ['pending', 'timeout_unpaid'].includes(String(order.status || '')) && !paid && payDeadlineMs;
     const remain = payDeadlineMs - Date.now();
     const payTimerHtml = showPayTimer ? `
       <div class="my-order-paytimer ${remain <= 0 ? 'is-over' : ''}" data-pay-deadline="${payDeadlineMs}">

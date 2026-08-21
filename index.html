@@ -550,6 +550,7 @@ nav{display:flex;align-items:center;gap:1rem;padding:0 1rem;background:var(--dar
 .my-order-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
 .my-order-status{flex:0 0 auto;padding:.25rem .7rem;border-radius:999px;font-size:11px;font-weight:800;background:rgba(124,101,97,.14);color:#5f4c3d;}
 .my-order-status--pending{background:rgba(196,140,74,.16);color:#8a5a1f;}
+.my-order-status--timeout_unpaid{background:rgba(181,82,55,.14);color:#a44732;}
 .my-order-status--paid{background:rgba(72,110,152,.16);color:#2f5175;}
 .my-order-status--making{background:rgba(72,110,152,.16);color:#2f5175;}
 .my-order-status--ready{background:rgba(72,110,152,.16);color:#2f5175;}
@@ -2243,13 +2244,13 @@ const orderPortalCopy = {
     noOrders: '还没有订单',
     paymentPaid: '已确认收款',
     paymentUnpaid: '待确认付款',
-    payReminder: '请在下单后 60 小时内完成付款，逾期未付款的订单会自动取消。',
-    payAutoCancel: '请在下单后 60 小时内完成付款，到期未付款订单会自动取消。',
+    payReminder: '请在下单后 60 小时内完成付款；超时后订单仍会保留，请及时付款。',
+    payAutoCancel: '请在下单后 60 小时内完成付款；倒计时结束后订单仍会保留。',
     viewPayment: '查看付款方式',
     hidePayment: '收起付款方式',
     payMethodsHead: '付款方式（任选其一）',
     payCountdownLabel: '剩余付款时间',
-    payCountdownOver: '付款已超时，请尽快微信联系店家确认',
+    payCountdownOver: '付款倒计时已结束，请及时付款',
     balanceReminderTitle: '账户有可用余额',
     balanceReminderText: '确认订单时可选择使用；余额不会自动抵扣。',
     balanceUseTitle: '使用账户余额',
@@ -2267,7 +2268,7 @@ const orderPortalCopy = {
     cancelKeep: '暂不取消',
     cancelSuccess: '订单已取消，库存已释放。',
     cancelFailed: '取消失败，请稍后再试。',
-    statusLabels: { pending: '待付款', paid: '已付款', making: '制作中', ready: '可自提', completed: '已完成', activity: '活动单', cancelled: '已取消' },
+    statusLabels: { pending: '待付款', timeout_unpaid: '超时未付款', paid: '已付款', making: '制作中', ready: '可自提', completed: '已完成', activity: '活动单', cancelled: '已取消' },
     statusUpdatedPrefix: '订单状态已更新为「',
     statusUpdatedSuffix: '」',
     readHint: '👆 点击卡片任意位置表示已阅读，红点会消失',
@@ -2345,13 +2346,13 @@ const orderPortalCopy = {
     noOrders: 'No orders yet',
     paymentPaid: 'Payment confirmed',
     paymentUnpaid: 'Awaiting payment',
-    payReminder: 'Please pay within 60 hours of placing your order. Unpaid orders are cancelled automatically.',
-    payAutoCancel: 'Please pay within 60 hours of placing your order. Unpaid orders are cancelled automatically.',
+    payReminder: 'Please pay within 60 hours. Overdue orders remain active and should be paid as soon as possible.',
+    payAutoCancel: 'Please pay within 60 hours. Your order remains active after the countdown ends.',
     viewPayment: 'View payment methods',
     hidePayment: 'Hide payment methods',
     payMethodsHead: 'Payment methods (pick one)',
     payCountdownLabel: 'Time left to pay',
-    payCountdownOver: 'Payment window has passed — please contact us on WeChat.',
+    payCountdownOver: 'Payment countdown has ended. Please complete payment as soon as possible.',
     balanceReminderTitle: 'Account balance available',
     balanceReminderText: 'Choose whether to use it at checkout. It is never applied automatically.',
     balanceUseTitle: 'Use account balance',
@@ -2369,7 +2370,7 @@ const orderPortalCopy = {
     cancelKeep: 'Keep order',
     cancelSuccess: 'Order cancelled. The stock has been released.',
     cancelFailed: 'Failed to cancel. Please try again later.',
-    statusLabels: { pending: 'Pending', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', activity: 'Promo order', cancelled: 'Cancelled' },
+    statusLabels: { pending: 'Pending', timeout_unpaid: 'Payment overdue', paid: 'Paid', making: 'Making', ready: 'Ready', completed: 'Completed', activity: 'Promo order', cancelled: 'Cancelled' },
     statusUpdatedPrefix: 'Order status updated to "',
     statusUpdatedSuffix: '"',
     readHint: '👆 Tap the card anywhere to mark as read — the dot will clear',
@@ -3056,7 +3057,7 @@ function renderOrderCard(order, allowCancel) {
 
   // 每笔待付款订单从下单时起有 60 小时付款窗口。
   const payDeadlineMs = getPayDeadlineMs(order);
-  const showPayTimer = allowCancel && String(order.status || '') === 'pending' && !paid && payDeadlineMs;
+  const showPayTimer = allowCancel && ['pending', 'timeout_unpaid'].includes(String(order.status || '')) && !paid && payDeadlineMs;
   let payTimerHtml = '';
   if (showPayTimer) {
     const remain = payDeadlineMs - Date.now();
@@ -3073,7 +3074,7 @@ function renderOrderCard(order, allowCancel) {
 
   // 未付款的本周订单：付款方式默认收起，点按钮展开（与蛋糕订单卡同一套开关）。
   const payPanelId = `order-${order.id}`;
-  const payMethodsHtml = !paid && (String(order.status || '') === 'pending' || cancelled) ? `
+  const payMethodsHtml = !paid && (['pending', 'timeout_unpaid'].includes(String(order.status || '')) || cancelled) ? `
     <div class="my-order-btnrow">
       <button class="my-order-paybtn" type="button" aria-expanded="false"
         data-pay-toggle="${escapeHtml(payPanelId)}"
@@ -3561,7 +3562,7 @@ function getWeeklyDeadlineMs() {
   return Number.isFinite(ms) ? ms : 0;
 }
 
-// 付款截止 = 每笔订单的下单时间 + 60 小时；后端以相同规则自动取消逾期未付款订单。
+// 付款截止 = 每笔订单的下单时间 + 60 小时；倒计时结束后订单继续保留，由后端标记为超时未付款。
 const PAY_WINDOW_HOURS = 60;
 function getPayDeadlineMs(order) {
   const createdAt = order && (order.created_at || order.createdAt);
