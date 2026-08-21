@@ -1517,6 +1517,7 @@ body[data-page="shop"] .shop-pill.is-open{background:#edf8ef;border-color:rgba(8
 .my-order-num{font-size:13px;font-weight:700;color:#5f4c3d;}
 .my-order-status{flex:0 0 auto;padding:.25rem .7rem;border-radius:999px;font-size:11px;font-weight:800;background:rgba(124,101,97,.14);color:#5f4c3d;}
 .my-order-status--pending{background:rgba(196,140,74,.16);color:#8a5a1f;}
+.my-order-status--timeout_unpaid{background:rgba(181,82,55,.14);color:#a44732;}
 .my-order-status--paid{background:rgba(72,110,152,.16);color:#2f5175;}
 .my-order-status--making{background:rgba(72,110,152,.16);color:#2f5175;}
 .my-order-status--ready{background:rgba(72,110,152,.16);color:#2f5175;}
