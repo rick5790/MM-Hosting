@@ -10,7 +10,7 @@
 <link rel="canonical" href="https://www.makkiemua.com/contact.html">
 <link rel="icon" type="image/png" href="assets/images/brand/Makkie_Original_Logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/subpages.css?v=20260714">
+<link rel="stylesheet" href="assets/subpages.css?v=20260822-easteregg">
 </head>
 <body data-page="contact">
 <nav>
@@ -61,6 +61,22 @@
     <div class="contact-shell">
       <div class="contact-qr-grid" id="contactQrGrid"></div>
     </div>
+    <!-- Makkie 吉祥物浮动彩蛋：桌面 hover 移动区域、手机滚动进入区域时显示对话。
+         与「关于我们」用的是同一套样式和脚本（subpages.css / initMakkieEasterEgg）。 -->
+    <div class="makkie-mascot-zone" id="makkieMascotZone" aria-label="Makkie 彩蛋">
+      <div class="makkie-mascot" aria-hidden="true">
+        <div class="makkie-mascot__bubble">
+          <span class="makkie-mascot__bubble-zh">哎呀，被发现了</span>
+          <span class="makkie-mascot__bubble-en">Oops, you found me!</span>
+        </div>
+        <span class="makkie-mascot__spark makkie-mascot__spark--1"></span>
+        <span class="makkie-mascot__spark makkie-mascot__spark--2"></span>
+        <span class="makkie-mascot__spark makkie-mascot__spark--3"></span>
+        <div class="makkie-mascot__hop">
+          <img class="makkie-mascot__img" src="assets/images/brand/Makkie_Original_Logo.png" alt="" draggable="false">
+        </div>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -94,6 +110,6 @@
   <div class="ft-copy" id="footerCopy">© 2026 Makkie Mua. All Rights Reserved.</div>
 </footer>
 
-<script src="assets/subpages.js?v=20260714"></script>
+<script src="assets/subpages.js?v=20260822-easteregg"></script>
 </body>
 </html>

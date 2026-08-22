@@ -282,11 +282,18 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
   border-radius:0;
   overflow:visible;
 }
-.hero-logo--clean.is-active{display:block;animation:hero-logo-hop 3.4s ease-in-out infinite;}
-/* WebKit / 微信只能显示静态 logo，用一点轻微起伏保留「小人在动」的感觉。 */
+/* WebKit / 微信只能显示静态 logo，用「关于我们」彩蛋同款的蹦跳把小人动起来。 */
+.hero-logo--clean.is-active{
+  display:block;
+  transform-origin:50% 88%;
+  animation:hero-logo-hop 1.9s cubic-bezier(.77,0,.175,1) infinite;
+}
 @keyframes hero-logo-hop{
-  0%,100%{transform:translateY(0) rotate(-1.6deg);}
-  50%{transform:translateY(-6px) rotate(1.6deg);}
+  0%,100%{transform:translateY(0) scale(1,1);}
+  14%{transform:translateY(0) scale(1.07,.93);}      /* 起跳前压扁 */
+  40%{transform:translateY(-12px) scale(.96,1.04);}  /* 空中拉长 */
+  68%{transform:translateY(0) scale(1.06,.94);}      /* 落地压扁 */
+  84%{transform:translateY(-4px) scale(.99,1.01);}   /* 小回弹 */
 }
 @media (prefers-reduced-motion:reduce){
   .hero-logo--clean.is-active{animation:none;}
