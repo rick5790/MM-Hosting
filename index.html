@@ -282,7 +282,15 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
   border-radius:0;
   overflow:visible;
 }
-.hero-logo--clean.is-active{display:block;}
+.hero-logo--clean.is-active{display:block;animation:hero-logo-hop 3.4s ease-in-out infinite;}
+/* WebKit / 微信只能显示静态 logo，用一点轻微起伏保留「小人在动」的感觉。 */
+@keyframes hero-logo-hop{
+  0%,100%{transform:translateY(0) rotate(-1.6deg);}
+  50%{transform:translateY(-6px) rotate(1.6deg);}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero-logo--clean.is-active{animation:none;}
+}
 .hero-logo[hidden]{display:none!important;}
 .hero-wordmark{
   width:min(100%,400px);
@@ -1278,7 +1286,6 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .shop-entry{
     padding:1.25rem 1.2rem 1rem;
   }
-  .shop-silk-canvas{display:none;}
   .reveal,
   .reveal.reveal-left,
   .reveal.reveal-right,
@@ -1479,20 +1486,62 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     </video>
     <img class="hero-logo hero-logo--clean" src="assets/images/brand/Makkie_Original_Logo.png" alt="Makkie Mua">
     <script>
-      // 微信内置浏览器多数无法内联自动播放视频，直接换成静态 Makkie logo。
+      // 微信内置浏览器多数无法内联自动播放视频；iOS Safari 能播 WebM 却会丢掉 alpha 通道，
+      // 透明区域被填成不透明底色，直接盖住毛玻璃。这两种情况都退回透明的静态 Makkie logo。
       (function () {
         var video = document.querySelector('.hero-logo--motion');
         if (!video || video.tagName !== 'VIDEO') return;
-        var isWeChat = /MicroMessenger/i.test(navigator.userAgent || '');
-        if (isWeChat) {
-          var img = document.querySelector('.hero-logo--clean');
+        var img = document.querySelector('.hero-logo--clean');
+        var usedStatic = false;
+        var useStaticLogo = function () {
+          if (usedStatic) return;
+          usedStatic = true;
+          try { video.pause(); } catch (err) {}
           video.hidden = true;
           if (img) img.classList.add('is-active');
+        };
+
+        if (/MicroMessenger/i.test(navigator.userAgent || '')) {
+          useStaticLogo();
           return;
         }
+        // WebKit（桌面 Safari 与全部 iOS 浏览器）只认 HEVC+alpha 的 mp4，
+        // 播 WebM 时会把 alpha 丢掉；与其闪一下黄底再降级，不如一开始就用静态 logo。
+        var ua = navigator.userAgent || '';
+        var isIos = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        var isSafari = /Safari/.test(ua) && !/Chrome|Chromium|Edg|OPR|Android/.test(ua);
+        if (isIos || isSafari || !video.canPlayType || !video.canPlayType('video/webm')) {
+          useStaticLogo();
+          return;
+        }
+        video.addEventListener('error', useStaticLogo);
+
+        // 取一帧画进 canvas，看四角还透不透明；不透明说明浏览器把 alpha 丢了。
+        var probeAlpha = function () {
+          if (usedStatic || !video.videoWidth || !video.videoHeight) return;
+          try {
+            var probe = document.createElement('canvas');
+            probe.width = 16;
+            probe.height = 16;
+            var ctx = probe.getContext('2d');
+            if (!ctx) return;
+            ctx.clearRect(0, 0, 16, 16);
+            ctx.drawImage(video, 0, 0, 16, 16);
+            var data = ctx.getImageData(0, 0, 16, 16).data;
+            var corners = [0, 15, 240, 255];
+            var opaque = corners.every(function (index) { return data[index * 4 + 3] > 200; });
+            if (opaque) useStaticLogo();
+          } catch (err) {
+            // 读不到像素（罕见的安全限制）就保持动画，不做降级。
+          }
+        };
+        if (video.readyState >= 2) probeAlpha();
+        video.addEventListener('loadeddata', probeAlpha);
+        video.addEventListener('playing', probeAlpha, { once:true });
 
         // 普通 Safari/Chrome 保持动画；若系统首次拦截自动播放，在第一次交互时补一次播放。
         var resumeMascot = function () {
+          if (usedStatic) return;
           video.muted = true;
           video.defaultMuted = true;
           var promise = video.play();
@@ -4357,10 +4406,9 @@ syncMobileTabsVisibility();
 function initShopSilkBackground(canvas, shell) {
   if (!canvas || !shell || prefersReducedMotion) return;
 
-  // 手机 GPU 同时解码首屏视频和持续绘制两个 WebGL 卡片会造成滚动掉帧。
-  // 窄屏与触控设备使用卡片自身的静态渐变即可。
+  // 手机 GPU 要同时解码首屏视频和绘制两个 WebGL 卡片，容易掉帧：
+  // 窄屏与触控设备降一档渲染分辨率，并且只在卡片进入视口时才继续画。
   const lowPowerLayout = window.matchMedia('(max-width: 700px), (hover: none) and (pointer: coarse)');
-  if (lowPowerLayout.matches) return;
 
   const gl = canvas.getContext('webgl', { alpha: true, antialias: false });
   if (!gl) return;
@@ -4465,10 +4513,12 @@ function initShopSilkBackground(canvas, shell) {
   const color = [0xC4 / 255, 0x99 / 255, 0x6A / 255];
   let startTime = performance.now();
   let frameId = 0;
+  let pausedAt = 0;
+  let inView = true;
 
   function resize() {
     const rect = shell.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, lowPowerLayout.matches ? 1.25 : 2);
     const width = Math.max(1, Math.floor(rect.width * dpr));
     const height = Math.max(1, Math.floor(rect.height * dpr));
     if (canvas.width !== width || canvas.height !== height) {
@@ -4498,9 +4548,28 @@ function initShopSilkBackground(canvas, shell) {
   resizeObserver.observe(shell);
   frameId = window.requestAnimationFrame(render);
 
+  // 卡片滚出视口就停掉 rAF，回来时补上暂停的时长，图案不会跳。
+  const viewObserver = 'IntersectionObserver' in window
+    ? new IntersectionObserver((entries) => {
+        const nextInView = entries.some((entry) => entry.isIntersecting);
+        if (nextInView === inView) return;
+        inView = nextInView;
+        if (inView) {
+          startTime += performance.now() - pausedAt;
+          frameId = window.requestAnimationFrame(render);
+        } else {
+          pausedAt = performance.now();
+          window.cancelAnimationFrame(frameId);
+          frameId = 0;
+        }
+      }, { threshold: 0 })
+    : null;
+  if (viewObserver) viewObserver.observe(shell);
+
   window.addEventListener('pagehide', () => {
     window.cancelAnimationFrame(frameId);
     resizeObserver.disconnect();
+    if (viewObserver) viewObserver.disconnect();
   }, { once: true });
 }
 
