@@ -1193,6 +1193,44 @@
     targets.forEach((item) => observer.observe(item));
   }
 
+  function initMakkieEasterEgg() {
+    const zone = document.getElementById('makkieMascotZone');
+    if (!zone) return;
+
+    const touchLikePointer = window.matchMedia('(hover: none), (pointer: coarse)');
+    let discovered = false;
+
+    const revealBubble = () => {
+      if (discovered || !touchLikePointer.matches) return;
+      discovered = true;
+      zone.classList.add('is-discovered');
+      window.setTimeout(() => {
+        zone.classList.remove('is-discovered');
+      }, 3000);
+    };
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries, io) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || entry.intersectionRatio < .35) return;
+          revealBubble();
+          if (discovered) io.unobserve(entry.target);
+        });
+      }, { threshold:[.35], rootMargin:'0px 0px -8% 0px' });
+      observer.observe(zone);
+      return;
+    }
+
+    const checkFallbackVisibility = () => {
+      const rect = zone.getBoundingClientRect();
+      if (rect.top >= window.innerHeight * .85 || rect.bottom <= 0) return;
+      revealBubble();
+      if (discovered) window.removeEventListener('scroll', checkFallbackVisibility);
+    };
+    window.addEventListener('scroll', checkFallbackVisibility, { passive:true });
+    checkFallbackVisibility();
+  }
+
   window.MakkieSite = {
     applyLanguage,
     getLang: () => currentLang
@@ -1201,6 +1239,7 @@
   initEvents();
   applyLanguage(currentLang);
   initReveal();
+  initMakkieEasterEgg();
 
   // 与后台图鉴同步（仅图鉴页）：拉取 /api/collection，成功则覆盖硬编码并重渲染（失败保留兜底）。
   if (page === 'collection') {
