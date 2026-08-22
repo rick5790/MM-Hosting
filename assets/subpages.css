@@ -1031,7 +1031,8 @@ body[data-page="intro"] .page-hero{
   bottom:clamp(1.5rem,4vw,3.5rem);
   width:clamp(320px,34vw,430px);
   height:clamp(300px,34vw,410px);
-  z-index:5;
+  /* Keep mascot decoration behind interactive UI (mobile confirm bars, modals) */
+  z-index:0;
   overflow:visible;
   pointer-events:none;
 }
@@ -1046,7 +1047,8 @@ body[data-page="intro"] .page-hero{
   bottom: 0;
   width: var(--mascot-size);
   height: var(--mascot-size);
-  z-index: 1;
+  /* Mascot itself should sit above the page background but below overlays/nav */
+  z-index: 2;
   pointer-events: none;
   will-change: transform;
   animation: makkie-float var(--float-duration) cubic-bezier(.77,0,.175,1) infinite;
