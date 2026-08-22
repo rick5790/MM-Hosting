@@ -1,0 +1,6 @@
+#!/bin/sh
+# 提交前跑承重代码检查。想临时跳过：git commit --no-verify
+sh "$(git rev-parse --show-toplevel)/scripts/check-invariants.sh" || {
+  echo "提交已拦下。要么改回来，要么在 commit message 里写清为什么故意去掉，再用 --no-verify。"
+  exit 1
+}
