@@ -282,9 +282,12 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
   border-radius:0;
   overflow:visible;
 }
-/* WebKit / 微信只能显示静态 logo，用「关于我们」彩蛋同款的蹦跳把小人动起来。 */
+.hero-logo--clean.is-active{display:block;}
+/* 小人必须在蹦 —— 不管这台浏览器最后显示的是 webm 还是静态 PNG。
+   蹦跳做在元素上而不是依赖视频内容，所以 WebKit 解不出 alpha 也不影响「会动」这件事。
+   曲线跟「关于我们」的彩蛋同款：压扁 → 拉长 → 落地 → 小回弹。 */
+.hero-logo--motion,
 .hero-logo--clean.is-active{
-  display:block;
   transform-origin:50% 88%;
   animation:hero-logo-hop 1.9s cubic-bezier(.77,0,.175,1) infinite;
 }
@@ -295,8 +298,16 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
   68%{transform:translateY(0) scale(1.06,.94);}      /* 落地压扁 */
   84%{transform:translateY(-4px) scale(.99,1.01);}   /* 小回弹 */
 }
+/* 系统开了「减弱动态」时不完全静止：换成很轻的慢速起伏，既收敛又还看得出在动。 */
 @media (prefers-reduced-motion:reduce){
-  .hero-logo--clean.is-active{animation:none;}
+  .hero-logo--motion,
+  .hero-logo--clean.is-active{
+    animation:hero-logo-drift 6s ease-in-out infinite;
+  }
+}
+@keyframes hero-logo-drift{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-4px);}
 }
 .hero-logo[hidden]{display:none!important;}
 .hero-wordmark{
@@ -1551,6 +1562,13 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
           box.textContent = '小人走的是：' + diag.path + (diag.why ? '（' + diag.why + '）' : '')
             + '\nwebm 支持：' + (video.canPlayType ? (video.canPlayType('video/webm') || '不支持') : '未知')
             + '\nreadyState=' + video.readyState + ' 尺寸=' + video.videoWidth + 'x' + video.videoHeight
+            + '\n减弱动态：' + (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches ? '开' : '关')
+            + '  动画：' + (function () {
+                var shown = usedStatic ? img : video;
+                if (!shown || !window.getComputedStyle) return '未知';
+                var cs = getComputedStyle(shown);
+                return (cs.animationName || 'none') + '/' + (cs.animationPlayState || '?');
+              })()
             + '\n' + navigator.userAgent;
           if (!box.parentNode) document.body.appendChild(box);
         };
