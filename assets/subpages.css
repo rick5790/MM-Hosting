@@ -1019,12 +1019,22 @@ body[data-page="intro"] .page-hero{
 }
 
 /* =========================================================================
-   Makkie 吉祥物浮动动画（装饰层）— MakkieMascotFloat
-   可复用：把 .makkie-mascot 整段 HTML 放进任意 position:relative 的容器即可。
+   Makkie 吉祥物浮动彩蛋 — MakkieMascotFloat
+   可复用：把 .makkie-mascot-zone 整段 HTML 放进任意 position:relative 的容器即可。
    —— 调「速度」：--float-duration（整体绕行 10–14s）、--hop-duration（跳动 ~1.8s）
    —— 调「大小」：--mascot-size
    —— 调「路径/幅度」：--tx / --ty（水平/垂直行程倍率），或改 @keyframes makkie-float 的百分比坐标
    ========================================================================= */
+.makkie-mascot-zone{
+  position:absolute;
+  right:clamp(1.2rem,4vw,4rem);
+  bottom:clamp(1.5rem,4vw,3.5rem);
+  width:clamp(320px,34vw,430px);
+  height:clamp(300px,34vw,410px);
+  z-index:5;
+  overflow:visible;
+  pointer-events:none;
+}
 .makkie-mascot{
   --mascot-size: clamp(88px, 9vw, 120px); /* 桌面 88–120px */
   --float-duration: 12s;                  /* 整体绕行时长 10–14s */
@@ -1032,20 +1042,20 @@ body[data-page="intro"] .page-hero{
   --tx: 1;                                /* 水平行程倍率（移动端调小） */
   --ty: 1;                                /* 垂直行程倍率（移动端调小） */
   position: absolute;
-  right: 4%;                              /* 起点：右下角。改这里挪动整体起点 */
-  bottom: 7%;
+  right: 0;                               /* 起点：感应区右下角 */
+  bottom: 0;
   width: var(--mascot-size);
   height: var(--mascot-size);
-  z-index: 5;                             /* 高于背景，低于导航(120)与弹窗(340) */
-  pointer-events: none;                   /* 纯装饰，不挡任何点击 */
+  z-index: 1;
+  pointer-events: none;
   will-change: transform;
-  animation: makkie-float var(--float-duration) ease-in-out infinite;
+  animation: makkie-float var(--float-duration) cubic-bezier(.77,0,.175,1) infinite;
 }
 .makkie-mascot__hop{
   width: 100%;
   height: 100%;
   transform-origin: 50% 92%;              /* 以底部为支点，squash/stretch 更自然 */
-  animation: makkie-hop var(--hop-duration) ease-in-out infinite;
+  animation: makkie-hop var(--hop-duration) cubic-bezier(.77,0,.175,1) infinite;
 }
 .makkie-mascot__img{
   display: block;
@@ -1055,6 +1065,55 @@ body[data-page="intro"] .page-hero{
   filter: drop-shadow(0 10px 14px rgba(61, 38, 27, .16));
   user-select: none;
   -webkit-user-drag: none;
+}
+.makkie-mascot__bubble{
+  position:absolute;
+  left:50%;
+  bottom:94%;
+  min-width:max-content;
+  padding:.55rem .8rem;
+  border:1px solid rgba(196,153,106,.26);
+  border-radius:14px;
+  background:rgba(255,250,244,.96);
+  color:#5e4128;
+  box-shadow:0 12px 28px rgba(61,38,27,.13);
+  font-family:'Noto Serif SC','Inter',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  line-height:1.2;
+  letter-spacing:.02em;
+  opacity:0;
+  transform:translate(-50%,8px) scale(.96);
+  transform-origin:50% 100%;
+  transition:opacity .2s cubic-bezier(.23,1,.32,1),transform .2s cubic-bezier(.23,1,.32,1);
+  pointer-events:none;
+}
+.makkie-mascot__bubble::after{
+  content:'';
+  position:absolute;
+  left:50%;
+  top:100%;
+  width:10px;
+  height:10px;
+  border-right:1px solid rgba(196,153,106,.26);
+  border-bottom:1px solid rgba(196,153,106,.26);
+  background:rgba(255,250,244,.96);
+  transform:translate(-50%,-5px) rotate(45deg);
+}
+.makkie-mascot__bubble-en{display:none;}
+body[data-lang="en"] .makkie-mascot__bubble-zh{display:none;}
+body[data-lang="en"] .makkie-mascot__bubble-en{display:inline;}
+.makkie-mascot-zone.is-discovered .makkie-mascot__bubble{
+  opacity:1;
+  transform:translate(-50%,0) scale(1);
+}
+
+@media (hover:hover) and (pointer:fine){
+  .makkie-mascot-zone{pointer-events:auto;}
+  .makkie-mascot-zone:hover .makkie-mascot__bubble{
+    opacity:1;
+    transform:translate(-50%,0) scale(1);
+  }
 }
 
 /* 绕行路径：右下角 → 沿右侧上跳 → 飘向下方中间 → 回到起点。
@@ -1086,7 +1145,7 @@ body[data-page="intro"] .page-hero{
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 244, 225, .95), rgba(214, 178, 132, .35) 60%, transparent 70%);
   opacity: 0;
-  animation: makkie-spark 3.4s ease-in-out infinite;
+  animation: makkie-spark 3.4s cubic-bezier(.77,0,.175,1) infinite;
 }
 .makkie-mascot__spark--1{ top: 8%;  left: -6%;  animation-delay: 0s; }
 .makkie-mascot__spark--2{ top: 46%; right: -10%; width: 5px; height: 5px; animation-delay: 1.1s; }
@@ -1098,13 +1157,25 @@ body[data-page="intro"] .page-hero{
 
 /* 移动端：58–76px，缩小行程，避免遮挡标题/正文 */
 @media (max-width: 640px){
+  .makkie-mascot-zone{
+    right:.6rem;
+    bottom:1rem;
+    width:180px;
+    height:170px;
+  }
   .makkie-mascot{
     --mascot-size: clamp(58px, 16vw, 76px);
     --tx: .55;
     --ty: .5;
-    right: 3%;
-    bottom: 5%;
+    right:0;
+    bottom:0;
   }
+  /* 手机端触发彩蛋时先把小人固定在感应区内，避免它正好跑出当前视野。 */
+  .makkie-mascot-zone.is-discovered .makkie-mascot{
+    animation:none;
+    transform:translate(-42%,-24%) rotate(-2deg);
+  }
+  .makkie-mascot__bubble{left:30%;font-size:11px;padding:.5rem .7rem;}
 }
 
 /* 尊重「减少动态」：停止移动/跳动/闪烁，仅保留静态装饰图 */
@@ -1115,6 +1186,13 @@ body[data-page="intro"] .page-hero{
     animation: none !important;
   }
   .makkie-mascot__spark{ opacity: 0; }
+  .makkie-mascot__bubble{
+    transform:translate(-50%,0);
+    transition:opacity .2s ease;
+  }
+  .makkie-mascot-zone.is-discovered .makkie-mascot__bubble{
+    transform:translate(-50%,0);
+  }
 }
 
 .shop{padding:1.2rem 1.5rem 5rem;background:var(--bg);}
