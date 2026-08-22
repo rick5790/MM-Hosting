@@ -1537,24 +1537,44 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
         if (!video || video.tagName !== 'VIDEO') return;
         var img = document.querySelector('.hero-logo--clean');
         var usedStatic = false;
-        var useStaticLogo = function () {
+        // 真机诊断：index.html?mascotdebug=1 会在左下角贴一张小条，说明这台浏览器
+        // 到底走了哪条路（播 webm / 丢了 alpha / 放不了 webm / 微信），省得靠猜。
+        var debugOn = /(?:^|[?&])mascotdebug=1(?:&|$)/.test(location.search);
+        var diag = { path:'webm', why:'' };
+        var showDiag = function () {
+          if (!debugOn) return;
+          var box = document.getElementById('mascotDiag') || document.createElement('div');
+          box.id = 'mascotDiag';
+          box.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;max-width:92vw;'
+            + 'padding:8px 10px;border-radius:10px;background:rgba(28,18,10,.88);color:#ffeccd;'
+            + 'font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;pointer-events:none;';
+          box.textContent = '小人走的是：' + diag.path + (diag.why ? '（' + diag.why + '）' : '')
+            + '\nwebm 支持：' + (video.canPlayType ? (video.canPlayType('video/webm') || '不支持') : '未知')
+            + '\nreadyState=' + video.readyState + ' 尺寸=' + video.videoWidth + 'x' + video.videoHeight
+            + '\n' + navigator.userAgent;
+          if (!box.parentNode) document.body.appendChild(box);
+        };
+        var useStaticLogo = function (why) {
           if (usedStatic) return;
           usedStatic = true;
+          diag.path = '静态 PNG';
+          diag.why = why || '';
           try { video.pause(); } catch (err) {}
           video.hidden = true;
           if (img) img.classList.add('is-active');
+          showDiag();
         };
 
         if (/MicroMessenger/i.test(navigator.userAgent || '')) {
-          useStaticLogo();
+          useStaticLogo('微信内置浏览器');
           return;
         }
         // 除微信外一律先直接播这段 webm；只有浏览器压根点不动它才立刻换静态 logo。
         if (!video.canPlayType || !video.canPlayType('video/webm')) {
-          useStaticLogo();
+          useStaticLogo('这台浏览器放不了 webm');
           return;
         }
-        video.addEventListener('error', useStaticLogo);
+        video.addEventListener('error', function () { useStaticLogo('视频加载失败'); });
 
         // 兜底：取一帧画进 canvas，看四角还透不透明。不透明说明这台浏览器丢了 alpha
         // （WebKit 的老毛病，会糊出一块黄底盖住毛玻璃），这时才换回静态 logo。
@@ -1571,7 +1591,8 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
             var data = ctx.getImageData(0, 0, 16, 16).data;
             var corners = [0, 15, 240, 255];
             var opaque = corners.every(function (index) { return data[index * 4 + 3] > 200; });
-            if (opaque) useStaticLogo();
+            if (opaque) useStaticLogo('浏览器丢了 alpha，webm 会糊出黄底');
+            else showDiag();
           } catch (err) {
             // 读不到像素（罕见的安全限制）就保持动画，不做降级。
           }
@@ -1579,6 +1600,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
         if (video.readyState >= 2) probeAlpha();
         video.addEventListener('loadeddata', probeAlpha);
         video.addEventListener('playing', probeAlpha, { once:true });
+        if (debugOn) window.setTimeout(showDiag, 1500);
 
         // 普通 Safari/Chrome 保持动画；若系统首次拦截自动播放，在第一次交互时补一次播放。
         var resumeMascot = function () {
