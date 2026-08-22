@@ -1493,8 +1493,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     </video>
     <img class="hero-logo hero-logo--clean" src="assets/images/brand/Makkie_Original_Logo.png" alt="Makkie Mua">
     <script>
-      // 微信内置浏览器多数无法内联自动播放视频；iOS Safari 能播 WebM 却会丢掉 alpha 通道，
-      // 透明区域被填成不透明底色，直接盖住毛玻璃。这两种情况都退回透明的静态 Makkie logo。
+      // 非微信一律播这段挥手 webm（手机也一样）。两种情况退回透明的静态 Makkie logo：
+      // 微信内置浏览器多数无法内联自动播放；以及浏览器丢掉 WebM 的 alpha 通道
+      // （WebKit 老毛病，透明区被填成不透明黄底，会盖住毛玻璃）——后者靠下面的取帧探测。
       (function () {
         var video = document.querySelector('.hero-logo--motion');
         if (!video || video.tagName !== 'VIDEO') return;
@@ -1512,18 +1513,15 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
           useStaticLogo();
           return;
         }
-        // WebKit（桌面 Safari 与全部 iOS 浏览器）只认 HEVC+alpha 的 mp4，
-        // 播 WebM 时会把 alpha 丢掉；与其闪一下黄底再降级，不如一开始就用静态 logo。
-        var ua = navigator.userAgent || '';
-        var isIos = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        var isSafari = /Safari/.test(ua) && !/Chrome|Chromium|Edg|OPR|Android/.test(ua);
-        if (isIos || isSafari || !video.canPlayType || !video.canPlayType('video/webm')) {
+        // 除微信外一律先直接播这段 webm；只有浏览器压根点不动它才立刻换静态 logo。
+        if (!video.canPlayType || !video.canPlayType('video/webm')) {
           useStaticLogo();
           return;
         }
         video.addEventListener('error', useStaticLogo);
 
-        // 取一帧画进 canvas，看四角还透不透明；不透明说明浏览器把 alpha 丢了。
+        // 兜底：取一帧画进 canvas，看四角还透不透明。不透明说明这台浏览器丢了 alpha
+        // （WebKit 的老毛病，会糊出一块黄底盖住毛玻璃），这时才换回静态 logo。
         var probeAlpha = function () {
           if (usedStatic || !video.videoWidth || !video.videoHeight) return;
           try {
