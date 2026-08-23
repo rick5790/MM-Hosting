@@ -48,6 +48,12 @@ fi
 want index.html 'probeAlpha' \
   'WebM alpha 丢失的探测没了。WebKit 会把透明区填成黄底，直接盖住毛玻璃'
 
+want index.html 'Math.min(video.videoWidth, video.videoHeight)' \
+  'iPhone 透明修复又把 16:9 WebM 整帧压成了正方形，小人会变形且发糊'
+
+want index.html 'var renderSize = Math.max(320' \
+  'iPhone 透明修复又退回低清画布，高像素屏上的小人会发糊'
+
 want index.html 'useStaticLogo' \
   '微信 / 不支持 WebM 时没有静态 logo 退路，首屏小人直接开天窗'
 

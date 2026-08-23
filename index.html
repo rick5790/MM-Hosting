@@ -1568,7 +1568,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <video class="hero-logo hero-logo--motion" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="Makkie Mua waving logo">
       <source src="assets/video/makkie-waving-clean.webm?v=20260403-143509" type="video/webm">
     </video>
-    <canvas class="hero-logo hero-logo--decoded" width="128" height="128" aria-hidden="true"></canvas>
+    <canvas class="hero-logo hero-logo--decoded" width="320" height="320" aria-hidden="true"></canvas>
     <img class="hero-logo hero-logo--clean" src="assets/images/brand/Makkie_Original_Logo.png" alt="Makkie Mua">
     <script>
       // 非微信一律使用这段挥手 WebM（手机也一样）；只有微信内置浏览器使用静态图。
@@ -1592,7 +1592,8 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
             + 'font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;pointer-events:none;';
           box.textContent = '小人走的是：' + diag.path + (diag.why ? '（' + diag.why + '）' : '')
             + '\nwebm 支持：' + (video.canPlayType ? (video.canPlayType('video/webm') || '不支持') : '未知')
-            + '\nreadyState=' + video.readyState + ' 尺寸=' + video.videoWidth + 'x' + video.videoHeight
+            + '\nreadyState=' + video.readyState + ' 源=' + video.videoWidth + 'x' + video.videoHeight
+            + (alphaRepairStarted && decoded ? ' 画布=' + decoded.width + 'x' + decoded.height : '')
             + '\n减弱动态：' + (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches ? '开' : '关')
             + '  动画：' + (function () {
                 var shown = alphaRepairStarted ? decoded : (usedStatic ? img : video);
@@ -1638,11 +1639,20 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
           video.classList.add('is-canvas-source');
           decoded.classList.add('is-active');
 
-          var width = decoded.width;
-          var height = decoded.height;
+          // 承重 · 勿删：Safari 的 WebM 透明修复不能再使用固定 128px 画布。
+          // iPhone 会把这块内容绘制到 300–400 个物理像素，固定小画布会把小人放糊；
+          // 同时必须按源视频中央正方形裁切，不能把 1280×720 整帧压扁成正方形。
+          var displaySize = Math.max(104, decoded.getBoundingClientRect().width || 136);
+          var pixelRatio = Math.min(3, Math.max(2, window.devicePixelRatio || 1));
+          var renderSize = Math.max(320, Math.min(512, Math.round(displaySize * pixelRatio)));
+          decoded.width = renderSize;
+          decoded.height = renderSize;
+          var width = renderSize;
+          var height = renderSize;
           var total = width * height;
           var seen = new Uint8Array(total);
           var queue = new Int32Array(total);
+          var lastRenderedAt = 0;
           var scheduleNext = function (callback) {
             if (typeof video.requestVideoFrameCallback === 'function') {
               video.requestVideoFrameCallback(callback);
@@ -1650,21 +1660,47 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
               window.requestAnimationFrame(callback);
             }
           };
-          var renderDecodedFrame = function () {
+          var renderDecodedFrame = function (now) {
             if (!video.paused && video.readyState >= 2) {
+              // 透明修复需要读写整帧像素；限制在约 24fps，保证滚动时不抢主线程。
+              if (now && now - lastRenderedAt < 40) {
+                scheduleNext(renderDecodedFrame);
+                return;
+              }
+              lastRenderedAt = now || performance.now();
               ctx.clearRect(0, 0, width, height);
-              ctx.drawImage(video, 0, 0, width, height);
+              var sourceSide = Math.min(video.videoWidth, video.videoHeight);
+              var sourceX = Math.max(0, (video.videoWidth - sourceSide) / 2);
+              var sourceY = Math.max(0, (video.videoHeight - sourceSide) / 2);
+              ctx.drawImage(video, sourceX, sourceY, sourceSide, sourceSide, 0, 0, width, height);
               var frame = ctx.getImageData(0, 0, width, height);
               var pixels = frame.data;
-              var cornerPixels = [0, width - 1, (height - 1) * width, total - 1];
-              var bgR = 0, bgG = 0, bgB = 0;
-              cornerPixels.forEach(function (pixelIndex) {
+              // Safari 丢 alpha 后，透明区会被合成为带压缩噪点的浅黄色。
+              // 取整圈边缘的中位色比只取四角稳定，并仅从边缘做 flood fill，
+              // 所以小人身体里相近的黄颜色不会被误删。
+              var borderR = [], borderG = [], borderB = [];
+              var sampleBorder = function (pixelIndex) {
                 var offset = pixelIndex * 4;
-                bgR += pixels[offset];
-                bgG += pixels[offset + 1];
-                bgB += pixels[offset + 2];
-              });
-              bgR /= 4; bgG /= 4; bgB /= 4;
+                borderR.push(pixels[offset]);
+                borderG.push(pixels[offset + 1]);
+                borderB.push(pixels[offset + 2]);
+              };
+              var sampleStep = Math.max(2, Math.round(width / 96));
+              for (var sx = 0; sx < width; sx += sampleStep) {
+                sampleBorder(sx);
+                sampleBorder((height - 1) * width + sx);
+              }
+              for (var sy = sampleStep; sy < height - sampleStep; sy += sampleStep) {
+                sampleBorder(sy * width);
+                sampleBorder(sy * width + width - 1);
+              }
+              var median = function (values) {
+                values.sort(function (a, b) { return a - b; });
+                return values[Math.floor(values.length / 2)] || 0;
+              };
+              var bgR = median(borderR);
+              var bgG = median(borderG);
+              var bgB = median(borderB);
               seen.fill(0);
               var head = 0, tail = 0;
               var matchesBackground = function (pixelIndex) {
@@ -1672,7 +1708,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
                 var dr = pixels[offset] - bgR;
                 var dg = pixels[offset + 1] - bgG;
                 var db = pixels[offset + 2] - bgB;
-                return (dr * dr + dg * dg + db * db) < 1500;
+                return (dr * dr + dg * dg + db * db) < 8100;
               };
               var enqueue = function (pixelIndex) {
                 if (seen[pixelIndex] || !matchesBackground(pixelIndex)) return;
