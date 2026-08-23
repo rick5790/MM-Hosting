@@ -282,9 +282,25 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
   border-radius:0;
   overflow:visible;
 }
-/* WebKit / 微信只能显示静态 logo，用「关于我们」彩蛋同款的蹦跳把小人动起来。 */
-.hero-logo--clean.is-active{
-  display:block;
+.hero-logo--clean.is-active{display:block;}
+.hero-logo--decoded{
+  display:none;
+  object-fit:contain;
+}
+.hero-logo--decoded.is-active{display:block;}
+.hero-logo--motion.is-canvas-source{
+  position:absolute;
+  width:1px;
+  height:1px;
+  opacity:0;
+  pointer-events:none;
+}
+/* 小人必须在蹦 —— 不管这台浏览器最后显示的是 webm 还是静态 PNG。
+   蹦跳做在元素上而不是依赖视频内容，所以 WebKit 解不出 alpha 也不影响「会动」这件事。
+   曲线跟「关于我们」的彩蛋同款：压扁 → 拉长 → 落地 → 小回弹。 */
+.hero-logo--motion,
+.hero-logo--clean.is-active,
+.hero-logo--decoded.is-active{
   transform-origin:50% 88%;
   animation:hero-logo-hop 1.9s cubic-bezier(.77,0,.175,1) infinite;
 }
@@ -295,8 +311,17 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
   68%{transform:translateY(0) scale(1.06,.94);}      /* 落地压扁 */
   84%{transform:translateY(-4px) scale(.99,1.01);}   /* 小回弹 */
 }
+/* 系统开了「减弱动态」时不完全静止：换成很轻的慢速起伏，既收敛又还看得出在动。 */
 @media (prefers-reduced-motion:reduce){
-  .hero-logo--clean.is-active{animation:none;}
+  .hero-logo--motion,
+  .hero-logo--clean.is-active,
+  .hero-logo--decoded.is-active{
+    animation:hero-logo-drift 6s ease-in-out infinite;
+  }
+}
+@keyframes hero-logo-drift{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-4px);}
 }
 .hero-logo[hidden]{display:none!important;}
 .hero-wordmark{
@@ -491,7 +516,30 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
 .marquee{display:none;}
 .shop-entry{padding:4rem 2rem 1.2rem;background:var(--bg);}
 .shop-entry-duo{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;max-width:1080px;margin:0 auto;align-items:stretch;}
-.shop-shell{position:relative;display:grid;place-items:center;max-width:1080px;margin:0 auto;padding:2rem 2rem 2.15rem;border-radius:30px;background:linear-gradient(135deg,rgba(248,241,230,.96),rgba(239,225,206,.98));border:1px solid rgba(196,153,106,.2);box-shadow:0 22px 56px rgba(45,31,15,.08);text-align:center;overflow:hidden;isolation:isolate;min-width:0;-webkit-mask-image:-webkit-radial-gradient(white,black);mask-image:radial-gradient(white,black);}
+.shop-shell{
+  position:relative;
+  display:grid;
+  place-items:center;
+  max-width:1080px;
+  margin:0 auto;
+  padding:2rem 2rem 2.15rem;
+  border-radius:30px;
+  background:linear-gradient(135deg,rgba(248,241,230,.96),rgba(239,225,206,.98));
+  border:1px solid rgba(196,153,106,.2);
+  box-shadow:0 22px 56px rgba(45,31,15,.08);
+  text-align:center;
+  min-width:0;
+  overflow:hidden;
+  isolation:isolate;
+  /* 承重 · 勿删（history: f6da973 加，c00e047 误删，5b959d9 补回）
+     看着像 no-op（白→黑渐变 alpha 全是 1，视觉上什么都不做），实际是逼浏览器
+     用能吃圆角的绘制路径。删掉后 GPU 合成的 .shop-silk-canvas 不再被 overflow:hidden
+     的圆角裁切，两张下单卡在真机上就变成圆角里套一个硬边方块。
+     headless / 软件渲染复现不出来，只有真机 GPU 和 iOS 才看得见。 */
+  -webkit-mask-image:-webkit-radial-gradient(white,black);
+  mask-image:radial-gradient(white,black);
+}
+
 .shop-entry-duo .shop-shell{max-width:none;margin:0;height:100%;}
 .shop-shell--cake{background:linear-gradient(135deg,rgba(250,240,232,.97),rgba(243,225,215,.98));}
 .shop-shell--cake .sec-title{margin:.5rem 0 0;font-size:clamp(2.6rem,9vw,3.6rem);line-height:1;font-weight:800;letter-spacing:-.02em;color:#2d1f0f;}
@@ -519,7 +567,36 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
   .shop-closed-sub,.shop-shell--cake .sec-sub{font-size:13.5px;line-height:1.7;margin-top:.85rem;}
   .shop-entry-cta{min-height:50px;margin-top:1.1rem;font-size:14px;}
 }
-.shop-silk-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0;opacity:.64;mix-blend-mode:multiply;border-radius:inherit;}
+.shop-silk-canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+  pointer-events:none;
+  z-index:0;
+  opacity:.64;
+  mix-blend-mode:multiply;
+  /* 承重 · 勿删：和 .shop-shell 的 mask hack 一起构成圆角裁切的双保险。 */
+  border-radius:inherit;
+}
+
+.shop-shell::before{
+  content:'';
+  position:absolute;
+  inset:-18%;
+  z-index:0;
+  pointer-events:none;
+  border-radius:inherit;
+  background:
+    radial-gradient(ellipse at 18% 22%,rgba(255,255,255,.72) 0 13%,transparent 34%),
+    radial-gradient(ellipse at 82% 74%,rgba(196,153,106,.24) 0 12%,transparent 38%),
+    radial-gradient(ellipse at 34% 92%,rgba(225,193,154,.30) 0 11%,transparent 37%),
+    linear-gradient(122deg,transparent 18%,rgba(255,255,255,.38) 42%,rgba(196,153,106,.16) 61%,transparent 82%);
+  transform:rotate(-4deg) scale(1.08);
+  opacity:.82;
+}
+
 .shop-shell::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%, rgba(255,255,255,.72), transparent 46%),linear-gradient(180deg,rgba(255,250,244,.32),rgba(245,237,224,.22));pointer-events:none;z-index:0;}
 .shop-entry-head{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;gap:1.15rem;margin:0 auto 1rem;}
 .shop-entry-copy{position:relative;z-index:1;width:min(100%,720px);display:flex;flex-direction:column;align-items:center;margin:0 auto;}
@@ -1491,37 +1568,144 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     <video class="hero-logo hero-logo--motion" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="Makkie Mua waving logo">
       <source src="assets/video/makkie-waving-clean.webm?v=20260403-143509" type="video/webm">
     </video>
+    <canvas class="hero-logo hero-logo--decoded" width="128" height="128" aria-hidden="true"></canvas>
     <img class="hero-logo hero-logo--clean" src="assets/images/brand/Makkie_Original_Logo.png" alt="Makkie Mua">
     <script>
-      // 非微信一律播这段挥手 webm（手机也一样）。两种情况退回透明的静态 Makkie logo：
-      // 微信内置浏览器多数无法内联自动播放；以及浏览器丢掉 WebM 的 alpha 通道
-      // （WebKit 老毛病，透明区被填成不透明黄底，会盖住毛玻璃）——后者靠下面的取帧探测。
+      // 非微信一律使用这段挥手 WebM（手机也一样）；只有微信内置浏览器使用静态图。
+      // iPhone WebKit 若丢掉 WebM 的 alpha 通道，就从同一段 WebM 逐帧修复透明背景。
       (function () {
         var video = document.querySelector('.hero-logo--motion');
         if (!video || video.tagName !== 'VIDEO') return;
+        var decoded = document.querySelector('.hero-logo--decoded');
         var img = document.querySelector('.hero-logo--clean');
         var usedStatic = false;
-        var useStaticLogo = function () {
+        // 真机诊断：index.html?mascotdebug=1 会在左下角贴一张小条，说明这台浏览器
+        // 到底走了哪条路（WebM / WebM 透明修复 / 微信静态图），省得靠猜。
+        var debugOn = /(?:^|[?&])mascotdebug=1(?:&|$)/.test(location.search);
+        var diag = { path:'webm', why:'' };
+        var showDiag = function () {
+          if (!debugOn) return;
+          var box = document.getElementById('mascotDiag') || document.createElement('div');
+          box.id = 'mascotDiag';
+          box.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;max-width:92vw;'
+            + 'padding:8px 10px;border-radius:10px;background:rgba(28,18,10,.88);color:#ffeccd;'
+            + 'font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;pointer-events:none;';
+          box.textContent = '小人走的是：' + diag.path + (diag.why ? '（' + diag.why + '）' : '')
+            + '\nwebm 支持：' + (video.canPlayType ? (video.canPlayType('video/webm') || '不支持') : '未知')
+            + '\nreadyState=' + video.readyState + ' 尺寸=' + video.videoWidth + 'x' + video.videoHeight
+            + '\n减弱动态：' + (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches ? '开' : '关')
+            + '  动画：' + (function () {
+                var shown = alphaRepairStarted ? decoded : (usedStatic ? img : video);
+                if (!shown || !window.getComputedStyle) return '未知';
+                var cs = getComputedStyle(shown);
+                return (cs.animationName || 'none') + '/' + (cs.animationPlayState || '?');
+              })()
+            + '\n' + navigator.userAgent;
+          if (!box.parentNode) document.body.appendChild(box);
+        };
+        var useStaticLogo = function (why) {
           if (usedStatic) return;
           usedStatic = true;
+          diag.path = '静态 PNG';
+          diag.why = why || '';
           try { video.pause(); } catch (err) {}
           video.hidden = true;
           if (img) img.classList.add('is-active');
+          showDiag();
         };
 
         if (/MicroMessenger/i.test(navigator.userAgent || '')) {
-          useStaticLogo();
+          useStaticLogo('微信内置浏览器');
           return;
         }
-        // 除微信外一律先直接播这段 webm；只有浏览器压根点不动它才立刻换静态 logo。
-        if (!video.canPlayType || !video.canPlayType('video/webm')) {
-          useStaticLogo();
-          return;
-        }
-        video.addEventListener('error', useStaticLogo);
+        // 除微信外绝不替换成 PNG。部分 Safari 会误报 canPlayType，仍让真实 WebM 自己加载。
+        video.addEventListener('error', function () {
+          diag.why = 'WebM 加载报错（非微信不切 PNG）';
+          showDiag();
+        });
 
-        // 兜底：取一帧画进 canvas，看四角还透不透明。不透明说明这台浏览器丢了 alpha
-        // （WebKit 的老毛病，会糊出一块黄底盖住毛玻璃），这时才换回静态 logo。
+        // iPhone WebKit 偶尔能播放 WebM，却把透明通道合成为一块不透明黄底。
+        // 仍以同一段 WebM 为唯一动画源，只在这种情况下把每一帧画到小画布，
+        // 从四周向内清除与角落同色且连通的背景；不会换成静态图片。
+        var alphaRepairStarted = false;
+        var startAlphaRepair = function () {
+          if (alphaRepairStarted || !decoded) return;
+          var ctx = decoded.getContext('2d', { willReadFrequently:true });
+          if (!ctx) return;
+          alphaRepairStarted = true;
+          diag.path = 'WebM 动画（iPhone 透明修复）';
+          diag.why = '浏览器丢了 alpha，动画帧仍来自 WebM';
+          video.classList.add('is-canvas-source');
+          decoded.classList.add('is-active');
+
+          var width = decoded.width;
+          var height = decoded.height;
+          var total = width * height;
+          var seen = new Uint8Array(total);
+          var queue = new Int32Array(total);
+          var scheduleNext = function (callback) {
+            if (typeof video.requestVideoFrameCallback === 'function') {
+              video.requestVideoFrameCallback(callback);
+            } else {
+              window.requestAnimationFrame(callback);
+            }
+          };
+          var renderDecodedFrame = function () {
+            if (!video.paused && video.readyState >= 2) {
+              ctx.clearRect(0, 0, width, height);
+              ctx.drawImage(video, 0, 0, width, height);
+              var frame = ctx.getImageData(0, 0, width, height);
+              var pixels = frame.data;
+              var cornerPixels = [0, width - 1, (height - 1) * width, total - 1];
+              var bgR = 0, bgG = 0, bgB = 0;
+              cornerPixels.forEach(function (pixelIndex) {
+                var offset = pixelIndex * 4;
+                bgR += pixels[offset];
+                bgG += pixels[offset + 1];
+                bgB += pixels[offset + 2];
+              });
+              bgR /= 4; bgG /= 4; bgB /= 4;
+              seen.fill(0);
+              var head = 0, tail = 0;
+              var matchesBackground = function (pixelIndex) {
+                var offset = pixelIndex * 4;
+                var dr = pixels[offset] - bgR;
+                var dg = pixels[offset + 1] - bgG;
+                var db = pixels[offset + 2] - bgB;
+                return (dr * dr + dg * dg + db * db) < 1500;
+              };
+              var enqueue = function (pixelIndex) {
+                if (seen[pixelIndex] || !matchesBackground(pixelIndex)) return;
+                seen[pixelIndex] = 1;
+                queue[tail++] = pixelIndex;
+              };
+              for (var x = 0; x < width; x += 1) {
+                enqueue(x);
+                enqueue((height - 1) * width + x);
+              }
+              for (var y = 1; y < height - 1; y += 1) {
+                enqueue(y * width);
+                enqueue(y * width + width - 1);
+              }
+              while (head < tail) {
+                var pixelIndex = queue[head++];
+                pixels[pixelIndex * 4 + 3] = 0;
+                var px = pixelIndex % width;
+                if (px > 0) enqueue(pixelIndex - 1);
+                if (px + 1 < width) enqueue(pixelIndex + 1);
+                if (pixelIndex >= width) enqueue(pixelIndex - width);
+                if (pixelIndex + width < total) enqueue(pixelIndex + width);
+              }
+              ctx.putImageData(frame, 0, 0);
+            }
+            scheduleNext(renderDecodedFrame);
+          };
+          scheduleNext(renderDecodedFrame);
+          showDiag();
+        };
+
+        // 取一帧画进 canvas，看四角还透不透明 —— 不透明说明这台浏览器丢了 alpha
+        // （WebKit 老毛病，透明区被填成黄底）。检测到后仍使用 WebM，只启用透明帧修复。
         var probeAlpha = function () {
           if (usedStatic || !video.videoWidth || !video.videoHeight) return;
           try {
@@ -1535,7 +1719,10 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
             var data = ctx.getImageData(0, 0, 16, 16).data;
             var corners = [0, 15, 240, 255];
             var opaque = corners.every(function (index) { return data[index * 4 + 3] > 200; });
-            if (opaque) useStaticLogo();
+            if (opaque) {
+              startAlphaRepair();
+            }
+            showDiag();
           } catch (err) {
             // 读不到像素（罕见的安全限制）就保持动画，不做降级。
           }
@@ -1543,6 +1730,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
         if (video.readyState >= 2) probeAlpha();
         video.addEventListener('loadeddata', probeAlpha);
         video.addEventListener('playing', probeAlpha, { once:true });
+        if (debugOn) window.setTimeout(showDiag, 1500);
 
         // 普通 Safari/Chrome 保持动画；若系统首次拦截自动播放，在第一次交互时补一次播放。
         var resumeMascot = function () {
