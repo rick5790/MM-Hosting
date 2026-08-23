@@ -1594,8 +1594,10 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
         }
         video.addEventListener('error', function () { useStaticLogo('视频加载失败'); });
 
-        // 兜底：取一帧画进 canvas，看四角还透不透明。不透明说明这台浏览器丢了 alpha
-        // （WebKit 的老毛病，会糊出一块黄底盖住毛玻璃），这时才换回静态 logo。
+        // 取一帧画进 canvas，看四角还透不透明 —— 不透明说明这台浏览器丢了 alpha
+        // （WebKit 老毛病，透明区被填成黄底）。按 Rick 的要求，非微信一律保留 webm 动画，
+        // 所以这里只记录、不再降级；把 FALL_BACK_ON_ALPHA_LOSS 改回 true 就恢复旧行为。
+        var FALL_BACK_ON_ALPHA_LOSS = false;
         var probeAlpha = function () {
           if (usedStatic || !video.videoWidth || !video.videoHeight) return;
           try {
@@ -1609,8 +1611,11 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
             var data = ctx.getImageData(0, 0, 16, 16).data;
             var corners = [0, 15, 240, 255];
             var opaque = corners.every(function (index) { return data[index * 4 + 3] > 200; });
-            if (opaque) useStaticLogo('浏览器丢了 alpha，webm 会糊出黄底');
-            else showDiag();
+            if (opaque) {
+              diag.why = '这台浏览器丢了 alpha（透明区会是黄底），但按要求继续播 webm';
+              if (FALL_BACK_ON_ALPHA_LOSS) useStaticLogo('浏览器丢了 alpha');
+            }
+            showDiag();
           } catch (err) {
             // 读不到像素（罕见的安全限制）就保持动画，不做降级。
           }
