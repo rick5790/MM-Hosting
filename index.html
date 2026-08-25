@@ -11,6 +11,8 @@
 <meta name="apple-mobile-web-app-title" content="Makkie Mua">
 <link rel="canonical" href="https://www.makkiemua.com/">
 <link rel="icon" type="image/png" href="assets/images/brand/Makkie_Original_Logo.png">
+<link rel="preconnect" href="https://admin.makkiemua.com" crossorigin>
+<link rel="dns-prefetch" href="//admin.makkiemua.com">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Makkie Mua">
 <meta property="og:title" content="Makkie Mua | 手作创意甜品 | Los Angeles &amp; Orange County">
@@ -2532,6 +2534,8 @@ let collectionArchiveData = [
     }))
     .filter((item) => item.image)
 }));
+let activeHomeCollectionOverlayId = '';
+let collectionLastApiRefresh = 0;
 
 function escapeHtml(value) {
   return String(value)
@@ -2605,6 +2609,7 @@ function collapseCards(exceptCard) {
 
 function openMenuOverlay(targetId) {
   if (!menuOverlay || !menuOverlayBody) return;
+  activeHomeCollectionOverlayId = targetId;
   renderMenuOverlay(targetId, document.body.dataset.lang === 'en' ? 'en' : 'zh');
   if (typeof bilingualActiveMenuId !== 'undefined') bilingualActiveMenuId = targetId;
 
@@ -2614,6 +2619,7 @@ function openMenuOverlay(targetId) {
 
 function closeMenuOverlay() {
   if (!menuOverlay || !menuOverlayBody) return;
+  activeHomeCollectionOverlayId = '';
   if (typeof bilingualActiveMenuId !== 'undefined') bilingualActiveMenuId = null;
   menuOverlay.hidden = true;
   menuOverlayBody.innerHTML = '';
@@ -2634,11 +2640,21 @@ function closeQrOverlay() {
 
 renderMenuCards();
 
-// 与后台图鉴同步：加载后拉取 /api/collection，成功则覆盖硬编码并重渲染菜单卡片（失败保留兜底）。
+// 图鉴目录属于实时内容：唯一 URL + no-store 可绕过 Safari 的 HTTP 缓存；
+// 从 BFCache 恢复或重新切回页面时也主动同步（失败保留最近数据或硬编码兜底）。
 const COLLECTION_API_URL = 'https://admin.makkiemua.com/api/collection';
 async function loadCollectionFromApi() {
+  collectionLastApiRefresh = Date.now();
   try {
-    const res = await fetch(COLLECTION_API_URL, { credentials: 'omit' });
+    const activeGroupTitle = activeHomeCollectionOverlayId
+      ? (collectionArchiveData.find((group) => group.id === activeHomeCollectionOverlayId)?.title.zh || '')
+      : '';
+    const requestUrl = `${COLLECTION_API_URL}?fresh=${collectionLastApiRefresh}`;
+    const res = await fetch(requestUrl, {
+      credentials: 'omit',
+      cache: 'no-store',
+      headers: { Accept: 'application/json' }
+    });
     if (!res.ok) return;
     const payload = await res.json();
     const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
@@ -2655,14 +2671,30 @@ async function loadCollectionFromApi() {
     })).filter((g) => g.items.length);
     if (!mapped.length) return;
     collectionArchiveData = mapped;
+    if (activeGroupTitle) {
+      activeHomeCollectionOverlayId = mapped.find((group) => group.title.zh === activeGroupTitle)?.id || '';
+    }
     const lang = getUiLang();
     const icon = (bilingualCopy[lang] && bilingualCopy[lang].menu && bilingualCopy[lang].menu.cardIcon) || '查看图鉴';
     renderMenuCards(lang, icon);
+    if (menuOverlay && !menuOverlay.hidden && activeHomeCollectionOverlayId) {
+      renderMenuOverlay(activeHomeCollectionOverlayId, lang);
+    } else if (menuOverlay && !menuOverlay.hidden) {
+      closeMenuOverlay();
+    }
   } catch (error) {
     // 网络/CORS 失败：保留硬编码图鉴
   }
 }
 loadCollectionFromApi();
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted || Date.now() - collectionLastApiRefresh > 30000) loadCollectionFromApi();
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && Date.now() - collectionLastApiRefresh > 30000) {
+    loadCollectionFromApi();
+  }
+});
 
 if (menuGrid) {
   menuGrid.addEventListener('click', (event) => {

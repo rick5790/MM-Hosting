@@ -73,6 +73,18 @@ want assets/subpages.js 'loading="${index < visibleCount ? '\''eager'\'' : '\''l
 want assets/subpages.js '保留已经解码的图片 DOM' \
   '关闭图鉴又销毁图片节点，重复打开同一分类会重新请求和解码'
 
+want assets/subpages.js "cache: 'no-store'" \
+  '独立图鉴页又允许 Safari 缓存目录 JSON，后台新增的图鉴可能隔天仍不出现'
+
+want assets/subpages.js "window.addEventListener('pageshow'" \
+  '独立图鉴页从 Safari 返回缓存恢复时不再主动同步后台目录'
+
+want index.html "cache: 'no-store'" \
+  '首页图鉴又允许 Safari 缓存目录 JSON，后台新增的图鉴可能隔天仍不出现'
+
+want index.html "window.addEventListener('pageshow'" \
+  '首页从 Safari 返回缓存恢复时不再主动同步后台图鉴目录'
+
 # ---------- 吉祥物彩蛋 ----------
 want intro.html 'makkieMascotZone' '关于我们的浮动彩蛋没了'
 want contact.html 'makkieMascotZone' '联系我们的浮动彩蛋没了'

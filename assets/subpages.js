@@ -187,9 +187,12 @@
 
   const collectionImageVersion = '20260619';
   const collectionImageBase = 'https://api.makkiemua.com/uploads/collection';
+  const collectionApiUrl = 'https://admin.makkiemua.com/api/collection';
   const collectionImageWarmCache = new Map();
   let collectionOverlayRenderKey = '';
+  let activeCollectionOverlayId = '';
   let collectionWarmupTimer = null;
+  let collectionLastApiRefresh = 0;
   // 硬编码兜底；图鉴页加载后会用后台 /api/collection 覆盖，实现与后台同步。
   let collectionGroups = [
     {
@@ -732,6 +735,7 @@
     const group = collectionGroups.find((entry) => entry.id === targetId);
     if (!overlay || !bodyEl || !group) return;
     const visibleCount = getCollectionVisibleImageCount();
+    activeCollectionOverlayId = targetId;
     warmCollectionGroup(targetId, 'high');
     const renderKey = `${targetId}:${currentLang}`;
     if (collectionOverlayRenderKey !== renderKey) bodyEl.innerHTML = `
@@ -1303,31 +1307,66 @@
   initReveal();
   initMakkieEasterEgg();
 
-  // 与后台图鉴同步（仅图鉴页）：拉取 /api/collection，成功则覆盖硬编码并重渲染（失败保留兜底）。
+  // 图鉴目录属于实时内容：每次请求使用唯一 URL + no-store，避免 Safari 沿用昨天的 JSON。
+  // 从 BFCache 恢复或重新切回页面时也主动同步；失败仍保留最近一次成功数据或硬编码兜底。
+  async function refreshCollectionFromApi() {
+    if (page !== 'collection') return;
+    collectionLastApiRefresh = Date.now();
+    try {
+      const activeGroupTitle = activeCollectionOverlayId
+        ? (collectionGroups.find((group) => group.id === activeCollectionOverlayId)?.title.zh || '')
+        : '';
+      const requestUrl = `${collectionApiUrl}?fresh=${collectionLastApiRefresh}`;
+      const res = await fetch(requestUrl, {
+        credentials: 'omit',
+        cache: 'no-store',
+        headers: { Accept: 'application/json' }
+      });
+      if (!res.ok) return;
+      const payload = await res.json();
+      const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
+      // 后台只有中文分类名（collection_items 没有 category_en），直接拿它当英文会让
+      // 英文版图鉴的分类标题全是中文。这里按中文名回查硬编码兜底，取回英文标题与副标题；
+      // 后台新增的分类查不到时才退回中文。
+      const localized = new Map(collectionGroups.map((g) => [g.title.zh, g]));
+      const mapped = groups.map((g, i) => {
+        const fallback = localized.get(g.group || '');
+        return {
+          id: 'cat-' + i,
+          title: { zh: g.group || '', en: (fallback && fallback.title.en) || g.group || '' },
+          subtitle: fallback ? fallback.subtitle : { zh: '', en: '' },
+          items: (g.items || [])
+            .map((it) => ({ title: { zh: it.name || '', en: it.name_en || it.name || '' }, image: it.image_url || '' }))
+            .filter((it) => it.image)
+        };
+      }).filter((g) => g.items.length);
+      if (!mapped.length) return;
+      collectionGroups = mapped;
+      if (activeGroupTitle) {
+        activeCollectionOverlayId = mapped.find((group) => group.title.zh === activeGroupTitle)?.id || '';
+      }
+      collectionOverlayRenderKey = '';
+      renderCollectionPage();
+      const overlay = document.getElementById('menuOverlay');
+      if (overlay && !overlay.hidden && activeCollectionOverlayId) {
+        renderCollectionOverlay(activeCollectionOverlayId);
+      } else if (overlay && !overlay.hidden) {
+        closeCollectionOverlay();
+      }
+    } catch (error) {
+      // 网络/CORS 失败：保留最近一次成功数据或硬编码图鉴。
+    }
+  }
+
   if (page === 'collection') {
-    fetch('https://admin.makkiemua.com/api/collection', { credentials: 'omit' })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((payload) => {
-        const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
-        // 后台只有中文分类名（collection_items 没有 category_en），直接拿它当英文会让
-        // 英文版图鉴的分类标题全是中文。这里按中文名回查硬编码兜底，取回英文标题与副标题；
-        // 后台新增的分类查不到时才退回中文。
-        const localized = new Map(collectionGroups.map((g) => [g.title.zh, g]));
-        const mapped = groups.map((g, i) => {
-          const fallback = localized.get(g.group || '');
-          return {
-            id: 'cat-' + i,
-            title: { zh: g.group || '', en: (fallback && fallback.title.en) || g.group || '' },
-            subtitle: fallback ? fallback.subtitle : { zh: '', en: '' },
-            items: (g.items || [])
-              .map((it) => ({ title: { zh: it.name || '', en: it.name_en || it.name || '' }, image: it.image_url || '' }))
-              .filter((it) => it.image)
-          };
-        }).filter((g) => g.items.length);
-        if (!mapped.length) return;
-        collectionGroups = mapped;
-        renderCollectionPage();
-      })
-      .catch(() => {});
+    refreshCollectionFromApi();
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted || Date.now() - collectionLastApiRefresh > 30000) refreshCollectionFromApi();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && Date.now() - collectionLastApiRefresh > 30000) {
+        refreshCollectionFromApi();
+      }
+    });
   }
 })();
