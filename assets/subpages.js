@@ -187,6 +187,12 @@
 
   const collectionImageVersion = '20260619';
   const collectionImageBase = 'https://api.makkiemua.com/uploads/collection';
+  const collectionApiUrl = 'https://admin.makkiemua.com/api/collection';
+  const collectionImageWarmCache = new Map();
+  let collectionOverlayRenderKey = '';
+  let activeCollectionOverlayId = '';
+  let collectionWarmupTimer = null;
+  let collectionLastApiRefresh = 0;
   // 硬编码兜底；图鉴页加载后会用后台 /api/collection 覆盖，实现与后台同步。
   let collectionGroups = [
     {
@@ -673,6 +679,54 @@
         </div>
       </button>
     `).join('');
+    scheduleCollectionImageWarmup();
+  }
+
+  function getCollectionVisibleImageCount() {
+    if (window.matchMedia('(max-width: 640px)').matches) return 1;
+    if (window.matchMedia('(max-width: 980px)').matches) return 3;
+    return 4;
+  }
+
+  function warmCollectionImage(src, priority = 'low') {
+    const url = String(src || '').trim();
+    if (!url) return null;
+    const existing = collectionImageWarmCache.get(url);
+    if (existing) {
+      if (priority === 'high' && 'fetchPriority' in existing) existing.fetchPriority = 'high';
+      return existing;
+    }
+    const image = new Image();
+    image.decoding = 'async';
+    if ('fetchPriority' in image) image.fetchPriority = priority;
+    image.src = url;
+    collectionImageWarmCache.set(url, image);
+    return image;
+  }
+
+  function warmCollectionGroup(targetId, priority = 'low') {
+    const group = collectionGroups.find((entry) => entry.id === targetId);
+    if (!group) return;
+    const visibleCount = getCollectionVisibleImageCount();
+    group.items.slice(0, visibleCount).forEach((item) => warmCollectionImage(item.image, priority));
+  }
+
+  function scheduleCollectionImageWarmup() {
+    if (page !== 'collection' || collectionWarmupTimer) return;
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection && (connection.saveData || /(^|-)2g$/.test(String(connection.effectiveType || '')))) return;
+    const warmFirstImagePerGroup = () => {
+      collectionWarmupTimer = null;
+      collectionGroups.forEach((group) => {
+        const first = group.items && group.items[0];
+        if (first) warmCollectionImage(first.image, 'low');
+      });
+    };
+    if ('requestIdleCallback' in window) {
+      collectionWarmupTimer = window.requestIdleCallback(warmFirstImagePerGroup, { timeout: 1600 });
+    } else {
+      collectionWarmupTimer = window.setTimeout(warmFirstImagePerGroup, 500);
+    }
   }
 
   function renderCollectionOverlay(targetId) {
@@ -680,32 +734,36 @@
     const bodyEl = document.getElementById('menuOverlayBody');
     const group = collectionGroups.find((entry) => entry.id === targetId);
     if (!overlay || !bodyEl || !group) return;
-    bodyEl.innerHTML = `
+    const visibleCount = getCollectionVisibleImageCount();
+    activeCollectionOverlayId = targetId;
+    warmCollectionGroup(targetId, 'high');
+    const renderKey = `${targetId}:${currentLang}`;
+    if (collectionOverlayRenderKey !== renderKey) bodyEl.innerHTML = `
       <div class="menu-overlay-header">
         <div class="menu-card-title">${escapeHtml(t(group.title))}</div>
         <div class="menu-card-sub">${escapeHtml(t(group.subtitle))}</div>
       </div>
       <div class="menu-gallery">
-        ${group.items.map((item) => `
+        ${group.items.map((item, index) => `
           <article class="menu-dessert-card">
             <div class="menu-dessert-media">
-              <img class="menu-dessert-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(t(item.title))}" loading="lazy">
+              <img class="menu-dessert-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(t(item.title))}" loading="${index < visibleCount ? 'eager' : 'lazy'}" decoding="async" fetchpriority="${index < visibleCount ? 'high' : 'low'}">
             </div>
             <div class="menu-dessert-name">${escapeHtml(t(item.title))}</div>
           </article>
         `).join('')}
       </div>
     `;
+    collectionOverlayRenderKey = renderKey;
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
   }
 
   function closeCollectionOverlay() {
     const overlay = document.getElementById('menuOverlay');
-    const bodyEl = document.getElementById('menuOverlayBody');
     if (!overlay) return;
     overlay.hidden = true;
-    if (bodyEl) bodyEl.innerHTML = '';
+    // 保留已经解码的图片 DOM；重复打开同一分类时不重新请求和解码。
     document.body.style.overflow = '';
   }
 
@@ -987,6 +1045,14 @@
       });
     }
 
+    const warmCollectionFromEvent = (event, priority) => {
+      const target = event.target && event.target.closest && event.target.closest('[data-menu-target]');
+      if (target) warmCollectionGroup(target.dataset.menuTarget, priority);
+    };
+    document.addEventListener('pointerover', (event) => warmCollectionFromEvent(event, 'low'), { passive: true });
+    document.addEventListener('pointerdown', (event) => warmCollectionFromEvent(event, 'high'), { passive: true });
+    document.addEventListener('focusin', (event) => warmCollectionFromEvent(event, 'high'));
+
     document.addEventListener('click', (event) => {
       const closeTrigger = event.target.closest('[data-mobile-drawer-close]');
       const mobileLink = event.target.closest('[data-mobile-link]');
@@ -1241,31 +1307,66 @@
   initReveal();
   initMakkieEasterEgg();
 
-  // 与后台图鉴同步（仅图鉴页）：拉取 /api/collection，成功则覆盖硬编码并重渲染（失败保留兜底）。
+  // 图鉴目录属于实时内容：每次请求使用唯一 URL + no-store，避免 Safari 沿用昨天的 JSON。
+  // 从 BFCache 恢复或重新切回页面时也主动同步；失败仍保留最近一次成功数据或硬编码兜底。
+  async function refreshCollectionFromApi() {
+    if (page !== 'collection') return;
+    collectionLastApiRefresh = Date.now();
+    try {
+      const activeGroupTitle = activeCollectionOverlayId
+        ? (collectionGroups.find((group) => group.id === activeCollectionOverlayId)?.title.zh || '')
+        : '';
+      const requestUrl = `${collectionApiUrl}?fresh=${collectionLastApiRefresh}`;
+      const res = await fetch(requestUrl, {
+        credentials: 'omit',
+        cache: 'no-store',
+        headers: { Accept: 'application/json' }
+      });
+      if (!res.ok) return;
+      const payload = await res.json();
+      const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
+      // 后台只有中文分类名（collection_items 没有 category_en），直接拿它当英文会让
+      // 英文版图鉴的分类标题全是中文。这里按中文名回查硬编码兜底，取回英文标题与副标题；
+      // 后台新增的分类查不到时才退回中文。
+      const localized = new Map(collectionGroups.map((g) => [g.title.zh, g]));
+      const mapped = groups.map((g, i) => {
+        const fallback = localized.get(g.group || '');
+        return {
+          id: 'cat-' + i,
+          title: { zh: g.group || '', en: (fallback && fallback.title.en) || g.group || '' },
+          subtitle: fallback ? fallback.subtitle : { zh: '', en: '' },
+          items: (g.items || [])
+            .map((it) => ({ title: { zh: it.name || '', en: it.name_en || it.name || '' }, image: it.image_url || '' }))
+            .filter((it) => it.image)
+        };
+      }).filter((g) => g.items.length);
+      if (!mapped.length) return;
+      collectionGroups = mapped;
+      if (activeGroupTitle) {
+        activeCollectionOverlayId = mapped.find((group) => group.title.zh === activeGroupTitle)?.id || '';
+      }
+      collectionOverlayRenderKey = '';
+      renderCollectionPage();
+      const overlay = document.getElementById('menuOverlay');
+      if (overlay && !overlay.hidden && activeCollectionOverlayId) {
+        renderCollectionOverlay(activeCollectionOverlayId);
+      } else if (overlay && !overlay.hidden) {
+        closeCollectionOverlay();
+      }
+    } catch (error) {
+      // 网络/CORS 失败：保留最近一次成功数据或硬编码图鉴。
+    }
+  }
+
   if (page === 'collection') {
-    fetch('https://admin.makkiemua.com/api/collection', { credentials: 'omit' })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((payload) => {
-        const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
-        // 后台只有中文分类名（collection_items 没有 category_en），直接拿它当英文会让
-        // 英文版图鉴的分类标题全是中文。这里按中文名回查硬编码兜底，取回英文标题与副标题；
-        // 后台新增的分类查不到时才退回中文。
-        const localized = new Map(collectionGroups.map((g) => [g.title.zh, g]));
-        const mapped = groups.map((g, i) => {
-          const fallback = localized.get(g.group || '');
-          return {
-            id: 'cat-' + i,
-            title: { zh: g.group || '', en: (fallback && fallback.title.en) || g.group || '' },
-            subtitle: fallback ? fallback.subtitle : { zh: '', en: '' },
-            items: (g.items || [])
-              .map((it) => ({ title: { zh: it.name || '', en: it.name_en || it.name || '' }, image: it.image_url || '' }))
-              .filter((it) => it.image)
-          };
-        }).filter((g) => g.items.length);
-        if (!mapped.length) return;
-        collectionGroups = mapped;
-        renderCollectionPage();
-      })
-      .catch(() => {});
+    refreshCollectionFromApi();
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted || Date.now() - collectionLastApiRefresh > 30000) refreshCollectionFromApi();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && Date.now() - collectionLastApiRefresh > 30000) {
+        refreshCollectionFromApi();
+      }
+    });
   }
 })();

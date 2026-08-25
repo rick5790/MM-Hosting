@@ -60,6 +60,31 @@ want index.html 'useStaticLogo' \
 want index.html '@keyframes hero-logo-hop' \
   '降级用的静态 logo 不会动了'
 
+# ---------- 图鉴图片首开速度 ----------
+want collection.html '<link rel="preconnect" href="https://admin.makkiemua.com" crossorigin>' \
+  '进入图鉴时没有提前建立图片域名连接，首次打开分类会多等一轮 DNS/TLS'
+
+want assets/subpages.js "warmCollectionGroup(targetId, 'high')" \
+  '点击图鉴分类前没有提升首屏图片请求优先级，弹窗会先出现空白图片格'
+
+want assets/subpages.js 'loading="${index < visibleCount ? '\''eager'\'' : '\''lazy'\''}"' \
+  '图鉴弹窗首屏图片又全部退回 lazy，只有打开后浏览器才开始慢慢排队'
+
+want assets/subpages.js '保留已经解码的图片 DOM' \
+  '关闭图鉴又销毁图片节点，重复打开同一分类会重新请求和解码'
+
+want assets/subpages.js "cache: 'no-store'" \
+  '独立图鉴页又允许 Safari 缓存目录 JSON，后台新增的图鉴可能隔天仍不出现'
+
+want assets/subpages.js "window.addEventListener('pageshow'" \
+  '独立图鉴页从 Safari 返回缓存恢复时不再主动同步后台目录'
+
+want index.html "cache: 'no-store'" \
+  '首页图鉴又允许 Safari 缓存目录 JSON，后台新增的图鉴可能隔天仍不出现'
+
+want index.html "window.addEventListener('pageshow'" \
+  '首页从 Safari 返回缓存恢复时不再主动同步后台图鉴目录'
+
 # ---------- 吉祥物彩蛋 ----------
 want intro.html 'makkieMascotZone' '关于我们的浮动彩蛋没了'
 want contact.html 'makkieMascotZone' '联系我们的浮动彩蛋没了'
