@@ -653,9 +653,10 @@ nav{
 .card-foot{font-size:13px;color:#6e5848;line-height:1.7;}
 
 .layers-showcase{padding:1.5rem 1.5rem 5rem;background:var(--bg);}
+.layers-showcase.reveal{filter:none;}
 .layers-showcase-grid{
   display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:2px;
   max-width:1080px;
   margin:0 auto;
@@ -664,11 +665,23 @@ nav{
   overflow:hidden;
 }
 .layers-showcase-card{
-  background:rgba(255,249,243,.96);
-  padding:2.7rem 1.6rem 0;
+  background:#f8f6f0;
+  padding:2.4rem 1.4rem 1.4rem;
+  min-width:0;
+  content-visibility:auto;
+  contain-intrinsic-size:auto 640px;
   text-align:center;
   position:relative;
-  overflow:visible;
+  overflow:hidden;
+  cursor:pointer;
+}
+.layers-showcase-card:last-child:nth-child(odd){
+  grid-column:1 / -1;
+}
+.layers-showcase-card:focus-visible{
+  z-index:1;
+  outline:2px solid var(--accent);
+  outline-offset:-4px;
 }
 .layers-showcase-eye{
   font-size:10px;
@@ -687,72 +700,39 @@ nav{
 .layers-showcase-sub{
   font-size:11px;
   color:var(--muted);
-  margin-bottom:1.7rem;
+  margin-bottom:1rem;
   letter-spacing:.05em;
 }
 .layers-showcase-scene{
-  perspective:700px;
-  width:min(100%,320px);
-  height:200px;
+  position:relative;
+  width:min(100%,520px);
+  aspect-ratio:640 / 590;
   margin:0 auto;
-  overflow:visible;
+  background:#f8f6f0;
 }
-.layers-showcase-stack-shell{
-  position:relative;
-  width:clamp(204px, calc(100% - 96px), 220px);
-  height:200px;
-  margin-right:auto;
-  overflow:visible;
-}
-.layers-showcase-stack{
-  position:relative;
+.layers-showcase-model{
+  position:absolute;
+  inset:0;
+  display:block;
   width:100%;
   height:100%;
-  transform-style:preserve-3d;
-  transition:transform .65s cubic-bezier(.34,1.3,.64,1);
+  object-fit:contain;
+  transition:opacity .24s ease;
 }
-.layers-showcase-card.is-active .layers-showcase-stack{
-  transform:rotateX(14deg) rotateY(-10deg);
-}
-.layers-showcase-part{
-  position:absolute;
-  left:50%;
-  transform-style:preserve-3d;
-  transition:transform .6s cubic-bezier(.34,1.45,.64,1);
-}
-.layers-showcase-tag{
-  position:absolute;
-  font-size:9.5px;
-  color:#8A6848;
-  letter-spacing:.05em;
-  white-space:nowrap;
-  background:rgba(245,237,224,.96);
-  padding:2px 9px;
-  border-radius:20px;
-  border:1px solid rgba(196,153,106,.22);
-  box-shadow:0 8px 18px rgba(45,31,15,.06);
-  opacity:0;
-  transition:opacity .28s .2s, transform .32s .14s;
-  pointer-events:none;
-  transform:translateX(-4px);
-}
-.layers-showcase-card.is-active .layers-showcase-tag{
-  opacity:1;
-  transform:translateX(0);
-}
-.layers-showcase-foot{
-  opacity:0;
-  transform:translateY(6px);
-  transition:opacity .3s .1s, transform .3s .1s;
-  padding:1.2rem 0 2.2rem;
-  font-size:11.5px;
+.layers-showcase-model-expanded{opacity:0;}
+.layers-showcase-card.is-active.is-expanded-ready .layers-showcase-model-stacked{opacity:0;}
+.layers-showcase-card.is-active.is-expanded-ready .layers-showcase-model-expanded{opacity:1;}
+.layers-showcase-hint{
+  min-height:1.2rem;
+  margin-top:.45rem;
+  font-size:10px;
   color:var(--muted);
-  line-height:1.7;
+  letter-spacing:.08em;
+  text-transform:uppercase;
 }
-.layers-showcase-card.is-active .layers-showcase-foot{
-  opacity:1;
-  transform:translateY(0);
-}
+.layers-showcase-hint-close{display:none;}
+.layers-showcase-card.is-active .layers-showcase-hint-open{display:none;}
+.layers-showcase-card.is-active .layers-showcase-hint-close{display:inline;}
 
 .social-feed{padding:1.5rem 1.5rem 5.5rem;background:var(--bg);}
 .social-shell{
@@ -1182,6 +1162,7 @@ body[data-lang="en"] .makkie-mascot__bubble-en{display:inline;}
 
 /* 尊重「减少动态」：停止移动/跳动/闪烁，仅保留静态装饰图 */
 @media (prefers-reduced-motion: reduce){
+  .layers-showcase-model{transition:none;}
   .makkie-mascot,
   .makkie-mascot__hop,
   .makkie-mascot__spark{
@@ -2083,8 +2064,8 @@ body[data-lang="en"] .ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::
   .menu-card{justify-content:center;text-align:center;}
   .menu-card-heading{align-items:center;text-align:center;}
   .menu-card-icon{display:none;}
-  .layers-showcase-grid{grid-template-columns:1fr;}
-  .layers-showcase-card{padding:2.2rem 1.2rem 0;}
+  .layers-showcase-grid{grid-template-columns:minmax(0,1fr);}
+  .layers-showcase-card{padding:2.2rem 1.2rem 1.2rem;}
   .contact-qr-icon{width:56px;height:56px;}
   .contact-qr-icon svg{width:26px;height:26px;}
   .contact-qr-card{
