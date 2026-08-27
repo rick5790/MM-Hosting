@@ -25,6 +25,7 @@
   const footerContactSection = footerContact ? footerContact.closest('div') : null;
 
   let drawerCloseTimer = null;
+  let layerModelObserver = null;
 
   const pageLinks = [
     { key: 'home', url: 'index.html', zh: '主页', en: 'Home' },
@@ -374,57 +375,45 @@
   const layerShowcaseCards = [
     {
       no: 'No.01',
-      zh: { title: 'Makkie 胖曲奇', sub: '招牌胖曲奇', footHtml: '招牌饼干夹心 · 轻奶油<br>简洁层次造型' },
-      en: { title: 'MakkieMua Stuffed Cookie', sub: 'Signature stuffed cookie', footHtml: 'Signature cookie sandwich · light cream<br>Clean lines · layered bite' },
-      tags: {
-        zh: ['双层饼干', '轻奶油夹心', '招牌品牌款'],
-        en: ['Double cookie layers', 'Light cream filling', 'Signature house style']
-      }
+      zh: { title: '斑斓芭乐巴斯克', sub: '斑斓戚风 · 芭乐巴斯克芝士' },
+      en: { title: 'Pandan Guava Basque', sub: 'Pandan chiffon · guava Basque cheesecake' },
+      stacked: 'assets/images/svg/1-斑斓芭乐巴斯克-堆叠.svg?v=20260827-clean',
+      expanded: 'assets/images/svg/1-斑斓芭乐巴斯克-展开.svg?v=20260827-clean'
     },
     {
       no: 'No.02',
-      zh: { title: '戚风三明治', sub: '轻盈夹心蛋糕', footHtml: '戚风蛋糕 · 新鲜水果<br>轻盈奶油 · 手工现切' },
-      en: { title: 'Chiffon Sandwich', sub: 'Airy cream-filled cake', footHtml: 'Chiffon cake · fresh fruit<br>Light cream · hand-finished' },
-      tags: {
-        zh: ['戚风蛋糕层', '鲜水果 · 轻奶油', '戚风底层'],
-        en: ['Chiffon cake top', 'Fresh fruit · light cream', 'Chiffon cake base']
-      }
+      zh: { title: '紫苏白桃芭乐戚风三明治', sub: '紫苏戚风 · 白桃芭乐奶油' },
+      en: { title: 'Shiso White Peach Guava Chiffon Sandwich', sub: 'Shiso chiffon · white peach guava cream' },
+      stacked: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-堆叠.svg?v=20260827-clean',
+      expanded: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-展开.svg?v=20260827-clean'
     },
     {
       no: 'No.03',
-      zh: { title: '巴斯克芝士蛋糕', sub: '焦香软心芝士蛋糕', footHtml: '重芝士 · 烤焦顶 · 软心<br>干花点缀 · 高品质动物奶油' },
-      en: { title: 'Basque Cheesecake', sub: 'Burnt-top soft-centered cheesecake', footHtml: 'Rich cheesecake · burnt top · molten center<br>Dried florals · premium dairy cream' },
-      tags: {
-        zh: ['炭烤焦顶', '浓郁芝士体'],
-        en: ['Burnt top', 'Dense cheesecake center']
-      }
+      zh: { title: '迪拜糯曲奇', sub: '可可曲奇 · 糯米麻薯 · 开心果卡达耶夫' },
+      en: { title: 'Dubai Mochi Cookie', sub: 'Cocoa cookie · mochi · pistachio kataifi' },
+      stacked: 'assets/images/svg/3-迪拜糯曲奇-堆叠.svg?v=20260827-clean',
+      expanded: 'assets/images/svg/3-迪拜糯曲奇-展开.svg?v=20260827-clean'
     },
     {
       no: 'No.04',
-      zh: { title: '米布丁', sub: '', footHtml: '牛奶<br>奶油 · 米粒布丁' },
-      en: { title: 'Rice Pudding', sub: '', footHtml: 'Milk<br>Cream · rice pudding pearls' },
-      tags: {
-        zh: ['新鲜水果', '大米米布丁·慕斯'],
-        en: ['Fresh fruit', 'Rice pudding · mousse']
-      }
+      zh: { title: '金沙双黄胖曲奇', sub: '黄油曲奇 · 金沙双黄奶油' },
+      en: { title: 'Salted Egg Yolk Stuffed Cookie', sub: 'Butter cookie · salted egg yolk cream' },
+      stacked: 'assets/images/svg/4-金沙双黄胖曲奇-堆叠.svg?v=20260827-clean',
+      expanded: 'assets/images/svg/4-金沙双黄胖曲奇-展开.svg?v=20260827-clean'
     },
     {
       no: 'No.05',
-      zh: { title: '酥皮挞挞', sub: '酥香挞类', footHtml: '千层酥饼 · 厚奶油<br>糖霜 · 入口即化' },
-      en: { title: 'Tart', sub: 'Flaky cream tart', footHtml: 'Puff pastry shell · thick cream<br>Royal icing · melts on the tongue' },
-      tags: {
-        zh: ['麻薯 · 风味奶油', '蛋挞芯', '酥皮底饼'],
-        en: ['Mochi · flavored cream', 'Egg tart center', 'Pastry base']
-      }
+      zh: { title: '桂花柿子酒酿布丁奶糕', sub: '柿子果泥 · 酒酿布丁 · 桂花奶油' },
+      en: { title: 'Osmanthus Persimmon Rice Wine Pudding Cake', sub: 'Persimmon · rice wine pudding · osmanthus cream' },
+      stacked: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-堆叠.svg?v=20260827-clean',
+      expanded: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-展开.svg?v=20260827-clean'
     },
     {
       no: 'No.06',
-      zh: { title: '迪拜糯曲奇', sub: '迪拜风味糯曲奇', footHtml: '糯糯外壳 · 碎丝内核<br>开心果酱 · 迪拜风味' },
-      en: { title: 'Dubai Kunafa Cookie', sub: 'Dubai-inspired mochi cookie', footHtml: 'Chewy shell · shredded filling<br>Pistachio spread · Dubai-inspired flavor' },
-      tags: {
-        zh: ['棉花糖球体', '卡达伊夫碎丝', '软软外壳'],
-        en: ['Cottony shell', 'Kunafa filling', 'Soft outer layer']
-      }
+      zh: { title: '巧克力香蕉米布丁', sub: '巧克力布丁 · 米布丁 · 焦糖香蕉' },
+      en: { title: 'Chocolate Banana Rice Pudding', sub: 'Chocolate pudding · rice pudding · caramelized banana' },
+      stacked: 'assets/images/svg/7-巧克力香蕉米布丁-堆叠.svg?v=20260827-clean',
+      expanded: 'assets/images/svg/7-巧克力香蕉米布丁-展开.svg?v=20260827-clean'
     }
   ];
 
@@ -770,35 +759,78 @@
   function renderLayersPage() {
     const grid = document.getElementById('layersGrid');
     if (!grid) return;
-    grid.innerHTML = layerShowcaseCards.map((card, index) => {
-      const scene = layerSceneTemplates[index];
-      const tags = currentLang === 'en' ? card.tags.en : card.tags.zh;
+    grid.innerHTML = layerShowcaseCards.map((card) => {
       const copy = currentLang === 'en' ? card.en : card.zh;
+      const openLabel = currentLang === 'en' ? `Expand ${copy.title}` : `展开${copy.title}`;
+      const closeLabel = currentLang === 'en' ? `Collapse ${copy.title}` : `收起${copy.title}`;
       return `
-        <article class="layers-showcase-card" data-layer-card tabindex="0">
+        <article class="layers-showcase-card" data-layer-card tabindex="0" role="button" aria-expanded="false" aria-label="${escapeHtml(openLabel)}" data-open-label="${escapeHtml(openLabel)}" data-close-label="${escapeHtml(closeLabel)}">
           <div class="layers-showcase-eye">${escapeHtml(card.no)}</div>
           <div class="layers-showcase-name">${escapeHtml(copy.title)}</div>
           <div class="layers-showcase-sub">${escapeHtml(copy.sub)}</div>
           <div class="layers-showcase-scene">
-            <div class="layers-showcase-stack-shell">
-              <div class="layers-showcase-stack">
-              ${scene.parts}
-              ${tags.map((tag, tagIndex) => `<div class="layers-showcase-tag" style="${scene.tags[tagIndex] || ''}">${escapeHtml(tag)}</div>`).join('')}
-              </div>
-            </div>
+            <img class="layers-showcase-model layers-showcase-model-stacked" src="${escapeHtml(card.stacked)}" alt="${escapeHtml(copy.title)}" loading="lazy" decoding="async">
+            <img class="layers-showcase-model layers-showcase-model-expanded" data-src="${escapeHtml(card.expanded)}" alt="" aria-hidden="true" decoding="async">
           </div>
-          <div class="layers-showcase-foot">${copy.footHtml}</div>
+          <div class="layers-showcase-hint" aria-hidden="true">
+            <span class="layers-showcase-hint-open">${currentLang === 'en' ? 'Click to expand' : '点击展开'}</span>
+            <span class="layers-showcase-hint-close">${currentLang === 'en' ? 'Click to collapse' : '点击收起'}</span>
+          </div>
         </article>
       `;
     }).join('');
+    initLayerModelWarmup();
+  }
+
+  function warmLayerExpandedModel(card) {
+    const model = card && card.querySelector('.layers-showcase-model-expanded');
+    if (!model || model.dataset.warming === 'true' || model.hasAttribute('src')) return;
+    const source = model.dataset.src;
+    if (!source) return;
+    model.dataset.warming = 'true';
+    const markReady = () => {
+      model.dataset.warming = 'false';
+      if (model.naturalWidth > 0) card.classList.add('is-expanded-ready');
+    };
+    model.addEventListener('load', markReady, { once: true });
+    model.addEventListener('error', () => { model.dataset.warming = 'false'; }, { once: true });
+    model.src = source;
+    if (typeof model.decode === 'function') model.decode().then(markReady).catch(() => {});
+  }
+
+  function initLayerModelWarmup() {
+    if (layerModelObserver) layerModelObserver.disconnect();
+    const cards = Array.from(document.querySelectorAll('[data-layer-card]'));
+    if (!cards.length) return;
+    if (!('IntersectionObserver' in window)) {
+      cards.forEach(warmLayerExpandedModel);
+      return;
+    }
+    layerModelObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        warmLayerExpandedModel(entry.target);
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '280px 0px' });
+    cards.forEach((card) => layerModelObserver.observe(card));
   }
 
   function activateLayerCard(card) {
     if (!card) return;
+    const willActivate = !card.classList.contains('is-active');
     document.querySelectorAll('[data-layer-card].is-active').forEach((activeCard) => {
-      if (activeCard !== card) activeCard.classList.remove('is-active');
+      if (activeCard !== card) {
+        activeCard.classList.remove('is-active');
+        activeCard.setAttribute('aria-expanded', 'false');
+        activeCard.setAttribute('aria-label', activeCard.dataset.openLabel || '');
+      }
     });
-    card.classList.toggle('is-active');
+    card.classList.toggle('is-active', willActivate);
+    if (willActivate) warmLayerExpandedModel(card);
+    const isActive = card.classList.contains('is-active');
+    card.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+    card.setAttribute('aria-label', isActive ? card.dataset.closeLabel : card.dataset.openLabel);
   }
 
   function renderInstagramPage() {
@@ -1049,9 +1081,22 @@
       const target = event.target && event.target.closest && event.target.closest('[data-menu-target]');
       if (target) warmCollectionGroup(target.dataset.menuTarget, priority);
     };
-    document.addEventListener('pointerover', (event) => warmCollectionFromEvent(event, 'low'), { passive: true });
-    document.addEventListener('pointerdown', (event) => warmCollectionFromEvent(event, 'high'), { passive: true });
-    document.addEventListener('focusin', (event) => warmCollectionFromEvent(event, 'high'));
+    const warmLayerFromEvent = (event) => {
+      const target = event.target && event.target.closest && event.target.closest('[data-layer-card]');
+      if (target) warmLayerExpandedModel(target);
+    };
+    document.addEventListener('pointerover', (event) => {
+      warmCollectionFromEvent(event, 'low');
+      warmLayerFromEvent(event);
+    }, { passive: true });
+    document.addEventListener('pointerdown', (event) => {
+      warmCollectionFromEvent(event, 'high');
+      warmLayerFromEvent(event);
+    }, { passive: true });
+    document.addEventListener('focusin', (event) => {
+      warmCollectionFromEvent(event, 'high');
+      warmLayerFromEvent(event);
+    });
 
     document.addEventListener('click', (event) => {
       const closeTrigger = event.target.closest('[data-mobile-drawer-close]');
@@ -1130,7 +1175,11 @@
         closeDrawer();
         closeCollectionOverlay();
         closeWeChatQr();
-        document.querySelectorAll('[data-layer-card].is-active').forEach((card) => card.classList.remove('is-active'));
+        document.querySelectorAll('[data-layer-card].is-active').forEach((card) => {
+          card.classList.remove('is-active');
+          card.setAttribute('aria-expanded', 'false');
+          card.setAttribute('aria-label', card.dataset.openLabel || '');
+        });
       }
       if ((event.key === 'Enter' || event.key === ' ') && event.target.closest('[data-layer-card]')) {
         event.preventDefault();
