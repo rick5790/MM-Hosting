@@ -6,6 +6,7 @@
   --accent:#C4996A;
   --card:#EDE0CC;
   --dark:#1A0F05;
+  --ease-out:cubic-bezier(.23,1,.32,1);
 }
 
 *{box-sizing:border-box;}
@@ -1854,15 +1855,24 @@ body[data-lang="en"] .ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::
 .ft-copy{text-align:center;font-size:11px;color:rgba(245,237,224,.2);}
 
 .reveal{
+  --reveal-delay:0ms;
   opacity:0;
   transform:translate3d(0,24px,0);
-  filter:blur(8px);
-  transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1),filter .7s cubic-bezier(.22,1,.36,1);
+  transition:
+    opacity 700ms var(--ease-out) var(--reveal-delay),
+    transform 700ms var(--ease-out) var(--reveal-delay);
 }
 .reveal.is-visible{
   opacity:1;
-  transform:none;
-  filter:none;
+  transform:translate3d(0,0,0);
+}
+@media (prefers-reduced-motion: reduce){
+  .reveal,
+  .reveal.is-visible{
+    opacity:1;
+    transform:none;
+    transition:none;
+  }
 }
 
 @keyframes menu-card-bounce{
