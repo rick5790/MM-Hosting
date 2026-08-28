@@ -377,43 +377,43 @@
       no: 'No.01',
       zh: { title: '斑斓芭乐巴斯克', sub: '斑斓戚风 · 芭乐巴斯克芝士' },
       en: { title: 'Pandan Guava Basque', sub: 'Pandan chiffon · guava Basque cheesecake' },
-      stacked: 'assets/images/svg/1-斑斓芭乐巴斯克-堆叠.svg?v=20260827-clean',
-      expanded: 'assets/images/svg/1-斑斓芭乐巴斯克-展开.svg?v=20260827-clean'
+      stacked: 'assets/images/svg/1-斑斓芭乐巴斯克-堆叠.svg?v=20260827-final-model',
+      expanded: 'assets/images/svg/1-斑斓芭乐巴斯克-展开.svg?v=20260827-final-model'
     },
     {
       no: 'No.02',
       zh: { title: '紫苏白桃芭乐戚风三明治', sub: '紫苏戚风 · 白桃芭乐奶油' },
       en: { title: 'Shiso White Peach Guava Chiffon Sandwich', sub: 'Shiso chiffon · white peach guava cream' },
-      stacked: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-堆叠.svg?v=20260827-clean',
-      expanded: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-展开.svg?v=20260827-clean'
+      stacked: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-堆叠.svg?v=20260827-final-model',
+      expanded: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-展开.svg?v=20260827-final-model'
     },
     {
       no: 'No.03',
       zh: { title: '迪拜糯曲奇', sub: '可可曲奇 · 糯米麻薯 · 开心果卡达耶夫' },
       en: { title: 'Dubai Mochi Cookie', sub: 'Cocoa cookie · mochi · pistachio kataifi' },
-      stacked: 'assets/images/svg/3-迪拜糯曲奇-堆叠.svg?v=20260827-clean',
-      expanded: 'assets/images/svg/3-迪拜糯曲奇-展开.svg?v=20260827-clean'
+      stacked: 'assets/images/svg/3-迪拜糯曲奇-堆叠.svg?v=20260827-dubai-labels',
+      expanded: 'assets/images/svg/3-迪拜糯曲奇-展开.svg?v=20260827-dubai-labels'
     },
     {
       no: 'No.04',
       zh: { title: '金沙双黄胖曲奇', sub: '黄油曲奇 · 金沙双黄奶油' },
       en: { title: 'Salted Egg Yolk Stuffed Cookie', sub: 'Butter cookie · salted egg yolk cream' },
-      stacked: 'assets/images/svg/4-金沙双黄胖曲奇-堆叠.svg?v=20260827-clean',
-      expanded: 'assets/images/svg/4-金沙双黄胖曲奇-展开.svg?v=20260827-clean'
+      stacked: 'assets/images/svg/4-金沙双黄胖曲奇-堆叠.svg?v=20260827-final-model',
+      expanded: 'assets/images/svg/4-金沙双黄胖曲奇-展开.svg?v=20260827-final-model'
     },
     {
       no: 'No.05',
       zh: { title: '桂花柿子酒酿布丁奶糕', sub: '柿子果泥 · 酒酿布丁 · 桂花奶油' },
       en: { title: 'Osmanthus Persimmon Rice Wine Pudding Cake', sub: 'Persimmon · rice wine pudding · osmanthus cream' },
-      stacked: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-堆叠.svg?v=20260827-clean',
-      expanded: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-展开.svg?v=20260827-clean'
+      stacked: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-堆叠.svg?v=20260827-final-model',
+      expanded: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-展开.svg?v=20260827-final-model'
     },
     {
       no: 'No.06',
       zh: { title: '巧克力香蕉米布丁', sub: '巧克力布丁 · 米布丁 · 焦糖香蕉' },
       en: { title: 'Chocolate Banana Rice Pudding', sub: 'Chocolate pudding · rice pudding · caramelized banana' },
-      stacked: 'assets/images/svg/7-巧克力香蕉米布丁-堆叠.svg?v=20260827-clean',
-      expanded: 'assets/images/svg/7-巧克力香蕉米布丁-展开.svg?v=20260827-clean'
+      stacked: 'assets/images/svg/7-巧克力香蕉米布丁-堆叠.svg?v=20260827-final-model',
+      expanded: 'assets/images/svg/7-巧克力香蕉米布丁-展开.svg?v=20260827-final-model'
     }
   ];
 
@@ -1294,18 +1294,16 @@
   function initReveal() {
     const targets = Array.from(document.querySelectorAll('.reveal'));
     if (!targets.length) return;
-    if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       targets.forEach((item) => item.classList.add('is-visible'));
       return;
     }
-    const observer = new IntersectionObserver((entries, io) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
-        io.unobserve(entry.target);
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
-    targets.forEach((item) => observer.observe(item));
+    targets.forEach((item, index) => {
+      item.style.setProperty('--reveal-delay', `${index * 70}ms`);
+    });
+    requestAnimationFrame(() => {
+      targets.forEach((item) => item.classList.add('is-visible'));
+    });
   }
 
   function initMakkieEasterEgg() {
