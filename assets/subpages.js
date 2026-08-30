@@ -376,38 +376,38 @@
     {
       zh: { title: '斑斓芭乐巴斯克', sub: '斑斓戚风 · 芭乐巴斯克芝士' },
       en: { title: 'Pandan Guava Basque', sub: 'Pandan chiffon · guava Basque cheesecake' },
-      stacked: 'assets/images/svg/1-斑斓芭乐巴斯克-堆叠.svg?v=20260829-layer-labels-plus-2',
-      expanded: 'assets/images/svg/1-斑斓芭乐巴斯克-展开.svg?v=20260829-layer-labels-plus-2'
+      stacked: 'assets/images/svg/1-斑斓芭乐巴斯克-堆叠.svg?v=20260829-no-layer-numbers',
+      expanded: 'assets/images/svg/1-斑斓芭乐巴斯克-展开.svg?v=20260829-no-layer-numbers'
     },
     {
       zh: { title: '紫苏白桃芭乐戚风三明治', sub: '紫苏戚风 · 白桃芭乐奶油' },
       en: { title: 'Shiso White Peach Guava Chiffon Sandwich', sub: 'Shiso chiffon · white peach guava cream' },
-      stacked: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-堆叠.svg?v=20260829-layer-labels-plus-2',
-      expanded: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-展开.svg?v=20260829-layer-labels-plus-2'
+      stacked: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-堆叠.svg?v=20260829-no-layer-numbers',
+      expanded: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-展开.svg?v=20260829-no-layer-numbers'
     },
     {
       zh: { title: '迪拜糯曲奇', sub: '可可曲奇 · 糯米麻薯 · 开心果卡达耶夫' },
       en: { title: 'Dubai Mochi Cookie', sub: 'Cocoa cookie · mochi · pistachio kataifi' },
-      stacked: 'assets/images/svg/3-迪拜糯曲奇-堆叠.svg?v=20260829-layer-labels-plus-2',
-      expanded: 'assets/images/svg/3-迪拜糯曲奇-展开.svg?v=20260829-layer-labels-plus-2'
+      stacked: 'assets/images/svg/3-迪拜糯曲奇-堆叠.svg?v=20260829-no-layer-numbers',
+      expanded: 'assets/images/svg/3-迪拜糯曲奇-展开.svg?v=20260829-no-layer-numbers'
     },
     {
       zh: { title: '金沙双黄胖曲奇', sub: '黄油曲奇 · 金沙双黄奶油' },
       en: { title: 'Salted Egg Yolk Stuffed Cookie', sub: 'Butter cookie · salted egg yolk cream' },
-      stacked: 'assets/images/svg/4-金沙双黄胖曲奇-堆叠.svg?v=20260829-layer-labels-plus-2',
-      expanded: 'assets/images/svg/4-金沙双黄胖曲奇-展开.svg?v=20260829-layer-labels-plus-2'
+      stacked: 'assets/images/svg/4-金沙双黄胖曲奇-堆叠.svg?v=20260829-no-layer-numbers',
+      expanded: 'assets/images/svg/4-金沙双黄胖曲奇-展开.svg?v=20260829-no-layer-numbers'
     },
     {
       zh: { title: '桂花柿子酒酿布丁奶糕', sub: '柿子果泥 · 酒酿布丁 · 桂花奶油' },
       en: { title: 'Osmanthus Persimmon Rice Wine Pudding Cake', sub: 'Persimmon · rice wine pudding · osmanthus cream' },
-      stacked: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-堆叠.svg?v=20260829-layer-labels-plus-2',
-      expanded: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-展开.svg?v=20260829-layer-labels-plus-2'
+      stacked: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-堆叠.svg?v=20260829-no-layer-numbers',
+      expanded: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-展开.svg?v=20260829-no-layer-numbers'
     },
     {
       zh: { title: '巧克力香蕉米布丁', sub: '巧克力布丁 · 米布丁 · 焦糖香蕉' },
       en: { title: 'Chocolate Banana Rice Pudding', sub: 'Chocolate pudding · rice pudding · caramelized banana' },
-      stacked: 'assets/images/svg/7-巧克力香蕉米布丁-堆叠.svg?v=20260829-layer-labels-plus-2',
-      expanded: 'assets/images/svg/7-巧克力香蕉米布丁-展开.svg?v=20260829-layer-labels-plus-2'
+      stacked: 'assets/images/svg/7-巧克力香蕉米布丁-堆叠.svg?v=20260829-no-layer-numbers',
+      expanded: 'assets/images/svg/7-巧克力香蕉米布丁-展开.svg?v=20260829-no-layer-numbers'
     }
   ];
 
