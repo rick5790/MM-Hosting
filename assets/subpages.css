@@ -681,8 +681,13 @@ nav{
 }
 .layers-showcase-card:focus-visible{
   z-index:1;
-  outline:2px solid var(--accent);
-  outline-offset:-4px;
+  outline:none;
+}
+.layers-showcase-card:focus-visible .layers-showcase-name{
+  text-decoration:underline;
+  text-decoration-color:var(--accent);
+  text-decoration-thickness:2px;
+  text-underline-offset:.3em;
 }
 .layers-showcase-name{
   display:flex;
