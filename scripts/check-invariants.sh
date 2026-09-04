@@ -85,6 +85,23 @@ want index.html "cache: 'no-store'" \
 want index.html "window.addEventListener('pageshow'" \
   '首页从 Safari 返回缓存恢复时不再主动同步后台图鉴目录'
 
+# ---------- Google Analytics 电商漏报 ----------
+for html in ./*.html; do
+  want "$html" 'assets/analytics.js?v=20260903-ga4-ecommerce-67' \
+    '该页面未加载统一 GA4 标签，访问与转化会从报表中消失'
+done
+
+want assets/analytics.js "send('purchase'" \
+  'GA4 没有 purchase 事件，“电商购买次数 / 下单量”会一直为 0'
+want assets/analytics.js 'transaction_id:' \
+  'purchase 缺少唯一订单号，GA4 无法正确识别和去重交易'
+want assets/shop-page.js 'MakkieAnalytics.purchase' \
+  '独立商城下单成功后没有上报 purchase'
+want index.html 'MakkieAnalytics.purchase' \
+  '首页商城下单成功后没有上报 purchase'
+want index.html 'MakkieAnalytics.cakeInquiry' \
+  '蛋糕询单成功后没有上报 generate_lead'
+
 # ---------- 吉祥物彩蛋 ----------
 want intro.html 'makkieMascotZone' '关于我们的浮动彩蛋没了'
 want contact.html 'makkieMascotZone' '联系我们的浮动彩蛋没了'

@@ -973,6 +973,11 @@
       return;
     }
 
+    if (window.MakkieAnalytics) {
+      const listId = state.weeklyOrder && (state.weeklyOrder.active_group_id || state.weeklyOrder.group_no || state.weeklyOrder.id);
+      window.MakkieAnalytics.viewItemList(state.products, listId ? `weekly_menu_${listId}` : 'weekly_menu');
+    }
+
     const totalQuantity = getCartTotalQuantity();
     const pickup = getPickup();
     const totalPrice = getSelectedItems().reduce((sum, item) => sum + (item.unitPrice || 0) * item.quantity, 0);
@@ -1057,11 +1062,15 @@
   function setProductQuantity(productId, nextQuantity) {
     const product = state.products.find((item) => item.id === productId);
     if (!product) return;
+    const previousQuantity = state.cartQuantities[productId] || 0;
     const quantity = Math.max(0, nextQuantity);
     if (quantity <= 0) {
       delete state.cartQuantities[productId];
     } else {
       state.cartQuantities[productId] = quantity;
+    }
+    if (window.MakkieAnalytics && quantity !== previousQuantity) {
+      window.MakkieAnalytics.cartChange(product, quantity - previousQuantity);
     }
     // 只更新受影响的步进器和结算栏，避免重建整个列表导致图片重新加载（手机端会闪）。
     updateCartUI();
@@ -1545,6 +1554,9 @@
     }
     const pickup = getPickup();
     const total = items.reduce((sum, item) => sum + (item.unitPrice || 0) * item.quantity, 0);
+    if (resetDeposit && window.MakkieAnalytics) {
+      window.MakkieAnalytics.beginCheckout(items, pickup && pickup.label);
+    }
     if (resetDeposit) state.useDeposit = false;
     const depositApplied = state.useDeposit ? Math.min(getDepositBalance(), total) : 0;
     const amountDue = Math.max(0, total - depositApplied);
@@ -1719,6 +1731,9 @@
       saveSiteAuth({ ...state.auth, user: { ...state.auth.user, ...result.user } });
     }
     state.lastCreatedOrder = result && result.order ? result.order : null;
+    if (window.MakkieAnalytics) {
+      window.MakkieAnalytics.purchase(state.lastCreatedOrder || result, items, pickup && pickup.label);
+    }
     state.cartQuantities = {};
     state.note = '';
     state.useDeposit = false;
