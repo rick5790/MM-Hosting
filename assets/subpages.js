@@ -666,7 +666,7 @@
   }
 
   function getCollectionVisibleImageCount() {
-    if (window.matchMedia('(max-width: 640px)').matches) return 1;
+    if (window.matchMedia('(max-width: 820px), (max-width: 980px) and (max-height: 500px) and (orientation: landscape)').matches) return 1;
     if (window.matchMedia('(max-width: 980px)').matches) return 3;
     return 4;
   }
