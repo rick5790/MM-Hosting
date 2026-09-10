@@ -60,6 +60,36 @@ want index.html 'useStaticLogo' \
 want index.html '@keyframes hero-logo-hop' \
   '降级用的静态 logo 不会动了'
 
+# ---------- iPhone / Duo / 折叠屏布局 ----------
+for html in ./*.html; do
+  want "$html" 'width=device-width, initial-scale=1.0, viewport-fit=cover' \
+    'iPhone 刘海、横屏安全区和折叠屏视口不能延伸到完整屏幕，左右内容可能被系统区域挤压'
+done
+
+want index.html 'min-height:100dvh;' \
+  '首页又只依赖静态 vh/svh，iPhone 地址栏收放后首屏会被裁切或留下大块空白'
+want index.html '6.8 · iPhone / Duo / foldable viewport hardening' \
+  '首页针对极窄屏、短横屏和铰链视口的覆盖被删了，桌面检查不会发现'
+want assets/subpages.css '6.8 · iPhone / Duo / foldable viewport hardening' \
+  '子页面针对极窄屏、短横屏和铰链视口的覆盖被删了，桌面检查不会发现'
+want index.html '@media (horizontal-viewport-segments:2)' \
+  'Duo 一类双屏设备失去物理铰链避让，居中内容会落在铰链下面'
+want assets/subpages.css '@media (horizontal-viewport-segments:2)' \
+  '子页面在双屏设备上失去物理铰链避让'
+want index.html '@media (spanning:single-fold-vertical)' \
+  '旧版 Edge/Surface Duo 的铰链避让被删了'
+want assets/subpages.css '@media (spanning:single-fold-vertical)' \
+  '子页面失去旧版 Edge/Surface Duo 的铰链避让'
+want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), (max-width: 980px) and (max-height: 500px) and (orientation: landscape)');" \
+  '展开折叠屏和 iPhone 横屏又会误用桌面导航，容易挤出视口'
+
+for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
+  want "$html" 'assets/subpages.css?v=20260910-foldables-68' \
+    '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
+  want "$html" 'assets/subpages.js?v=20260910-foldables-68' \
+    '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
+done
+
 # ---------- 图鉴图片首开速度 ----------
 want collection.html '<link rel="preconnect" href="https://admin.makkiemua.com" crossorigin>' \
   '进入图鉴时没有提前建立图片域名连接，首次打开分类会多等一轮 DNS/TLS'
