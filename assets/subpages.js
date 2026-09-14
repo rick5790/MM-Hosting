@@ -1011,7 +1011,7 @@
     mobileDrawer.classList.remove('is-open');
     drawerCloseTimer = window.setTimeout(() => {
       mobileDrawer.hidden = true;
-    }, 240);
+    }, 440);
     document.body.style.overflow = '';
     if (navMenuButton) {
       navMenuButton.classList.remove('is-open');
