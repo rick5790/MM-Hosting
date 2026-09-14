@@ -2078,12 +2078,12 @@ body[data-lang="en"] .ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::
     gap:.85rem;
     margin-top:1rem;
     padding:1rem .8rem;
-    border:1px solid rgba(61,82,83,.2);
+    border:1px solid rgba(196,153,106,.34);
     border-radius:24px;
-    background:rgba(255,255,255,.62);
+    background:rgba(196,153,106,.09);
   }
   .mobile-drawer-socials-title{
-    color:#34494a;
+    color:var(--text);
     font-size:.78rem;
     font-weight:700;
     letter-spacing:.02em;
@@ -2103,18 +2103,18 @@ body[data-lang="en"] .ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::
     height:38px;
     flex:0 0 38px;
     padding:0;
-    border:1px solid rgba(61,82,83,.2);
+    border:1px solid rgba(196,153,106,.3);
     border-radius:12px;
-    background:rgba(255,255,255,.72);
-    color:#34494a;
+    background:#fffaf6;
+    color:var(--text);
     text-decoration:none;
     cursor:pointer;
     transition:background-color .2s ease,border-color .2s ease,transform .2s ease;
   }
   .mobile-drawer-social:hover,
   .mobile-drawer-social:focus-visible{
-    border-color:rgba(61,82,83,.42);
-    background:#fff;
+    border-color:var(--accent);
+    background:rgba(196,153,106,.16);
     outline:none;
     transform:translateY(-1px);
   }
