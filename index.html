@@ -1678,7 +1678,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
       <button class="nav-book" type="button" data-order-entry>订单入口</button>
     </div>
     <div class="mobile-drawer-socials" aria-label="Social links">
-      <div class="mobile-drawer-socials-title">SOCIALS</div>
+      <div class="mobile-drawer-socials-title" data-mobile-socials-title>社交媒体</div>
       <div class="mobile-drawer-socials-list">
         <button class="mobile-drawer-social" type="button" data-qr-open="assets/images/qr/Makkie Wechat QR Code Clean.jpg" data-qr-label="WeChat" aria-label="WeChat">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -6077,6 +6077,10 @@ function applyBilingualLanguage(lang) {
 
   if (mobileLangLabel) {
     mobileLangLabel.textContent = lang === 'en' ? 'Language' : '语言';
+  }
+  const mobileSocialsTitle = document.querySelector('[data-mobile-socials-title]');
+  if (mobileSocialsTitle) {
+    mobileSocialsTitle.textContent = lang === 'en' ? 'SOCIALS' : '社交媒体';
   }
   mobileLangButtons.forEach((button) => {
     button.classList.toggle('is-en', lang === 'en');

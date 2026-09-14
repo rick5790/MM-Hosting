@@ -86,7 +86,7 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
   want "$html" 'assets/subpages.css?v=20260913-mobile-socials-theme-69' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
-  want "$html" 'assets/subpages.js?v=20260913-mobile-socials-69' \
+  want "$html" 'assets/subpages.js?v=20260913-mobile-socials-i18n-69' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
 done
 
@@ -95,6 +95,10 @@ want index.html 'class="mobile-drawer-socials"' \
   '首页手机侧栏的 SOCIALS 卡片被删了，桌面检查不会发现'
 want assets/subpages.js 'class="mobile-drawer-socials"' \
   '子页面手机侧栏不再生成 SOCIALS 卡片'
+want index.html 'data-mobile-socials-title>社交媒体' \
+  '首页手机侧栏的社交媒体标题不再跟随语言显示中文'
+want assets/subpages.js "currentLang === 'en' ? 'SOCIALS' : '社交媒体'" \
+  '子页面手机侧栏的社交媒体标题不再跟随语言切换'
 want assets/subpages.css '.mobile-drawer-socials{display:none;}' \
   'SOCIALS 卡片失去桌面隐藏兜底，可能跑到非手机布局'
 
