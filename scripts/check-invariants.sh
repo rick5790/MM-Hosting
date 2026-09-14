@@ -86,18 +86,9 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
   want "$html" 'assets/subpages.css?v=20260910-foldables-68' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
-  want "$html" 'assets/subpages.js?v=20260913-zoox-nav-69' \
+  want "$html" 'assets/subpages.js?v=20260910-foldables-68' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
-  want "$html" 'assets/nav-69.css?v=20260913-zoox-nav-69' \
-    '子页面未加载 6.9 导航样式，导航会退回旧版侧栏'
-  want "$html" 'assets/nav-69.js?v=20260913-zoox-nav-69' \
-    '子页面未加载 6.9 导航增强，双栏视觉和键盘焦点控制会丢失'
 done
-
-want index.html 'assets/nav-69.css?v=20260913-zoox-nav-69' \
-  '首页未加载 6.9 导航样式，导航会退回旧版侧栏'
-want index.html 'assets/nav-69.js?v=20260913-zoox-nav-69' \
-  '首页未加载 6.9 导航增强，双栏视觉和键盘焦点控制会丢失'
 
 # ---------- 图鉴图片首开速度 ----------
 want collection.html '<link rel="preconnect" href="https://admin.makkiemua.com" crossorigin>' \
