@@ -476,6 +476,7 @@ nav{
     gooey-pulse calc(620ms + var(--particle-variance, 0ms)) ease-out 1 both;
 }
 .mobile-drawer-actions{display:flex;flex-direction:column;gap:.75rem;margin-top:1.2rem;}
+.mobile-drawer-socials{display:none;}
 
 .page-main{padding-bottom:5rem;}
 .page-hero{
@@ -2070,6 +2071,54 @@ body[data-lang="en"] .ft-social-link[href="https://xhslink.com/m/2ohrymfwufZ"]::
     box-shadow:none;
   }
   .nav-lang{display:none;}
+  .mobile-drawer-socials{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:.85rem;
+    margin-top:1rem;
+    padding:1rem .8rem;
+    border:1px solid rgba(61,82,83,.2);
+    border-radius:24px;
+    background:rgba(255,255,255,.62);
+  }
+  .mobile-drawer-socials-title{
+    color:#34494a;
+    font-size:.78rem;
+    font-weight:700;
+    letter-spacing:.02em;
+  }
+  .mobile-drawer-socials-list{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:.4rem;
+    min-width:0;
+  }
+  .mobile-drawer-social{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:38px;
+    height:38px;
+    flex:0 0 38px;
+    padding:0;
+    border:1px solid rgba(61,82,83,.2);
+    border-radius:12px;
+    background:rgba(255,255,255,.72);
+    color:#34494a;
+    text-decoration:none;
+    cursor:pointer;
+    transition:background-color .2s ease,border-color .2s ease,transform .2s ease;
+  }
+  .mobile-drawer-social:hover,
+  .mobile-drawer-social:focus-visible{
+    border-color:rgba(61,82,83,.42);
+    background:#fff;
+    outline:none;
+    transform:translateY(-1px);
+  }
+  .mobile-drawer-social svg{display:block;width:20px;height:20px;}
   .top-tabs{display:none;}
   .mobile-drawer-close{width:40px;height:40px;}
   .mobile-drawer-brand{font-size:.95rem;}
@@ -2188,6 +2237,8 @@ body[data-lang="en"] .legal-en{display:block;}
     min-height:40px;
   }
   .mobile-drawer-panel{min-width:0;width:min(92vw,320px);}
+  .mobile-drawer-socials{grid-template-columns:1fr;gap:.7rem;}
+  .mobile-drawer-socials-list{justify-content:flex-start;}
   .page-hero,.page-section,.menu-set,.products,.layers-showcase,.social-feed,.contact-page,.story-page,.shop,.legal-page{
     padding-left:.9rem;
     padding-right:.9rem;

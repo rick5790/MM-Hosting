@@ -596,6 +596,28 @@
       `;
     }
 
+    const mobileDrawerPanel = mobileDrawer && mobileDrawer.querySelector('.mobile-drawer-panel');
+    if (mobileDrawerPanel && !mobileDrawerPanel.querySelector('.mobile-drawer-socials')) {
+      mobileDrawerPanel.insertAdjacentHTML('beforeend', `
+        <div class="mobile-drawer-socials" aria-label="Social links">
+          <div class="mobile-drawer-socials-title">SOCIALS</div>
+          <div class="mobile-drawer-socials-list">
+            <button class="mobile-drawer-social" type="button" data-qr-open="assets/images/qr/Makkie Wechat QR Code Clean.jpg" data-qr-label="WeChat" aria-label="WeChat">
+              ${getContactIcon('wechat')}
+            </button>
+            <a class="mobile-drawer-social" href="https://www.instagram.com/makkiemua/" target="_blank" rel="noreferrer" aria-label="Instagram">
+              ${getContactIcon('instagram')}
+            </a>
+            <a class="mobile-drawer-social" href="https://xhslink.com/m/2ohrymfwufZ" target="_blank" rel="noreferrer" aria-label="Xiaohongshu">
+              ${getContactIcon('rednote')}
+            </a>
+            <a class="mobile-drawer-social" href="mailto:MakkieMua@gmail.com" aria-label="Email">
+              ${getContactIcon('email')}
+            </a>
+          </div>
+        </div>`);
+    }
+
     enhanceNavBurstTargets();
 
     if (langToggle) {

@@ -84,11 +84,19 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
   '展开折叠屏和 iPhone 横屏又会误用桌面导航，容易挤出视口'
 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
-  want "$html" 'assets/subpages.css?v=20260910-foldables-68' \
+  want "$html" 'assets/subpages.css?v=20260913-mobile-socials-69' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
-  want "$html" 'assets/subpages.js?v=20260910-foldables-68' \
+  want "$html" 'assets/subpages.js?v=20260913-mobile-socials-69' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
 done
+
+# ---------- 手机汉堡侧栏社交入口 ----------
+want index.html 'class="mobile-drawer-socials"' \
+  '首页手机侧栏的 SOCIALS 卡片被删了，桌面检查不会发现'
+want assets/subpages.js 'class="mobile-drawer-socials"' \
+  '子页面手机侧栏不再生成 SOCIALS 卡片'
+want assets/subpages.css '.mobile-drawer-socials{display:none;}' \
+  'SOCIALS 卡片失去桌面隐藏兜底，可能跑到非手机布局'
 
 # ---------- 图鉴图片首开速度 ----------
 want collection.html '<link rel="preconnect" href="https://admin.makkiemua.com" crossorigin>' \
