@@ -578,6 +578,20 @@ nav{
 .menu-card:hover{transform:translateY(-2px);background:rgba(245,237,224,.08);border-color:rgba(196,153,106,.34);box-shadow:0 14px 34px rgba(0,0,0,.16);}
 .menu-card-heading{display:flex;flex-direction:column;gap:.25rem;}
 .menu-card-title{font-size:1rem;font-weight:600;color:var(--bg);}
+.menu-card-title--creative{
+  display:inline-block;
+  width:fit-content;
+  color:var(--bg);
+  background-image:linear-gradient(90deg,#f5ede0,#c4996a,#ffe1aa,#f8efe4,#c4996a,#f5ede0);
+  background-size:300% 100%;
+  background-repeat:repeat;
+  background-position:0% 50%;
+  background-clip:text;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:menu-creative-title-shimmer 8s linear infinite alternate;
+}
+@keyframes menu-creative-title-shimmer{to{background-position:100% 50%;}}
 .menu-card-sub{display:none;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);}
 .menu-card-hint{margin-top:.1rem;font-size:14px;letter-spacing:0;color:var(--accent);font-weight:400;line-height:1.45;}
 .menu-card-icon{flex:0 0 auto;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,237,224,.6);}
@@ -614,6 +628,9 @@ nav{
 }
 .menu-overlay-header{padding:.4rem 0 1rem;border-bottom:1px solid rgba(45,31,15,.08);margin-bottom:1.2rem;}
 .menu-overlay-header .menu-card-title{font-size:clamp(2rem,5vw,3.2rem);line-height:.95;color:var(--text);margin-bottom:.3rem;}
+.menu-overlay-header .menu-card-title--creative{
+  background-image:linear-gradient(90deg,#2d1f0f,#9b6840,#d8a66f,#6f4525,#2d1f0f);
+}
 .menu-overlay-header .menu-card-sub{display:none;font-size:12px;letter-spacing:.04em;text-transform:none;}
 .menu-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;}
 .menu-dessert-card{
@@ -1180,6 +1197,10 @@ body[data-lang="en"] .makkie-mascot__bubble-en{display:inline;}
 
 /* 尊重「减少动态」：停止移动/跳动/闪烁，仅保留静态装饰图 */
 @media (prefers-reduced-motion: reduce){
+  .menu-card-title--creative{
+    animation:none;
+    background-position:50% 50%;
+  }
   .layers-showcase-model{transition:none;}
   .layers-showcase-name-text{
     animation:none;

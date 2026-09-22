@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="site-version" content="5.6">
+<meta name="site-version" content="7.1">
 <title>Makkie Mua | 手作创意甜品 | Los Angeles &amp; Orange County</title>
 <meta name="description" content="Makkie Mua 是位于 Los Angeles 与 Orange County 的手作创意甜品品牌，提供巴斯克、Makkie 胖曲奇、戚风三明治、米布丁、布丁奶糕等每周预订甜品。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
@@ -824,6 +824,20 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
 .menu-card:hover{transform:translateY(-2px);background:rgba(245,237,224,.08);border-color:rgba(196,153,106,.34);box-shadow:0 14px 34px rgba(0,0,0,.16);}
 .menu-card-heading{display:flex;flex-direction:column;gap:.25rem;text-align:left;}
 .menu-card-title{font-size:1rem;font-weight:600;color:var(--bg);}
+.menu-card-title--creative{
+  display:inline-block;
+  width:fit-content;
+  color:var(--bg);
+  background-image:linear-gradient(90deg,#f5ede0,#c4996a,#ffe1aa,#f8efe4,#c4996a,#f5ede0);
+  background-size:300% 100%;
+  background-repeat:repeat;
+  background-position:0% 50%;
+  background-clip:text;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:menu-creative-title-shimmer 8s linear infinite alternate;
+}
+@keyframes menu-creative-title-shimmer{to{background-position:100% 50%;}}
 .menu-card-sub{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);}
 .menu-card-icon{flex:0 0 auto;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,237,224,.6);}
 .menu-templates{display:none;}
@@ -834,6 +848,9 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
 .menu-overlay-close{position:sticky;top:0;margin-left:auto;display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;border:1px solid rgba(45,31,15,.1);background:rgba(255,255,255,.82);font-size:18px;color:var(--text);backdrop-filter:blur(8px);cursor:pointer;}
 .menu-overlay-header{padding:.4rem 0 1rem;border-bottom:1px solid rgba(45,31,15,.08);margin-bottom:1.2rem;text-align:center;}
 .menu-overlay-header .menu-card-title{font-family:'Inter',sans-serif;font-size:clamp(2.1rem,5vw,3.4rem);font-weight:600;line-height:.95;letter-spacing:-.03em;color:var(--text);margin-bottom:.3rem;}
+.menu-overlay-header .menu-card-title--creative{
+  background-image:linear-gradient(90deg,#2d1f0f,#9b6840,#d8a66f,#6f4525,#2d1f0f);
+}
 .menu-overlay-header .menu-card-sub{font-size:12px;letter-spacing:.04em;text-transform:none;}
 .menu-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;}
 .menu-dessert-card{min-width:0;overflow:hidden;border-radius:22px;background:rgba(255,249,243,.82);border:1px solid rgba(124,101,97,.1);box-shadow:0 10px 24px rgba(45,31,15,.08);}
@@ -1113,6 +1130,10 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 }
 
 @media (prefers-reduced-motion: reduce){
+  .menu-card-title--creative{
+    animation:none;
+    background-position:50% 50%;
+  }
   .reveal,
   .reveal.reveal-left,
   .reveal.reveal-right,
@@ -2697,6 +2718,11 @@ let collectionArchiveData = [
     }))
     .filter((item) => item.image)
 }));
+collectionArchiveData.sort((a, b) => {
+  if (a.title.zh === '创意甜品') return -1;
+  if (b.title.zh === '创意甜品') return 1;
+  return 0;
+});
 // 后台分类只有中文，且旧数据可能把中文误存进 name_en。固定保留一份英文兜底，
 // 避免实时 API 覆盖图鉴后，切到英文仍显示中文。
 const collectionGroupEnglishByZh = new Map([
@@ -2758,15 +2784,18 @@ function getCollectionGroup(targetId) {
 
 function renderMenuCards(lang = 'zh', iconLabel = '查看图鉴') {
   if (!menuGrid) return;
-  menuGrid.innerHTML = collectionArchiveData.map((group) => `
-    <button class="menu-card" type="button" data-menu-target="${group.id}">
+  menuGrid.innerHTML = collectionArchiveData.map((group) => {
+    const isCreative = group.title.zh === '创意甜品';
+    return `
+    <button class="menu-card${isCreative ? ' menu-card--creative' : ''}" type="button" data-menu-target="${group.id}">
       <div class="menu-card-heading">
-        <div class="menu-card-title">${escapeHtml(localizeCollectionText(group.title, lang))}</div>
+        <div class="menu-card-title${isCreative ? ' menu-card-title--creative' : ''}">${escapeHtml(localizeCollectionText(group.title, lang))}</div>
         <div class="menu-card-sub">${escapeHtml(localizeCollectionText(group.subtitle, lang))}</div>
       </div>
       <span class="menu-card-icon">${escapeHtml(iconLabel)}</span>
     </button>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function renderMenuOverlay(targetId, lang = 'zh') {
@@ -2787,7 +2816,7 @@ function renderMenuOverlay(targetId, lang = 'zh') {
 
   menuOverlayBody.innerHTML = `
     <div class="menu-overlay-header">
-      <div class="menu-card-title" id="menuOverlayTitle">${escapeHtml(localizeCollectionText(group.title, lang))}</div>
+      <div class="menu-card-title${group.title.zh === '创意甜品' ? ' menu-card-title--creative' : ''}" id="menuOverlayTitle">${escapeHtml(localizeCollectionText(group.title, lang))}</div>
       <div class="menu-card-sub">${escapeHtml(localizeCollectionText(group.subtitle, lang))}</div>
     </div>
     <div class="menu-gallery">${dessertsMarkup}</div>

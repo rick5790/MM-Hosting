@@ -287,6 +287,11 @@
       image: `${collectionImageBase}/${fileName}?v=${collectionImageVersion}`
     }))
   }));
+  collectionGroups.sort((a, b) => {
+    if (a.title.zh === '创意甜品') return -1;
+    if (b.title.zh === '创意甜品') return 1;
+    return 0;
+  });
   // 实时 API 会替换 collectionGroups，所以英文兜底必须独立保存，不能从被覆盖后的
   // collectionGroups 反查，否则第二次刷新时分类和缺失的英文名会重新变成中文。
   const collectionGroupEnglishByZh = new Map(
@@ -723,15 +728,18 @@
     const menuGrid = document.getElementById('menuGrid');
     if (!menuGrid) return;
     const openHint = currentLang === 'en' ? 'Open collection' : '点击展开';
-    menuGrid.innerHTML = collectionGroups.map((group) => `
-      <button class="menu-card" type="button" data-menu-target="${group.id}">
+    menuGrid.innerHTML = collectionGroups.map((group) => {
+      const isCreative = group.title.zh === '创意甜品';
+      return `
+      <button class="menu-card${isCreative ? ' menu-card--creative' : ''}" type="button" data-menu-target="${group.id}">
         <div class="menu-card-heading">
-          <div class="menu-card-title">${escapeHtml(t(group.title))}</div>
+          <div class="menu-card-title${isCreative ? ' menu-card-title--creative' : ''}">${escapeHtml(t(group.title))}</div>
           <div class="menu-card-sub">${escapeHtml(t(group.subtitle))}</div>
           <div class="menu-card-hint">${escapeHtml(openHint)}</div>
         </div>
       </button>
-    `).join('');
+    `;
+    }).join('');
     scheduleCollectionImageWarmup();
   }
 
@@ -793,7 +801,7 @@
     const renderKey = `${targetId}:${currentLang}`;
     if (collectionOverlayRenderKey !== renderKey) bodyEl.innerHTML = `
       <div class="menu-overlay-header">
-        <div class="menu-card-title">${escapeHtml(t(group.title))}</div>
+        <div class="menu-card-title${group.title.zh === '创意甜品' ? ' menu-card-title--creative' : ''}">${escapeHtml(t(group.title))}</div>
         <div class="menu-card-sub">${escapeHtml(t(group.subtitle))}</div>
       </div>
       <div class="menu-gallery">

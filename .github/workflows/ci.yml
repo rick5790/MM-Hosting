@@ -1,0 +1,39 @@
+name: Site CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gate:
+    name: Static site quality gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Run release, regression, and integration checks
+        env:
+          CI_BASE_REF: ${{ github.base_ref }}
+          CI_BASE_SHA: ${{ github.event.before }}
+        run: sh scripts/ci/run-checks.sh
