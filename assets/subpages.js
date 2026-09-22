@@ -292,6 +292,16 @@
   const collectionGroupEnglishByZh = new Map(
     collectionGroups.map((group) => [group.title.zh, group.title.en])
   );
+  // 首屏与实时 API 必须使用同一分类顺序，避免图片加载后卡片突然换位。
+  const collectionGroupOrderByZh = new Map(
+    collectionGroups.map((group, index) => [group.title.zh, index])
+  );
+  function getCollectionGroupOrder(groupName, apiIndex) {
+    const canonicalOrder = collectionGroupOrderByZh.get(groupName || '');
+    return canonicalOrder === undefined
+      ? collectionGroupOrderByZh.size + apiIndex
+      : canonicalOrder;
+  }
   const collectionItemEnglishByZh = new Map([
     ...collectionGroups.flatMap((group) => group.items.map((item) => [item.title.zh, item.title.en]))
   ]);
@@ -1441,7 +1451,13 @@
       const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
       // 后台只有中文分类名；使用不会被 API 覆盖的英文映射。
       const localized = new Map(collectionGroups.map((g) => [g.title.zh, g]));
-      const mapped = groups.map((g, i) => {
+      const orderedGroups = groups
+        .map((group, apiIndex) => ({ group, apiIndex }))
+        .sort((a, b) => (
+          getCollectionGroupOrder(a.group.group, a.apiIndex)
+          - getCollectionGroupOrder(b.group.group, b.apiIndex)
+        ));
+      const mapped = orderedGroups.map(({ group: g, apiIndex: i }) => {
         const fallback = localized.get(g.group || '');
         return {
           id: 'cat-' + i,

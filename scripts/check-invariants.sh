@@ -86,9 +86,14 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
   want "$html" 'assets/subpages.css?v=20260913-mobile-socials-theme-69' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
-  want "$html" 'assets/subpages.js?v=20260921-layers-collection-i18n-70' \
+  want "$html" 'assets/subpages.js?v=20260921-stable-collection-order-70' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
 done
+
+want index.html 'collectionGroupOrderByZh' \
+  '首页图鉴实时数据又会按接口顺序覆盖首屏顺序，加载后卡片会跳位'
+want assets/subpages.js 'collectionGroupOrderByZh' \
+  '独立图鉴页实时数据又会按接口顺序覆盖首屏顺序，加载后卡片会跳位'
 
 # ---------- 手机汉堡侧栏社交入口 ----------
 want index.html 'class="mobile-drawer-socials"' \
