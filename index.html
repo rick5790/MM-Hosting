@@ -2704,18 +2704,25 @@ const collectionGroupEnglishByZh = new Map([
   ['戚风夹心', 'Chiffon Sandwich']
 ]);
 const collectionItemEnglishByZh = new Map([
-  ...collectionArchiveData.flatMap((group) => group.items.map((item) => [item.title.zh, item.title.en])),
+  ...collectionArchiveData.flatMap((group) => group.items.map((item) => [item.title.zh, item.title.en]))
+]);
+const collectionItemEnglishOverridesByZh = new Map([
   ['Duo抹茶麻薯', 'Duo Matcha Mochi'],
   ['巴斯克咸蛋黄麻薯月饼', 'Basque Salted Egg Yolk Mochi Mooncake'],
   ['苔条咸蛋黄流心巴斯克', 'Seaweed Salted Egg Yolk Lava Basque'],
   ['香芋大白兔玫瑰布丁奶糕', 'Taro White Rabbit Rose Pudding Milk Cake'],
-  ['焙茶香蕉挞挞', 'Hojicha Banana Tart']
+  ['焙茶香蕉挞挞', 'Hojicha Banana Tart'],
+  ['豆乳年糕胖曲奇', 'Soy Milk Rice Cake Makkie']
 ]);
 
 function getCollectionItemEnglish(item) {
   const apiEnglish = String(item.name_en || '').trim();
   const containsChinese = /[\u3400-\u9fff]/.test(apiEnglish);
-  return (!containsChinese && apiEnglish) || collectionItemEnglishByZh.get(item.name || '') || item.name || '';
+  return collectionItemEnglishOverridesByZh.get(item.name || '')
+    || (!containsChinese && apiEnglish)
+    || collectionItemEnglishByZh.get(item.name || '')
+    || item.name
+    || '';
 }
 let activeHomeCollectionOverlayId = '';
 let collectionLastApiRefresh = 0;

@@ -86,7 +86,7 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
   want "$html" 'assets/subpages.css?v=20260913-mobile-socials-theme-69' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
-  want "$html" 'assets/subpages.js?v=20260921-drawer-collection-i18n-70' \
+  want "$html" 'assets/subpages.js?v=20260921-layers-collection-i18n-70' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
 done
 
@@ -134,6 +134,12 @@ want index.html 'collectionGroupEnglishByZh' \
   '首页实时图鉴覆盖后，英文分类会退回中文'
 want assets/subpages.js 'collectionItemEnglishByZh' \
   '独立图鉴页遇到缺失或错误的 name_en 时会继续显示中文'
+want assets/subpages.js "['豆乳年糕胖曲奇', 'Soy Milk Rice Cake Makkie']" \
+  '豆乳年糕胖曲奇的英文名会重新粘在一起'
+want assets/subpages.js 'stackedEn:' \
+  '英文层次页仍会加载带中文标注的 SVG'
+want 'assets/images/svg/1-斑斓芭乐巴斯克-展开-en.svg' 'Guava Basque Cheesecake' \
+  '英文层次图的芭乐巴斯克标注缺失'
 
 # ---------- Google Analytics 电商漏报 ----------
 for html in ./*.html; do
