@@ -57,6 +57,14 @@ want index.html 'var renderSize = Math.max(320' \
 want index.html 'useStaticLogo' \
   '微信 / 不支持 WebM 时没有静态 logo 退路，首屏小人直接开天窗'
 
+want index.html 'assets/video/makkie-waving-fixed.webm?v=20260922-waving-fixed-71' \
+  '首页又引用旧版挥手动画，fixed 版本不会被加载'
+
+if [ -e assets/video/makkie-waving-clean.webm ]; then
+  printf '✗ assets/video/makkie-waving-clean.webm\n  旧版挥手动画仍在仓库中，容易被误引用并增加发布体积\n\n'
+  fail=1
+fi
+
 want index.html '@keyframes hero-logo-hop' \
   '降级用的静态 logo 不会动了'
 

@@ -51,6 +51,7 @@ try {
   await expectRoute('/assets/subpages.css', 'text/css');
   await expectRoute('/assets/subpages.js', 'application/javascript');
   await expectRoute('/assets/analytics.js', 'application/javascript');
+  await expectRoute('/assets/video/makkie-waving-fixed.webm', 'video/webm');
   await expectRoute('/robots.txt', 'text/plain');
   await expectRoute('/sitemap.xml', 'application/xml');
 
