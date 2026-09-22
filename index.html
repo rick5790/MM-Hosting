@@ -2703,19 +2703,37 @@ const collectionGroupEnglishByZh = new Map([
   ...collectionArchiveData.map((group) => [group.title.zh, group.title.en]),
   ['戚风夹心', 'Chiffon Sandwich']
 ]);
+// 首屏与实时 API 必须使用同一分类顺序，避免图片加载后卡片突然换位。
+const collectionGroupOrderByZh = new Map(
+  collectionArchiveData.map((group, index) => [group.title.zh, index])
+);
+collectionGroupOrderByZh.set('戚风夹心', collectionGroupOrderByZh.get('戚风三明治'));
+function getCollectionGroupOrder(groupName, apiIndex) {
+  const canonicalOrder = collectionGroupOrderByZh.get(groupName || '');
+  return canonicalOrder === undefined
+    ? collectionGroupOrderByZh.size + apiIndex
+    : canonicalOrder;
+}
 const collectionItemEnglishByZh = new Map([
-  ...collectionArchiveData.flatMap((group) => group.items.map((item) => [item.title.zh, item.title.en])),
+  ...collectionArchiveData.flatMap((group) => group.items.map((item) => [item.title.zh, item.title.en]))
+]);
+const collectionItemEnglishOverridesByZh = new Map([
   ['Duo抹茶麻薯', 'Duo Matcha Mochi'],
   ['巴斯克咸蛋黄麻薯月饼', 'Basque Salted Egg Yolk Mochi Mooncake'],
   ['苔条咸蛋黄流心巴斯克', 'Seaweed Salted Egg Yolk Lava Basque'],
   ['香芋大白兔玫瑰布丁奶糕', 'Taro White Rabbit Rose Pudding Milk Cake'],
-  ['焙茶香蕉挞挞', 'Hojicha Banana Tart']
+  ['焙茶香蕉挞挞', 'Hojicha Banana Tart'],
+  ['豆乳年糕胖曲奇', 'Soy Milk Rice Cake Makkie']
 ]);
 
 function getCollectionItemEnglish(item) {
   const apiEnglish = String(item.name_en || '').trim();
   const containsChinese = /[\u3400-\u9fff]/.test(apiEnglish);
-  return (!containsChinese && apiEnglish) || collectionItemEnglishByZh.get(item.name || '') || item.name || '';
+  return collectionItemEnglishOverridesByZh.get(item.name || '')
+    || (!containsChinese && apiEnglish)
+    || collectionItemEnglishByZh.get(item.name || '')
+    || item.name
+    || '';
 }
 let activeHomeCollectionOverlayId = '';
 let collectionLastApiRefresh = 0;
@@ -2841,7 +2859,13 @@ async function loadCollectionFromApi() {
     if (!res.ok) return;
     const payload = await res.json();
     const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
-    const mapped = groups.map((g, i) => ({
+    const orderedGroups = groups
+      .map((group, apiIndex) => ({ group, apiIndex }))
+      .sort((a, b) => (
+        getCollectionGroupOrder(a.group.group, a.apiIndex)
+        - getCollectionGroupOrder(b.group.group, b.apiIndex)
+      ));
+    const mapped = orderedGroups.map(({ group: g, apiIndex: i }) => ({
       id: 'cat-' + i,
       title: {
         zh: g.group || '',

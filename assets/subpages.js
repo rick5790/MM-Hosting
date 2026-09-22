@@ -292,19 +292,36 @@
   const collectionGroupEnglishByZh = new Map(
     collectionGroups.map((group) => [group.title.zh, group.title.en])
   );
+  // 首屏与实时 API 必须使用同一分类顺序，避免图片加载后卡片突然换位。
+  const collectionGroupOrderByZh = new Map(
+    collectionGroups.map((group, index) => [group.title.zh, index])
+  );
+  function getCollectionGroupOrder(groupName, apiIndex) {
+    const canonicalOrder = collectionGroupOrderByZh.get(groupName || '');
+    return canonicalOrder === undefined
+      ? collectionGroupOrderByZh.size + apiIndex
+      : canonicalOrder;
+  }
   const collectionItemEnglishByZh = new Map([
-    ...collectionGroups.flatMap((group) => group.items.map((item) => [item.title.zh, item.title.en])),
+    ...collectionGroups.flatMap((group) => group.items.map((item) => [item.title.zh, item.title.en]))
+  ]);
+  const collectionItemEnglishOverridesByZh = new Map([
     ['Duo抹茶麻薯', 'Duo Matcha Mochi'],
     ['巴斯克咸蛋黄麻薯月饼', 'Basque Salted Egg Yolk Mochi Mooncake'],
     ['苔条咸蛋黄流心巴斯克', 'Seaweed Salted Egg Yolk Lava Basque'],
     ['香芋大白兔玫瑰布丁奶糕', 'Taro White Rabbit Rose Pudding Milk Cake'],
-    ['焙茶香蕉挞挞', 'Hojicha Banana Tart']
+    ['焙茶香蕉挞挞', 'Hojicha Banana Tart'],
+    ['豆乳年糕胖曲奇', 'Soy Milk Rice Cake Makkie']
   ]);
 
   function getCollectionItemEnglish(item) {
     const apiEnglish = String(item.name_en || '').trim();
     const containsChinese = /[\u3400-\u9fff]/.test(apiEnglish);
-    return (!containsChinese && apiEnglish) || collectionItemEnglishByZh.get(item.name || '') || item.name || '';
+    return collectionItemEnglishOverridesByZh.get(item.name || '')
+      || (!containsChinese && apiEnglish)
+      || collectionItemEnglishByZh.get(item.name || '')
+      || item.name
+      || '';
   }
 
   const instagramPosts = [
@@ -396,37 +413,49 @@
       zh: { title: '斑斓芭乐巴斯克', sub: '斑斓戚风 · 芭乐巴斯克芝士' },
       en: { title: 'Pandan Guava Basque', sub: 'Pandan chiffon · guava Basque cheesecake' },
       stacked: 'assets/images/svg/1-斑斓芭乐巴斯克-堆叠.svg?v=20260829-idle-dessert-bob',
-      expanded: 'assets/images/svg/1-斑斓芭乐巴斯克-展开.svg?v=20260829-no-layer-numbers'
+      expanded: 'assets/images/svg/1-斑斓芭乐巴斯克-展开.svg?v=20260829-no-layer-numbers',
+      stackedEn: 'assets/images/svg/1-斑斓芭乐巴斯克-堆叠-en.svg?v=20260921-layers-i18n-70',
+      expandedEn: 'assets/images/svg/1-斑斓芭乐巴斯克-展开-en.svg?v=20260921-layers-i18n-70'
     },
     {
       zh: { title: '紫苏白桃芭乐戚风三明治', sub: '紫苏戚风 · 白桃芭乐奶油' },
       en: { title: 'Shiso White Peach Guava Chiffon Sandwich', sub: 'Shiso chiffon · white peach guava cream' },
       stacked: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-堆叠.svg?v=20260829-idle-dessert-bob',
-      expanded: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-展开.svg?v=20260829-no-layer-numbers'
+      expanded: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-展开.svg?v=20260829-no-layer-numbers',
+      stackedEn: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-堆叠-en.svg?v=20260921-layers-i18n-70',
+      expandedEn: 'assets/images/svg/2-紫苏白桃芭乐戚风三明治-展开-en.svg?v=20260921-layers-i18n-70'
     },
     {
       zh: { title: '迪拜糯曲奇', sub: '可可曲奇 · 糯米麻薯 · 开心果卡达耶夫' },
       en: { title: 'Dubai Mochi Cookie', sub: 'Cocoa cookie · mochi · pistachio kataifi' },
       stacked: 'assets/images/svg/3-迪拜糯曲奇-堆叠.svg?v=20260829-idle-dessert-bob',
-      expanded: 'assets/images/svg/3-迪拜糯曲奇-展开.svg?v=20260829-no-layer-numbers'
+      expanded: 'assets/images/svg/3-迪拜糯曲奇-展开.svg?v=20260829-no-layer-numbers',
+      stackedEn: 'assets/images/svg/3-迪拜糯曲奇-堆叠-en.svg?v=20260921-layers-i18n-70',
+      expandedEn: 'assets/images/svg/3-迪拜糯曲奇-展开-en.svg?v=20260921-layers-i18n-70'
     },
     {
       zh: { title: '金沙双黄胖曲奇', sub: '黄油曲奇 · 金沙双黄奶油' },
       en: { title: 'Salted Egg Yolk Stuffed Cookie', sub: 'Butter cookie · salted egg yolk cream' },
       stacked: 'assets/images/svg/4-金沙双黄胖曲奇-堆叠.svg?v=20260829-idle-dessert-bob',
-      expanded: 'assets/images/svg/4-金沙双黄胖曲奇-展开.svg?v=20260829-no-layer-numbers'
+      expanded: 'assets/images/svg/4-金沙双黄胖曲奇-展开.svg?v=20260829-no-layer-numbers',
+      stackedEn: 'assets/images/svg/4-金沙双黄胖曲奇-堆叠-en.svg?v=20260921-layers-i18n-70',
+      expandedEn: 'assets/images/svg/4-金沙双黄胖曲奇-展开-en.svg?v=20260921-layers-i18n-70'
     },
     {
       zh: { title: '桂花柿子酒酿布丁奶糕', sub: '柿子果泥 · 酒酿布丁 · 桂花奶油' },
       en: { title: 'Osmanthus Persimmon Rice Wine Pudding Cake', sub: 'Persimmon · rice wine pudding · osmanthus cream' },
       stacked: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-堆叠.svg?v=20260829-idle-dessert-bob',
-      expanded: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-展开.svg?v=20260829-no-layer-numbers'
+      expanded: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-展开.svg?v=20260829-no-layer-numbers',
+      stackedEn: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-堆叠-en.svg?v=20260921-layers-i18n-70',
+      expandedEn: 'assets/images/svg/5-桂花柿子酒酿布丁奶糕-展开-en.svg?v=20260921-layers-i18n-70'
     },
     {
       zh: { title: '巧克力香蕉米布丁', sub: '巧克力布丁 · 米布丁 · 焦糖香蕉' },
       en: { title: 'Chocolate Banana Rice Pudding', sub: 'Chocolate pudding · rice pudding · caramelized banana' },
       stacked: 'assets/images/svg/7-巧克力香蕉米布丁-堆叠.svg?v=20260829-idle-dessert-bob',
-      expanded: 'assets/images/svg/7-巧克力香蕉米布丁-展开.svg?v=20260829-no-layer-numbers'
+      expanded: 'assets/images/svg/7-巧克力香蕉米布丁-展开.svg?v=20260829-no-layer-numbers',
+      stackedEn: 'assets/images/svg/7-巧克力香蕉米布丁-堆叠-en.svg?v=20260921-layers-i18n-70',
+      expandedEn: 'assets/images/svg/7-巧克力香蕉米布丁-展开-en.svg?v=20260921-layers-i18n-70'
     }
   ];
 
@@ -796,6 +825,8 @@
     if (!grid) return;
     grid.innerHTML = layerShowcaseCards.map((card) => {
       const copy = currentLang === 'en' ? card.en : card.zh;
+      const stackedModel = currentLang === 'en' ? card.stackedEn : card.stacked;
+      const expandedModel = currentLang === 'en' ? card.expandedEn : card.expanded;
       const openLabel = currentLang === 'en' ? `Expand ${copy.title}` : `展开${copy.title}`;
       const closeLabel = currentLang === 'en' ? `Collapse ${copy.title}` : `收起${copy.title}`;
       return `
@@ -803,8 +834,8 @@
           <div class="layers-showcase-name"><span class="layers-showcase-name-text">${escapeHtml(copy.title)}</span></div>
           <div class="layers-showcase-sub">${escapeHtml(copy.sub)}</div>
           <div class="layers-showcase-scene">
-            <img class="layers-showcase-model layers-showcase-model-stacked" src="${escapeHtml(card.stacked)}" alt="${escapeHtml(copy.title)}" loading="lazy" decoding="async">
-            <img class="layers-showcase-model layers-showcase-model-expanded" data-src="${escapeHtml(card.expanded)}" alt="" aria-hidden="true" decoding="async">
+            <img class="layers-showcase-model layers-showcase-model-stacked" src="${escapeHtml(stackedModel)}" alt="${escapeHtml(copy.title)}" loading="lazy" decoding="async">
+            <img class="layers-showcase-model layers-showcase-model-expanded" data-src="${escapeHtml(expandedModel)}" alt="" aria-hidden="true" decoding="async">
           </div>
           <div class="layers-showcase-hint" aria-hidden="true">
             <span class="layers-showcase-hint-open">${currentLang === 'en' ? 'Click to expand' : '点击展开'}</span>
@@ -1420,7 +1451,13 @@
       const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
       // 后台只有中文分类名；使用不会被 API 覆盖的英文映射。
       const localized = new Map(collectionGroups.map((g) => [g.title.zh, g]));
-      const mapped = groups.map((g, i) => {
+      const orderedGroups = groups
+        .map((group, apiIndex) => ({ group, apiIndex }))
+        .sort((a, b) => (
+          getCollectionGroupOrder(a.group.group, a.apiIndex)
+          - getCollectionGroupOrder(b.group.group, b.apiIndex)
+        ));
+      const mapped = orderedGroups.map(({ group: g, apiIndex: i }) => {
         const fallback = localized.get(g.group || '');
         return {
           id: 'cat-' + i,
