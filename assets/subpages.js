@@ -287,6 +287,25 @@
       image: `${collectionImageBase}/${fileName}?v=${collectionImageVersion}`
     }))
   }));
+  // 实时 API 会替换 collectionGroups，所以英文兜底必须独立保存，不能从被覆盖后的
+  // collectionGroups 反查，否则第二次刷新时分类和缺失的英文名会重新变成中文。
+  const collectionGroupEnglishByZh = new Map(
+    collectionGroups.map((group) => [group.title.zh, group.title.en])
+  );
+  const collectionItemEnglishByZh = new Map([
+    ...collectionGroups.flatMap((group) => group.items.map((item) => [item.title.zh, item.title.en])),
+    ['Duo抹茶麻薯', 'Duo Matcha Mochi'],
+    ['巴斯克咸蛋黄麻薯月饼', 'Basque Salted Egg Yolk Mochi Mooncake'],
+    ['苔条咸蛋黄流心巴斯克', 'Seaweed Salted Egg Yolk Lava Basque'],
+    ['香芋大白兔玫瑰布丁奶糕', 'Taro White Rabbit Rose Pudding Milk Cake'],
+    ['焙茶香蕉挞挞', 'Hojicha Banana Tart']
+  ]);
+
+  function getCollectionItemEnglish(item) {
+    const apiEnglish = String(item.name_en || '').trim();
+    const containsChinese = /[\u3400-\u9fff]/.test(apiEnglish);
+    return (!containsChinese && apiEnglish) || collectionItemEnglishByZh.get(item.name || '') || item.name || '';
+  }
 
   const instagramPosts = [
     {
@@ -976,6 +995,9 @@
   }
 
   function applyLanguage(lang) {
+    const keepMobileDrawerOpen = Boolean(
+      mobileDrawer && !mobileDrawer.hidden && mobileDrawer.classList.contains('is-open')
+    );
     currentLang = lang === 'en' ? 'en' : 'zh';
     body.dataset.lang = currentLang;
     document.documentElement.lang = currentLang;
@@ -1008,6 +1030,15 @@
     renderInstagramPage();
     renderContactPage();
     renderIntroPage();
+
+    // renderNavAndFooter 会重建侧栏内容；切换语言后恢复原有打开状态与焦点。
+    if (keepMobileDrawerOpen) {
+      openDrawer();
+      requestAnimationFrame(() => {
+        const mobileLanguageControl = document.querySelector('[data-mobile-lang]');
+        if (mobileLanguageControl) mobileLanguageControl.focus({ preventScroll: true });
+      });
+    }
 
     document.dispatchEvent(new CustomEvent('makkie:languagechange', {
       detail: { lang: currentLang }
@@ -1387,18 +1418,19 @@
       if (!res.ok) return;
       const payload = await res.json();
       const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
-      // 后台只有中文分类名（collection_items 没有 category_en），直接拿它当英文会让
-      // 英文版图鉴的分类标题全是中文。这里按中文名回查硬编码兜底，取回英文标题与副标题；
-      // 后台新增的分类查不到时才退回中文。
+      // 后台只有中文分类名；使用不会被 API 覆盖的英文映射。
       const localized = new Map(collectionGroups.map((g) => [g.title.zh, g]));
       const mapped = groups.map((g, i) => {
         const fallback = localized.get(g.group || '');
         return {
           id: 'cat-' + i,
-          title: { zh: g.group || '', en: (fallback && fallback.title.en) || g.group || '' },
+          title: {
+            zh: g.group || '',
+            en: collectionGroupEnglishByZh.get(g.group || '') || g.group || ''
+          },
           subtitle: fallback ? fallback.subtitle : { zh: '', en: '' },
           items: (g.items || [])
-            .map((it) => ({ title: { zh: it.name || '', en: it.name_en || it.name || '' }, image: it.image_url || '' }))
+            .map((it) => ({ title: { zh: it.name || '', en: getCollectionItemEnglish(it) }, image: it.image_url || '' }))
             .filter((it) => it.image)
         };
       }).filter((g) => g.items.length);

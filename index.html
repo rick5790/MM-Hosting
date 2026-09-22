@@ -2628,7 +2628,7 @@ let collectionArchiveData = [
   },
   {
     id: 'menu-cookie',
-    title: { zh: 'Makkie 胖曲奇', en: 'Makkie' },
+    title: { zh: 'Makkie 胖曲奇', en: 'Makkie Cookies' },
     items: [
       { title: { zh: '咸奶茶炒米胖曲奇', en: 'Salted Milk Tea Toasted Rice Makkie' }, fileName: 'collection-04.jpg' },
       { title: { zh: '朗姆酒提子胖曲奇', en: 'Rum Raisin Makkie' }, fileName: 'collection-13.jpg' },
@@ -2697,6 +2697,26 @@ let collectionArchiveData = [
     }))
     .filter((item) => item.image)
 }));
+// 后台分类只有中文，且旧数据可能把中文误存进 name_en。固定保留一份英文兜底，
+// 避免实时 API 覆盖图鉴后，切到英文仍显示中文。
+const collectionGroupEnglishByZh = new Map([
+  ...collectionArchiveData.map((group) => [group.title.zh, group.title.en]),
+  ['戚风夹心', 'Chiffon Sandwich']
+]);
+const collectionItemEnglishByZh = new Map([
+  ...collectionArchiveData.flatMap((group) => group.items.map((item) => [item.title.zh, item.title.en])),
+  ['Duo抹茶麻薯', 'Duo Matcha Mochi'],
+  ['巴斯克咸蛋黄麻薯月饼', 'Basque Salted Egg Yolk Mochi Mooncake'],
+  ['苔条咸蛋黄流心巴斯克', 'Seaweed Salted Egg Yolk Lava Basque'],
+  ['香芋大白兔玫瑰布丁奶糕', 'Taro White Rabbit Rose Pudding Milk Cake'],
+  ['焙茶香蕉挞挞', 'Hojicha Banana Tart']
+]);
+
+function getCollectionItemEnglish(item) {
+  const apiEnglish = String(item.name_en || '').trim();
+  const containsChinese = /[\u3400-\u9fff]/.test(apiEnglish);
+  return (!containsChinese && apiEnglish) || collectionItemEnglishByZh.get(item.name || '') || item.name || '';
+}
 let activeHomeCollectionOverlayId = '';
 let collectionLastApiRefresh = 0;
 
@@ -2823,11 +2843,14 @@ async function loadCollectionFromApi() {
     const groups = payload && payload.data && Array.isArray(payload.data.groups) ? payload.data.groups : [];
     const mapped = groups.map((g, i) => ({
       id: 'cat-' + i,
-      title: { zh: g.group || '', en: g.group || '' },
+      title: {
+        zh: g.group || '',
+        en: collectionGroupEnglishByZh.get(g.group || '') || g.group || ''
+      },
       subtitle: { zh: '', en: '' },
       items: (g.items || [])
         .map((it) => ({
-          title: { zh: it.name || '', en: it.name_en || it.name || '' },
+          title: { zh: it.name || '', en: getCollectionItemEnglish(it) },
           image: it.image_url || ''
         }))
         .filter((it) => it.image)
@@ -4638,7 +4661,8 @@ mobileLangButtons.forEach((button) => button.addEventListener('click', () => {
   if (typeof applyBilingualLanguage === 'function') {
     applyBilingualLanguage(nextLang);
   }
-  closeMobileDrawer();
+  // 手机侧栏切换语言时保持抽屉打开；这不是一次页面导航。
+  button.focus({ preventScroll: true });
 }));
 orderEntryButtons.forEach((button) => button.addEventListener('click', () => {
   closeMobileDrawer();

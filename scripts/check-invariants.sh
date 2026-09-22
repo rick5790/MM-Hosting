@@ -86,7 +86,7 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
   want "$html" 'assets/subpages.css?v=20260913-mobile-socials-theme-69' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
-  want "$html" 'assets/subpages.js?v=20260913-mobile-socials-i18n-69' \
+  want "$html" 'assets/subpages.js?v=20260921-drawer-collection-i18n-70' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
 done
 
@@ -101,6 +101,10 @@ want assets/subpages.js "currentLang === 'en' ? 'SOCIALS' : '社交媒体'" \
   '子页面手机侧栏的社交媒体标题不再跟随语言切换'
 want assets/subpages.css '.mobile-drawer-socials{display:none;}' \
   'SOCIALS 卡片失去桌面隐藏兜底，可能跑到非手机布局'
+want index.html '手机侧栏切换语言时保持抽屉打开' \
+  '首页手机侧栏切换语言后又自动关闭'
+want assets/subpages.js '切换语言后恢复原有打开状态与焦点' \
+  '子页面重建导航后没有恢复手机侧栏，切换语言会让侧栏消失'
 
 # ---------- 图鉴图片首开速度 ----------
 want collection.html '<link rel="preconnect" href="https://admin.makkiemua.com" crossorigin>' \
@@ -126,6 +130,10 @@ want index.html "cache: 'no-store'" \
 
 want index.html "window.addEventListener('pageshow'" \
   '首页从 Safari 返回缓存恢复时不再主动同步后台图鉴目录'
+want index.html 'collectionGroupEnglishByZh' \
+  '首页实时图鉴覆盖后，英文分类会退回中文'
+want assets/subpages.js 'collectionItemEnglishByZh' \
+  '独立图鉴页遇到缺失或错误的 name_en 时会继续显示中文'
 
 # ---------- Google Analytics 电商漏报 ----------
 for html in ./*.html; do
