@@ -9,7 +9,8 @@ const root = process.cwd();
 const mime = {
   '.html':'text/html', '.htm':'text/html', '.css':'text/css', '.js':'application/javascript',
   '.json':'application/json', '.png':'image/png', '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.svg':'image/svg+xml',
-  '.webp':'image/webp', '.gif':'image/gif', '.mp4':'video/mp4', '.webm':'video/webm', '.ogg':'audio/ogg'
+  '.webp':'image/webp', '.gif':'image/gif', '.mp4':'video/mp4', '.webm':'video/webm', '.ogg':'audio/ogg',
+  '.txt':'text/plain', '.xml':'application/xml'
 };
 
 const server = http.createServer((req, res) => {
