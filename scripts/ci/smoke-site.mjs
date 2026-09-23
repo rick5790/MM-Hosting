@@ -51,6 +51,12 @@ try {
   await expectRoute('/assets/subpages.css', 'text/css');
   await expectRoute('/assets/subpages.js', 'application/javascript');
   await expectRoute('/assets/analytics.js', 'application/javascript');
+  await expectRoute('/assets/video/makkie-waving-fixed.webm', 'video/webm');
+  await expectRoute('/assets/video/makkie-mid-autumn-2026.webm', 'video/webm');
+  await expectRoute('/assets/video/makkie-halloween.webm', 'video/webm');
+  await expectRoute('/assets/video/makkie-christmas.webm', 'video/webm');
+  await expectRoute('/assets/video/makkie-new-year.webm', 'video/webm');
+  await expectRoute('/assets/video/makkie-cny-2027.webm', 'video/webm');
   await expectRoute('/robots.txt', 'text/plain');
   await expectRoute('/sitemap.xml', 'application/xml');
 

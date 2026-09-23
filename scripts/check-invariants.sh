@@ -57,6 +57,46 @@ want index.html 'var renderSize = Math.max(320' \
 want index.html 'useStaticLogo' \
   '微信 / 不支持 WebM 时没有静态 logo 退路，首屏小人直接开天窗'
 
+want assets/mascot-schedule.js 'assets/video/makkie-waving-fixed.webm?v=20260922-holiday-mascots-71' \
+  '首页默认 mascot 又引用旧版挥手动画，fixed 版本不会被加载'
+
+want assets/mascot-schedule.js "timeZone: 'America/Los_Angeles'" \
+  '节日 mascot 不再按 Los Angeles 日期切换，访客设备时区会导致提前或延后展示'
+
+want index.html 'MakkieMascotSchedule' \
+  '节日 mascot 的日期选择器被删掉，所有日期都会退回默认版本'
+
+want index.html 'class="hero-mascot-glass"' \
+  '首页 mascot 的毛玻璃组件外层被移除，节日视频会直接浮在背景上'
+
+want index.html 'background:rgba(249,241,229,.26);' \
+  '首页 mascot 毛玻璃的半透明背景被移除，只剩无底色边框'
+
+want index.html 'backdrop-filter:blur(18px) saturate(.88);' \
+  '首页 mascot 毛玻璃模糊效果被移除'
+
+want index.html 'width:min(36vw,180px);' \
+  '首页 mascot 又恢复为过大的 220px 尺寸，毛玻璃圆会遮住太多背景'
+
+for asset in \
+  assets/video/makkie-waving-fixed.webm \
+  assets/video/makkie-mid-autumn-2026.webm \
+  assets/video/makkie-halloween.webm \
+  assets/video/makkie-christmas.webm \
+  assets/video/makkie-new-year.webm \
+  assets/video/makkie-cny-2027.webm
+do
+  if [ ! -f "$asset" ]; then
+    printf '✗ %s\n  节日 mascot 资源缺失，命中对应日期时首页会空白\n\n' "$asset"
+    fail=1
+  fi
+done
+
+if [ -e assets/video/makkie-waving-clean.webm ]; then
+  printf '✗ assets/video/makkie-waving-clean.webm\n  旧版挥手动画仍在仓库中，容易被误引用并增加发布体积\n\n'
+  fail=1
+fi
+
 want index.html '@keyframes hero-logo-hop' \
   '降级用的静态 logo 不会动了'
 

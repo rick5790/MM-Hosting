@@ -29,6 +29,10 @@ echo '::group::Release and cache-version contract'
 node scripts/ci/check-version.mjs
 echo '::endgroup::'
 
+echo '::group::Holiday mascot schedule'
+node scripts/ci/check-mascot-schedule.mjs
+echo '::endgroup::'
+
 echo '::group::HTML, CSS, JavaScript, and local links'
 node scripts/ci/check-site.mjs
 echo '::endgroup::'
