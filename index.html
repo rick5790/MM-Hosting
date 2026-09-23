@@ -1744,6 +1744,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   </div>
 </div>
 
+<script src="assets/mascot-schedule.js?v=20260922-holiday-mascots-71"></script>
 <div class="hero">
   <video class="hero-bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
     <source src="assets/video/bakery-hero-loop-vertical-1080x1920.mp4" type="video/mp4" media="(orientation:portrait)">
@@ -1751,9 +1752,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   </video>
   <div class="hero-bg-tint" aria-hidden="true"></div>
   <div class="hero-mascot-glass">
-    <video class="hero-logo hero-logo--motion" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="Makkie Mua waving logo">
-      <source src="assets/video/makkie-waving-fixed.webm?v=20260922-waving-fixed-71" type="video/webm">
-    </video>
+    <video class="hero-logo hero-logo--motion" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="Makkie Mua waving logo"></video>
     <canvas class="hero-logo hero-logo--decoded" width="320" height="320" aria-hidden="true"></canvas>
     <img class="hero-logo hero-logo--clean" src="assets/images/brand/Makkie_Original_Logo.png" alt="Makkie Mua">
     <script>
@@ -1765,10 +1764,16 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
         var decoded = document.querySelector('.hero-logo--decoded');
         var img = document.querySelector('.hero-logo--clean');
         var usedStatic = false;
+        // 节日 mascot 统一按 Los Angeles 日历切换；?mascot=christmas 等可强制预览。
+        var mascotSchedule = window.MakkieMascotSchedule;
+        var mascotEdition = mascotSchedule.requestedEdition(location.search);
+        video.src = mascotSchedule.videos[mascotEdition];
+        video.dataset.mascotEdition = mascotEdition;
+        video.load();
         // 真机诊断：index.html?mascotdebug=1 会在左下角贴一张小条，说明这台浏览器
         // 到底走了哪条路（WebM / WebM 透明修复 / 微信静态图），省得靠猜。
         var debugOn = /(?:^|[?&])mascotdebug=1(?:&|$)/.test(location.search);
-        var diag = { path:'webm', why:'' };
+        var diag = { path:'webm/' + mascotEdition, why:'' };
         var showDiag = function () {
           if (!debugOn) return;
           var box = document.getElementById('mascotDiag') || document.createElement('div');
