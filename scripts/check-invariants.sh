@@ -141,9 +141,19 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
   want "$html" 'assets/subpages.css?v=20260922-creative-first-70' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
-  want "$html" 'assets/subpages.js?v=20260922-creative-first-70' \
+  want "$html" 'assets/subpages.js?v=20260922-browser-language-seo-72' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
 done
+
+# ---------- 首页品牌搜索与语言 ----------
+want index.html '"alternateName": ["MakkieMua", "makkiemua.com"]' \
+  '首页 WebSite 结构化数据失去无空格品牌别名，Google 更难把 makkiemua 查询与首页关联'
+want index.html 'alt="Makkie Mua (MakkieMua)"' \
+  '首页可见品牌 H1 失去 Makkie Mua / MakkieMua 的等价名称'
+want index.html 'function getPreferredBilingualLanguage()' \
+  '首页首次访问不再按浏览器语言选择中英文'
+want assets/subpages.js 'function getPreferredLanguage()' \
+  '子页面首次访问不再按浏览器语言选择中英文'
 
 want index.html 'collectionGroupOrderByZh' \
   '首页图鉴实时数据又会按接口顺序覆盖首屏顺序，加载后卡片会跳位'

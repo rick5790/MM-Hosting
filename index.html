@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="site-version" content="7.2">
-<title>Makkie Mua | 手作创意甜品 | Los Angeles &amp; Orange County</title>
-<meta name="description" content="Makkie Mua 是位于 Los Angeles 与 Orange County 的手作创意甜品品牌，提供巴斯克、Makkie 胖曲奇、戚风三明治、米布丁、布丁奶糕等每周预订甜品。">
+<title>Makkie Mua（MakkieMua）| 洛杉矶手作创意甜品</title>
+<meta name="description" content="Makkie Mua（MakkieMua）手作创意甜品首页。浏览 Los Angeles 与 Orange County 本周预订、巴斯克、胖曲奇、戚风夹心、米布丁与创意甜品。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 <meta name="theme-color" content="#1A0F05">
 <meta name="apple-mobile-web-app-title" content="Makkie Mua">
@@ -15,14 +15,15 @@
 <link rel="dns-prefetch" href="//admin.makkiemua.com">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Makkie Mua">
-<meta property="og:title" content="Makkie Mua | 手作创意甜品 | Los Angeles &amp; Orange County">
-<meta property="og:description" content="Makkie Mua 是位于 Los Angeles 与 Orange County 的手作创意甜品品牌，提供巴斯克、Makkie 胖曲奇、戚风三明治、米布丁、布丁奶糕等每周预订甜品。">
+<meta property="og:title" content="Makkie Mua（MakkieMua）| 洛杉矶手作创意甜品">
+<meta property="og:description" content="Makkie Mua（MakkieMua）手作创意甜品首页。浏览 Los Angeles 与 Orange County 本周预订、巴斯克、胖曲奇、戚风夹心、米布丁与创意甜品。">
 <meta property="og:url" content="https://www.makkiemua.com/">
 <meta property="og:image" content="https://www.makkiemua.com/assets/images/brand/Makkie_Mua_Text_Original.png">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Makkie Mua | 手作创意甜品 | Los Angeles &amp; Orange County">
-<meta name="twitter:description" content="Makkie Mua 是位于 Los Angeles 与 Orange County 的手作创意甜品品牌，提供巴斯克、Makkie 胖曲奇、戚风三明治、米布丁、布丁奶糕等每周预订甜品。">
+<meta name="twitter:title" content="Makkie Mua（MakkieMua）| 洛杉矶手作创意甜品">
+<meta name="twitter:description" content="Makkie Mua（MakkieMua）手作创意甜品首页。浏览 Los Angeles 与 Orange County 本周预订、巴斯克、胖曲奇、戚风夹心、米布丁与创意甜品。">
 <meta name="twitter:image" content="https://www.makkiemua.com/assets/images/brand/Makkie_Mua_Text_Original.png">
 <script src="assets/analytics.js?v=20260903-ga4-ecommerce-67"></script>
 <script type="application/ld+json">
@@ -34,6 +35,7 @@
       "@id": "https://www.makkiemua.com/#website",
       "url": "https://www.makkiemua.com/",
       "name": "Makkie Mua",
+      "alternateName": ["MakkieMua", "makkiemua.com"],
       "inLanguage": ["zh-CN", "en-US"],
       "publisher": {
         "@id": "https://www.makkiemua.com/#organization"
@@ -43,6 +45,7 @@
       "@type": "Organization",
       "@id": "https://www.makkiemua.com/#organization",
       "name": "Makkie Mua",
+      "alternateName": ["MakkieMua", "@makkiemua"],
       "url": "https://www.makkiemua.com/",
       "logo": {
         "@type": "ImageObject",
@@ -510,6 +513,11 @@ body[data-lang="en"] .mid-autumn-egg__bubble-en{display:inline;}
   background:transparent;
   object-fit:contain;
   filter:drop-shadow(0 7px 14px rgba(61,38,27,.12));
+}
+.hero-wordmark-heading{
+  margin:0;
+  font:inherit;
+  line-height:0;
 }
 .hero-eyebrow{font-size:12px;color:rgba(76,49,36,.82);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.55rem;font-family:'Noto Serif SC',serif;font-weight:500;}
 .hero-title{font-size:clamp(3rem,8vw,6.5rem);font-weight:600;line-height:0.95;letter-spacing:-0.03em;color:var(--text);margin-bottom:2.5rem;}
@@ -2282,7 +2290,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
       }
     })();
   </script>
-  <img class="hero-wordmark-art" src="assets/images/brand/Makkie_Mua_Text_Original.png" alt="Makkie Mua">
+  <h1 class="hero-wordmark-heading">
+    <img class="hero-wordmark-art" src="assets/images/brand/Makkie_Mua_Text_Original.png" alt="Makkie Mua (MakkieMua)">
+  </h1>
   <div class="hero-tagline">Butter Off With Makkie<sup class="hero-tagline-mark">®</sup></div>
   <div class="hero-links">
     <a href="index.html" class="btn-chip">主页</a>
@@ -6035,10 +6045,24 @@ const bilingualStorageKey = 'makkie-language';
 let bilingualLanguage = 'zh';
 let bilingualActiveMenuId = null;
 
+function getPreferredBilingualLanguage() {
+  const requestedLanguage = new URLSearchParams(window.location.search).get('lang');
+  if (requestedLanguage && requestedLanguage.toLowerCase().startsWith('zh')) return 'zh';
+  if (requestedLanguage && requestedLanguage.toLowerCase().startsWith('en')) return 'en';
+
+  try {
+    const savedLanguage = localStorage.getItem(bilingualStorageKey);
+    if (savedLanguage === 'zh' || savedLanguage === 'en') return savedLanguage;
+  } catch (error) {}
+
+  const browserLanguage = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+  return browserLanguage.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+}
+
 try {
-  bilingualLanguage = localStorage.getItem(bilingualStorageKey) === 'en' ? 'en' : 'zh';
+  bilingualLanguage = getPreferredBilingualLanguage();
 } catch (error) {
-  bilingualLanguage = 'zh';
+  bilingualLanguage = 'en';
 }
 
 const bilingualCopy = {
@@ -6059,8 +6083,8 @@ const bilingualCopy = {
       cta: '查看款式和口味'
     },
     seo: {
-      title: 'Makkie Mua | 手作创意甜品 | Los Angeles & Orange County',
-      description: 'Makkie Mua 是位于 Los Angeles 与 Orange County 的手作创意甜品品牌，提供巴斯克、Makkie 胖曲奇、戚风三明治、米布丁、布丁奶糕等每周预订甜品。',
+      title: 'Makkie Mua（MakkieMua）| 洛杉矶手作创意甜品',
+      description: 'Makkie Mua（MakkieMua）手作创意甜品首页。浏览 Los Angeles 与 Orange County 本周预订、巴斯克、胖曲奇、戚风夹心、米布丁与创意甜品。',
       locale: 'zh_CN'
     },
     hero: {
@@ -6203,8 +6227,8 @@ const bilingualCopy = {
       cta: 'View styles & flavors'
     },
     seo: {
-      title: 'Makkie Mua | Handmade Creative Desserts | Los Angeles & Orange County',
-      description: 'Makkie Mua is a handmade creative dessert brand serving Los Angeles and Orange County with Basque cheesecakes, Makkie cookies, chiffon sandwiches, rice puddings, pudding milk cakes, and weekly preorder sweets.',
+      title: 'Makkie Mua (MakkieMua) | Handmade Desserts in Los Angeles',
+      description: 'Makkie Mua (MakkieMua) is a handmade creative dessert studio serving Los Angeles and Orange County. Explore weekly preorders, Basque cheesecakes, stuffed cookies, chiffon sandwiches, rice puddings, and more.',
       locale: 'en_US'
     },
     hero: {

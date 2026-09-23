@@ -584,11 +584,21 @@
   const gooeyRadiusFactor = 200;
   const gooeyBurstDuration = 1500;
   const navBurstNavigateDelay = 180;
-  try {
-    currentLang = localStorage.getItem(storageKey) === 'en' ? 'en' : 'zh';
-  } catch (error) {
-    currentLang = 'zh';
+  function getPreferredLanguage() {
+    const requestedLanguage = new URLSearchParams(window.location.search).get('lang');
+    if (requestedLanguage && requestedLanguage.toLowerCase().startsWith('zh')) return 'zh';
+    if (requestedLanguage && requestedLanguage.toLowerCase().startsWith('en')) return 'en';
+
+    try {
+      const savedLanguage = localStorage.getItem(storageKey);
+      if (savedLanguage === 'zh' || savedLanguage === 'en') return savedLanguage;
+    } catch (error) {}
+
+    const browserLanguage = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+    return browserLanguage.toLowerCase().startsWith('zh') ? 'zh' : 'en';
   }
+
+  currentLang = getPreferredLanguage();
 
   function escapeHtml(value) {
     return String(value)
