@@ -57,7 +57,7 @@ want index.html 'var renderSize = Math.max(320' \
 want index.html 'useStaticLogo' \
   '微信 / 不支持 WebM 时没有静态 logo 退路，首屏小人直接开天窗'
 
-want assets/mascot-schedule.js 'assets/video/makkie-waving-fixed.webm?v=20260922-holiday-mascots-71' \
+want assets/mascot-schedule.js 'assets/videos/mascots/default/makkie-waving-fixed.webm?v=20260922-organized-holiday-assets-72' \
   '首页默认 mascot 又引用旧版挥手动画，fixed 版本不会被加载'
 
 want assets/mascot-schedule.js "timeZone: 'America/Los_Angeles'" \
@@ -79,12 +79,12 @@ want index.html 'width:min(36vw,180px);' \
   '首页 mascot 又恢复为过大的 220px 尺寸，毛玻璃圆会遮住太多背景'
 
 for asset in \
-  assets/video/makkie-waving-fixed.webm \
-  assets/video/makkie-mid-autumn-2026.webm \
-  assets/video/makkie-halloween.webm \
-  assets/video/makkie-christmas.webm \
-  assets/video/makkie-new-year.webm \
-  assets/video/makkie-cny-2027.webm
+  assets/videos/mascots/default/makkie-waving-fixed.webm \
+  assets/videos/mascots/seasonal/makkie-mid-autumn-2026.webm \
+  assets/videos/mascots/seasonal/makkie-halloween.webm \
+  assets/videos/mascots/seasonal/makkie-christmas.webm \
+  assets/videos/mascots/seasonal/makkie-new-year.webm \
+  assets/videos/mascots/seasonal/makkie-cny-2027.webm
 do
   if [ ! -f "$asset" ]; then
     printf '✗ %s\n  节日 mascot 资源缺失，命中对应日期时首页会空白\n\n' "$asset"
@@ -92,13 +92,36 @@ do
   fi
 done
 
-if [ -e assets/video/makkie-waving-clean.webm ]; then
-  printf '✗ assets/video/makkie-waving-clean.webm\n  旧版挥手动画仍在仓库中，容易被误引用并增加发布体积\n\n'
+if [ -e assets/videos/mascots/default/makkie-waving-clean.webm ]; then
+  printf '✗ assets/videos/mascots/default/makkie-waving-clean.webm\n  旧版挥手动画仍在仓库中，容易被误引用并增加发布体积\n\n'
   fail=1
 fi
 
 want index.html '@keyframes hero-logo-hop' \
   '降级用的静态 logo 不会动了'
+
+want index.html "mascotVideo.dataset.mascotEdition !== 'mid-autumn'" \
+  '中秋小白兔不再受节日日期控制，非中秋日期也会加载彩蛋'
+
+want index.html 'window.requestIdleCallback(mountMidAutumnEgg' \
+  '中秋彩蛋不再等浏览器空闲后挂载，可能拖慢首屏关键渲染'
+
+want index.html 'observer.observe(hero);' \
+  '中秋彩蛋离开首屏后仍持续动画，浪费手机电量和渲染资源'
+
+want index.html '.mid-autumn-easter-egg.is-page-hidden *{animation-play-state:paused!important;}' \
+  '页面切到后台时中秋彩蛋仍持续动画'
+
+want index.html '.mid-autumn-rabbit-track,.mid-autumn-rabbit,.mid-autumn-egg__charm{animation:none!important;}' \
+  '中秋彩蛋失去 prefers-reduced-motion 的静态降级'
+want index.html 'assets/images/holidays/mid-autumn-2026/rabbit-1.png' \
+  '首页中秋彩蛋不再使用兔子 1 素材'
+want index.html 'assets/images/holidays/mid-autumn-2026/rabbit-3.png' \
+  '本周预定卡片不再显示兔子 3 灯笼装饰'
+want index.html 'shopRabbit.loading = '\''lazy'\''' \
+  '本周预定兔子装饰失去懒加载，非首屏图片会抢占关键资源'
+want index.html '.shop-shell--mid-autumn.is-active .mid-autumn-shop-rabbit' \
+  '本周预定兔子装饰不再按可见区域启停动画'
 
 # ---------- iPhone / Duo / 折叠屏布局 ----------
 for html in ./*.html; do
@@ -126,9 +149,19 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
   want "$html" 'assets/subpages.css?v=20260922-creative-first-70' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
-  want "$html" 'assets/subpages.js?v=20260922-creative-first-70' \
+  want "$html" 'assets/subpages.js?v=20260922-organized-assets-72' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
 done
+
+# ---------- 首页品牌搜索与语言 ----------
+want index.html '"alternateName": ["MakkieMua", "makkiemua.com"]' \
+  '首页 WebSite 结构化数据失去无空格品牌别名，Google 更难把 makkiemua 查询与首页关联'
+want index.html 'alt="Makkie Mua (MakkieMua)"' \
+  '首页可见品牌 H1 失去 Makkie Mua / MakkieMua 的等价名称'
+want index.html 'function getPreferredBilingualLanguage()' \
+  '首页首次访问不再按浏览器语言选择中英文'
+want assets/subpages.js 'function getPreferredLanguage()' \
+  '子页面首次访问不再按浏览器语言选择中英文'
 
 want index.html 'collectionGroupOrderByZh' \
   '首页图鉴实时数据又会按接口顺序覆盖首屏顺序，加载后卡片会跳位'
@@ -191,7 +224,7 @@ want assets/subpages.js "['豆乳年糕胖曲奇', 'Soy Milk Rice Cake Makkie']"
   '豆乳年糕胖曲奇的英文名会重新粘在一起'
 want assets/subpages.js 'stackedEn:' \
   '英文层次页仍会加载带中文标注的 SVG'
-want 'assets/images/svg/1-斑斓芭乐巴斯克-展开-en.svg' 'Guava Basque Cheesecake' \
+want 'assets/images/dessert-layers/illustrations/1-斑斓芭乐巴斯克-展开-en.svg' 'Guava Basque Cheesecake' \
   '英文层次图的芭乐巴斯克标注缺失'
 
 # ---------- Google Analytics 电商漏报 ----------
