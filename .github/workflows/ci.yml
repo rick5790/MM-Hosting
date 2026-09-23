@@ -36,4 +36,5 @@ jobs:
         env:
           CI_BASE_REF: ${{ github.base_ref }}
           CI_BASE_SHA: ${{ github.event.before }}
+          CI_RELEASE_REF: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
         run: sh scripts/ci/run-checks.sh

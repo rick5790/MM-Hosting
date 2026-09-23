@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync } from 'node:fs';
+import { resolveReleaseBranch } from './release-context.mjs';
 
 const fail = (message) => {
   console.error(`✗ ${message}`);
@@ -11,25 +12,20 @@ if (!/^\d+\.\d+(?:\.\d+)?$/.test(releaseVersion)) {
   fail(`VERSION must be a numeric release such as 7.0 or 7.0.1; got "${releaseVersion}"`);
 }
 
-let currentBranch = process.env.GITHUB_REF_NAME || '';
-if (!currentBranch) {
+let localBranch = '';
+if (!process.env.CI_RELEASE_REF && !process.env.GITHUB_HEAD_REF && !process.env.GITHUB_REF_NAME) {
   try {
-    currentBranch = execFileSync('git', ['symbolic-ref', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
+    localBranch = execFileSync('git', ['symbolic-ref', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
   } catch {
-    currentBranch = '';
+    localBranch = '';
   }
 }
 
 // A release PR is normally based on the previous numeric release (for example
 // 7.2 targets 7.1). Only the head/current branch must match the new VERSION.
-const candidateBranches = new Set([
-  process.env.GITHUB_HEAD_REF,
-  currentBranch,
-].filter(Boolean));
-for (const branch of candidateBranches) {
-  if (/^\d+\.\d+(?:\.\d+)?$/.test(branch) && branch !== releaseVersion) {
-    fail(`release branch "${branch}" must match VERSION "${releaseVersion}"`);
-  }
+const releaseBranch = resolveReleaseBranch(process.env, localBranch);
+if (/^\d+\.\d+(?:\.\d+)?$/.test(releaseBranch) && releaseBranch !== releaseVersion) {
+  fail(`release branch "${releaseBranch}" must match VERSION "${releaseVersion}"`);
 }
 
 const htmlFiles = readdirSync('.', { withFileTypes: true })

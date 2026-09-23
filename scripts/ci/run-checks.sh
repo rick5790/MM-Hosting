@@ -26,6 +26,7 @@ sh scripts/check-invariants.sh
 echo '::endgroup::'
 
 echo '::group::Release and cache-version contract'
+node scripts/ci/check-release-context.mjs
 node scripts/ci/check-version.mjs
 echo '::endgroup::'
 
