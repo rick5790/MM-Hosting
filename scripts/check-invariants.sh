@@ -75,6 +75,9 @@ want index.html 'background:rgba(249,241,229,.26);' \
 want index.html 'backdrop-filter:blur(18px) saturate(.88);' \
   '首页 mascot 毛玻璃模糊效果被移除'
 
+want index.html 'width:min(36vw,180px);' \
+  '首页 mascot 又恢复为过大的 220px 尺寸，毛玻璃圆会遮住太多背景'
+
 for asset in \
   assets/video/makkie-waving-fixed.webm \
   assets/video/makkie-mid-autumn-2026.webm \
