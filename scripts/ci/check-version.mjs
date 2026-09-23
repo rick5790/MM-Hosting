@@ -20,9 +20,10 @@ if (!currentBranch) {
   }
 }
 
+// A release PR is normally based on the previous numeric release (for example
+// 7.2 targets 7.1). Only the head/current branch must match the new VERSION.
 const candidateBranches = new Set([
   process.env.GITHUB_HEAD_REF,
-  process.env.GITHUB_BASE_REF,
   currentBranch,
 ].filter(Boolean));
 for (const branch of candidateBranches) {
