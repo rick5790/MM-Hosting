@@ -100,6 +100,21 @@ fi
 want index.html '@keyframes hero-logo-hop' \
   '降级用的静态 logo 不会动了'
 
+want index.html "mascotVideo.dataset.mascotEdition !== 'mid-autumn'" \
+  '中秋小白兔不再受节日日期控制，非中秋日期也会加载彩蛋'
+
+want index.html 'window.requestIdleCallback(mountMidAutumnEgg' \
+  '中秋彩蛋不再等浏览器空闲后挂载，可能拖慢首屏关键渲染'
+
+want index.html 'observer.observe(hero);' \
+  '中秋彩蛋离开首屏后仍持续动画，浪费手机电量和渲染资源'
+
+want index.html '.mid-autumn-easter-egg.is-page-hidden *{animation-play-state:paused!important;}' \
+  '页面切到后台时中秋彩蛋仍持续动画'
+
+want index.html '.mid-autumn-rabbit-track,.mid-autumn-rabbit,.mid-autumn-egg__charm{animation:none!important;}' \
+  '中秋彩蛋失去 prefers-reduced-motion 的静态降级'
+
 # ---------- iPhone / Duo / 折叠屏布局 ----------
 for html in ./*.html; do
   want "$html" 'width=device-width, initial-scale=1.0, viewport-fit=cover' \

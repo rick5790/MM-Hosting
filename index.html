@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="site-version" content="7.1">
+<meta name="site-version" content="7.2">
 <title>Makkie Mua | 手作创意甜品 | Los Angeles &amp; Orange County</title>
 <meta name="description" content="Makkie Mua 是位于 Los Angeles 与 Orange County 的手作创意甜品品牌，提供巴斯克、Makkie 胖曲奇、戚风三明治、米布丁、布丁奶糕等每周预订甜品。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
@@ -321,6 +321,182 @@ nav.is-engaged{background-color:var(--dark);border-bottom-color:rgba(255,255,255
   50%{transform:translateY(-4px);}
 }
 .hero-logo[hidden]{display:none!important;}
+/* 中秋限定彩蛋：只在日期命中后由 JS 创建。全部动画仅使用 transform / opacity。 */
+.mid-autumn-easter-egg{
+  position:absolute;
+  right:max(1rem,env(safe-area-inset-right,0px));
+  bottom:clamp(4.5rem,8vh,6.5rem);
+  z-index:1;
+  width:150px;
+  height:112px;
+  pointer-events:none;
+  opacity:0;
+  transform:translate3d(0,16px,0);
+  transition:opacity .2s cubic-bezier(.23,1,.32,1),transform .2s cubic-bezier(.23,1,.32,1);
+}
+.mid-autumn-easter-egg.is-mounted{opacity:1;transform:translate3d(0,0,0);}
+.mid-autumn-rabbit-track{
+  position:absolute;
+  right:10px;
+  bottom:4px;
+  width:58px;
+  height:64px;
+  pointer-events:auto;
+}
+.mid-autumn-easter-egg.is-active .mid-autumn-rabbit-track{
+  animation:mid-autumn-rabbit-roam 12s cubic-bezier(.77,0,.175,1) infinite;
+}
+.mid-autumn-rabbit{
+  position:relative;
+  display:block;
+  width:58px;
+  height:64px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+  transform-origin:50% 92%;
+}
+.mid-autumn-easter-egg.is-active .mid-autumn-rabbit{
+  animation:mid-autumn-rabbit-hop 2.4s cubic-bezier(.77,0,.175,1) infinite;
+}
+.mid-autumn-rabbit__body{
+  position:absolute;
+  right:5px;
+  bottom:3px;
+  width:41px;
+  height:34px;
+  border:1px solid rgba(115,88,68,.2);
+  border-radius:52% 48% 46% 54%;
+  background:linear-gradient(145deg,#fffdf9,#eee7df);
+  box-shadow:0 7px 16px rgba(61,38,27,.13);
+}
+.mid-autumn-rabbit__head{
+  position:absolute;
+  left:2px;
+  bottom:14px;
+  width:29px;
+  height:28px;
+  border:1px solid rgba(115,88,68,.18);
+  border-radius:50%;
+  background:#fffdf9;
+}
+.mid-autumn-rabbit__ear{
+  position:absolute;
+  left:7px;
+  bottom:36px;
+  width:9px;
+  height:25px;
+  border:1px solid rgba(115,88,68,.18);
+  border-radius:70% 70% 45% 45%;
+  background:linear-gradient(90deg,#fffdf9 30%,#f2cfcd 32% 66%,#fffdf9 68%);
+  transform:rotate(-8deg);
+}
+.mid-autumn-rabbit__ear--back{left:18px;bottom:35px;height:23px;transform:rotate(8deg);}
+.mid-autumn-rabbit__tail{
+  position:absolute;
+  right:0;
+  bottom:19px;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 3px 8px rgba(61,38,27,.1);
+}
+.mid-autumn-rabbit__eye{
+  position:absolute;
+  left:10px;
+  bottom:25px;
+  width:3px;
+  height:4px;
+  border-radius:50%;
+  background:#5d3b2e;
+}
+.mid-autumn-rabbit__nose{
+  position:absolute;
+  left:0;
+  bottom:20px;
+  width:4px;
+  height:3px;
+  border-radius:50%;
+  background:#d99b99;
+}
+.mid-autumn-egg__bubble{
+  position:absolute;
+  right:2px;
+  bottom:78px;
+  min-width:max-content;
+  padding:.48rem .68rem;
+  border:1px solid rgba(196,153,106,.3);
+  border-radius:13px;
+  background:rgba(255,250,244,.94);
+  color:#5e4128;
+  box-shadow:0 10px 24px rgba(61,38,27,.12);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  font-size:11px;
+  font-weight:650;
+  line-height:1.2;
+  opacity:0;
+  transform:translate3d(0,7px,0) scale(.96);
+  transform-origin:85% 100%;
+  transition:opacity .2s cubic-bezier(.23,1,.32,1),transform .2s cubic-bezier(.23,1,.32,1);
+}
+.mid-autumn-egg__bubble-en{display:none;}
+body[data-lang="en"] .mid-autumn-egg__bubble-zh{display:none;}
+body[data-lang="en"] .mid-autumn-egg__bubble-en{display:inline;}
+.mid-autumn-easter-egg.is-discovered .mid-autumn-egg__bubble{
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+}
+.mid-autumn-egg__charm{
+  position:absolute;
+  color:#b87a3c;
+  opacity:0;
+  filter:drop-shadow(0 3px 7px rgba(61,38,27,.12));
+  pointer-events:none;
+}
+.mid-autumn-egg__charm--moon{left:18px;top:17px;font-size:19px;}
+.mid-autumn-egg__charm--cake{left:48px;bottom:7px;font-size:14px;}
+.mid-autumn-egg__charm--star{right:1px;top:41px;font-size:13px;}
+.mid-autumn-easter-egg.is-active .mid-autumn-egg__charm{
+  animation:mid-autumn-charm 3.4s cubic-bezier(.77,0,.175,1) infinite;
+}
+.mid-autumn-easter-egg.is-active .mid-autumn-egg__charm--cake{animation-delay:1.1s;}
+.mid-autumn-easter-egg.is-active .mid-autumn-egg__charm--star{animation-delay:2.2s;}
+.mid-autumn-easter-egg.is-page-hidden *{animation-play-state:paused!important;}
+@keyframes mid-autumn-rabbit-roam{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg);}
+  35%{transform:translate3d(-52px,-8px,0) rotate(-3deg);}
+  70%{transform:translate3d(-24px,-20px,0) rotate(2deg);}
+}
+@keyframes mid-autumn-rabbit-hop{
+  0%,100%{transform:translate3d(0,0,0) scale(1);}
+  18%{transform:translate3d(0,0,0) scale(1.05,.95);}
+  48%{transform:translate3d(0,-7px,0) scale(.97,1.03);}
+  72%{transform:translate3d(0,0,0) scale(1.04,.96);}
+}
+@keyframes mid-autumn-charm{
+  0%,100%{opacity:0;transform:translate3d(0,5px,0) scale(.9);}
+  50%{opacity:.9;transform:translate3d(0,-3px,0) scale(1);}
+}
+@media (hover:hover) and (pointer:fine){
+  .mid-autumn-rabbit-track:hover .mid-autumn-egg__bubble,
+  .mid-autumn-rabbit:focus-visible + .mid-autumn-egg__bubble{opacity:1;transform:translate3d(0,0,0) scale(1);}
+}
+@media (max-width:640px){
+  .mid-autumn-easter-egg{right:max(.35rem,env(safe-area-inset-right,0px));bottom:4rem;transform:translate3d(0,10px,0) scale(.9);transform-origin:100% 100%;}
+  .mid-autumn-easter-egg.is-mounted{transform:translate3d(0,0,0) scale(.9);}
+}
+@media (prefers-reduced-motion:reduce){
+  .mid-autumn-easter-egg{transition:opacity .2s cubic-bezier(.23,1,.32,1);transform:none;}
+  .mid-autumn-easter-egg.is-mounted{transform:none;}
+  .mid-autumn-rabbit-track,.mid-autumn-rabbit,.mid-autumn-egg__charm{animation:none!important;}
+  .mid-autumn-egg__charm{opacity:.55;transform:none;}
+  .mid-autumn-egg__bubble{transition:opacity .2s cubic-bezier(.23,1,.32,1);transform:none;}
+  .mid-autumn-easter-egg.is-discovered .mid-autumn-egg__bubble{transform:none;}
+}
 .hero-wordmark{
   width:min(100%,400px);
   display:block;
@@ -1973,6 +2149,86 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
       })();
     </script>
   </div>
+  <script>
+    (function () {
+      var mascotVideo = document.querySelector('.hero-logo--motion');
+      if (!mascotVideo || mascotVideo.dataset.mascotEdition !== 'mid-autumn') return;
+
+      var mountMidAutumnEgg = function () {
+        var hero = document.querySelector('.hero');
+        if (!hero || hero.querySelector('.mid-autumn-easter-egg')) return;
+
+        var zone = document.createElement('div');
+        zone.className = 'mid-autumn-easter-egg';
+        zone.innerHTML = [
+          '<div class="mid-autumn-rabbit-track">',
+            '<button class="mid-autumn-rabbit" type="button" aria-expanded="false" aria-label="发现中秋小白兔">',
+              '<span class="mid-autumn-rabbit__ear mid-autumn-rabbit__ear--back" aria-hidden="true"></span>',
+              '<span class="mid-autumn-rabbit__ear" aria-hidden="true"></span>',
+              '<span class="mid-autumn-rabbit__body" aria-hidden="true"></span>',
+              '<span class="mid-autumn-rabbit__head" aria-hidden="true"></span>',
+              '<span class="mid-autumn-rabbit__eye" aria-hidden="true"></span>',
+              '<span class="mid-autumn-rabbit__nose" aria-hidden="true"></span>',
+              '<span class="mid-autumn-rabbit__tail" aria-hidden="true"></span>',
+            '</button>',
+            '<div class="mid-autumn-egg__bubble" aria-live="polite">',
+              '<span class="mid-autumn-egg__bubble-zh">月圆啦，找到小白兔了 🥮</span>',
+              '<span class="mid-autumn-egg__bubble-en">Moonlight found you! 🥮</span>',
+            '</div>',
+          '</div>',
+          '<span class="mid-autumn-egg__charm mid-autumn-egg__charm--moon" aria-hidden="true">☾</span>',
+          '<span class="mid-autumn-egg__charm mid-autumn-egg__charm--cake" aria-hidden="true">🥮</span>',
+          '<span class="mid-autumn-egg__charm mid-autumn-egg__charm--star" aria-hidden="true">✦</span>'
+        ].join('');
+        hero.appendChild(zone);
+
+        var rabbit = zone.querySelector('.mid-autumn-rabbit');
+        var hideTimer = 0;
+        var setDiscovered = function (visible) {
+          window.clearTimeout(hideTimer);
+          zone.classList.toggle('is-discovered', visible);
+          rabbit.setAttribute('aria-expanded', visible ? 'true' : 'false');
+          if (visible) {
+            hideTimer = window.setTimeout(function () { setDiscovered(false); }, 3200);
+          }
+        };
+        rabbit.addEventListener('click', function () {
+          setDiscovered(!zone.classList.contains('is-discovered'));
+        });
+
+        window.updateMakkieMidAutumnEggLanguage = function (lang) {
+          rabbit.setAttribute('aria-label', lang === 'en'
+            ? 'Discover the Mid-Autumn rabbit'
+            : '发现中秋小白兔');
+        };
+        window.updateMakkieMidAutumnEggLanguage(document.body.dataset.lang || 'zh');
+
+        window.requestAnimationFrame(function () { zone.classList.add('is-mounted'); });
+        if ('IntersectionObserver' in window) {
+          var observer = new IntersectionObserver(function (entries) {
+            zone.classList.toggle('is-active', Boolean(entries[0] && entries[0].isIntersecting));
+          }, { threshold:.08 });
+          observer.observe(hero);
+        } else {
+          zone.classList.add('is-active');
+        }
+
+        document.addEventListener('visibilitychange', function () {
+          zone.classList.toggle('is-page-hidden', document.visibilityState !== 'visible');
+        });
+
+        if (window.matchMedia('(hover:none), (pointer:coarse)').matches) {
+          window.setTimeout(function () { setDiscovered(true); }, 900);
+        }
+      };
+
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(mountMidAutumnEgg, { timeout:800 });
+      } else {
+        window.setTimeout(mountMidAutumnEgg, 60);
+      }
+    })();
+  </script>
   <script>
     (function () {
       var video = document.querySelector('.hero-bg-video');
@@ -6190,6 +6446,9 @@ function applyBilingualLanguage(lang) {
   bilingualSetText('#cakeEntrySub', copy.cakeEntry.sub);
   bilingualSetText('#cakeEntryCta', copy.cakeEntry.cta);
   bilingualSetAttr('.hero-logo', 'aria-label', copy.hero.videoAria);
+  if (typeof window.updateMakkieMidAutumnEggLanguage === 'function') {
+    window.updateMakkieMidAutumnEggLanguage(lang);
+  }
   bilingualSetText('.hero-eyebrow', copy.hero.eyebrow);
   bilingualSetHTML('.hero-sub', copy.hero.sub);
   document.querySelectorAll('.hero-links .btn-chip').forEach((link, index) => {
