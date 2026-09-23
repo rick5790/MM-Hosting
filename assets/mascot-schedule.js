@@ -2,12 +2,12 @@
   'use strict';
 
   var videos = {
-    'default': 'assets/video/makkie-waving-fixed.webm?v=20260922-holiday-mascots-71',
-    'mid-autumn': 'assets/video/makkie-mid-autumn-2026.webm?v=20260922-holiday-mascots-71',
-    'halloween': 'assets/video/makkie-halloween.webm?v=20260922-holiday-mascots-71',
-    'christmas': 'assets/video/makkie-christmas.webm?v=20260922-holiday-mascots-71',
-    'new-year': 'assets/video/makkie-new-year.webm?v=20260922-holiday-mascots-71',
-    'cny': 'assets/video/makkie-cny-2027.webm?v=20260922-holiday-mascots-71'
+    'default': 'assets/videos/mascots/default/makkie-waving-fixed.webm?v=20260922-organized-holiday-assets-72',
+    'mid-autumn': 'assets/videos/mascots/seasonal/makkie-mid-autumn-2026.webm?v=20260922-organized-holiday-assets-72',
+    'halloween': 'assets/videos/mascots/seasonal/makkie-halloween.webm?v=20260922-organized-holiday-assets-72',
+    'christmas': 'assets/videos/mascots/seasonal/makkie-christmas.webm?v=20260922-organized-holiday-assets-72',
+    'new-year': 'assets/videos/mascots/seasonal/makkie-new-year.webm?v=20260922-organized-holiday-assets-72',
+    'cny': 'assets/videos/mascots/seasonal/makkie-cny-2027.webm?v=20260922-organized-holiday-assets-72'
   };
 
   var losAngelesDateKey = function (date) {
