@@ -51,12 +51,16 @@ try {
   await expectRoute('/assets/subpages.css', 'text/css');
   await expectRoute('/assets/subpages.js', 'application/javascript');
   await expectRoute('/assets/analytics.js', 'application/javascript');
-  await expectRoute('/assets/video/makkie-waving-fixed.webm', 'video/webm');
-  await expectRoute('/assets/video/makkie-mid-autumn-2026.webm', 'video/webm');
-  await expectRoute('/assets/video/makkie-halloween.webm', 'video/webm');
-  await expectRoute('/assets/video/makkie-christmas.webm', 'video/webm');
-  await expectRoute('/assets/video/makkie-new-year.webm', 'video/webm');
-  await expectRoute('/assets/video/makkie-cny-2027.webm', 'video/webm');
+  await expectRoute('/assets/videos/backgrounds/bakery-hero-horizontal.mp4', 'video/mp4');
+  await expectRoute('/assets/videos/backgrounds/bakery-hero-vertical.mp4', 'video/mp4');
+  await expectRoute('/assets/videos/mascots/default/makkie-waving-fixed.webm', 'video/webm');
+  await expectRoute('/assets/videos/mascots/seasonal/makkie-mid-autumn-2026.webm', 'video/webm');
+  await expectRoute('/assets/videos/mascots/seasonal/makkie-halloween.webm', 'video/webm');
+  await expectRoute('/assets/videos/mascots/seasonal/makkie-christmas.webm', 'video/webm');
+  await expectRoute('/assets/videos/mascots/seasonal/makkie-new-year.webm', 'video/webm');
+  await expectRoute('/assets/videos/mascots/seasonal/makkie-cny-2027.webm', 'video/webm');
+  await expectRoute('/assets/images/holidays/mid-autumn-2026/rabbit-1.png', 'image/png');
+  await expectRoute('/assets/images/holidays/mid-autumn-2026/rabbit-3.png', 'image/png');
   await expectRoute('/robots.txt', 'text/plain');
   await expectRoute('/sitemap.xml', 'application/xml');
 
