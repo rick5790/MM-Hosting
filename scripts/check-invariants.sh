@@ -147,9 +147,9 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
   '展开折叠屏和 iPhone 横屏又会误用桌面导航，容易挤出视口'
 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
-  want "$html" 'assets/subpages.css?v=20261004-mobile-drawer-74' \
+  want "$html" 'assets/subpages.css?v=20261004-mobile-drawer-76' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
-  want "$html" 'assets/subpages.js?v=20261004-mobile-drawer-74' \
+  want "$html" 'assets/subpages.js?v=20261004-mobile-drawer-76' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
 done
 
@@ -187,9 +187,9 @@ want index.html 'data-mobile-cake-entry' \
   '首页手机侧栏缺少直达蛋糕询单的入口'
 want assets/subpages.js 'index.html?cake=inquiry' \
   '子页面手机侧栏缺少回到首页打开蛋糕询单的入口'
-want index.html 'width:50vw;min-width:0;max-width:50vw;' \
+want index.html 'width:60vw;min-width:0;max-width:60vw;' \
   '首页手机侧栏没有保持为屏幕一半宽度'
-want assets/subpages.css 'width:50vw;' \
+want assets/subpages.css 'width:60vw;' \
   '子页面手机侧栏没有保持为屏幕一半宽度'
 want assets/subpages.js "currentLang === 'en' ? 'SOCIALS' : '社交媒体'" \
   '子页面手机侧栏的社交媒体标题不再跟随语言切换'
