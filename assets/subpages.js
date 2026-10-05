@@ -650,6 +650,9 @@
             ${escapeHtml(currentLang === 'en' ? link.en : link.zh)}
           </a>
         `).join('')}
+        <a href="index.html?cake=inquiry" class="mobile-drawer-link" data-mobile-link="cake-inquiry">
+          ${currentLang === 'en' ? 'Cake Inquiry' : '蛋糕询单'}
+        </a>
         <div class="mobile-drawer-switch-row">
           <span class="mobile-drawer-switch-label" id="mobileLangLabel">${escapeHtml(copy.mobileLang)}</span>
           <button class="mobile-drawer-lang ${currentLang === 'en' ? 'is-en' : ''}" type="button" data-mobile-lang aria-label="${escapeHtml(copy.toggleAria)}">
@@ -665,17 +668,11 @@
         <div class="mobile-drawer-socials" aria-label="Social links">
           <div class="mobile-drawer-socials-title">${currentLang === 'en' ? 'SOCIALS' : '社交媒体'}</div>
           <div class="mobile-drawer-socials-list">
-            <button class="mobile-drawer-social" type="button" data-qr-open="assets/images/qr/Makkie Wechat QR Code Clean.jpg" data-qr-label="WeChat" aria-label="WeChat">
-              ${getContactIcon('wechat')}
-            </button>
             <a class="mobile-drawer-social" href="https://www.instagram.com/makkiemua/" target="_blank" rel="noreferrer" aria-label="Instagram">
               ${getContactIcon('instagram')}
             </a>
             <a class="mobile-drawer-social" href="https://xhslink.com/m/2ohrymfwufZ" target="_blank" rel="noreferrer" aria-label="Xiaohongshu">
               ${getContactIcon('rednote')}
-            </a>
-            <a class="mobile-drawer-social" href="mailto:MakkieMua@gmail.com" aria-label="Email">
-              ${getContactIcon('email')}
             </a>
           </div>
         </div>`);
