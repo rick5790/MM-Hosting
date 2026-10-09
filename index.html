@@ -1071,7 +1071,9 @@ body[data-lang="en"] .mid-autumn-egg__bubble-en{display:inline;}
 .cake-cal-cell.is-empty{visibility:hidden;}
 .cake-cal-cell:not(.is-disabled):hover{background:rgba(196,153,106,.18);}
 .cake-cal-cell.is-disabled{color:rgba(120,101,90,.32);cursor:not-allowed;text-decoration:line-through;}
+.cake-cal-cell.is-booked{background:rgba(120,101,90,.08);color:rgba(120,101,90,.45);}
 .cake-cal-cell.is-selected{background:var(--dark);color:var(--bg);font-weight:700;}
+.cake-cal-availability{min-height:1.4em;margin-top:.7rem;text-align:center;font-size:12px;line-height:1.45;color:#8a6f5b;}
 .cake-time-field{margin-top:1.1rem;}
 .cake-time-field label{display:block;font-size:13px;color:#5f4633;margin-bottom:.35rem;font-weight:600;}
 .cake-input,.cake-textarea{width:100%;border:1px solid rgba(124,101,97,.25);border-radius:12px;padding:.7rem .85rem;font-family:inherit;font-size:14px;color:#2d1f0f;background:#fffdfa;}
@@ -5467,9 +5469,35 @@ function cakeFormatDateCn(str) {
   return `${y} 年 ${Number(m)} 月 ${Number(d)} 日 ${wd}`;
 }
 
-const cakeFlow = { step: 'pick', cakeId: '', flavor: '', month: null, selected: '', preferredTime: '', notes: '' };
+const cakeFlow = {
+  step: 'pick', cakeId: '', flavor: '', month: null, selected: '', preferredTime: '', notes: '',
+  unavailableDates: new Set(), availabilityLoaded: false, availabilityRequest: 0
+};
 const cakeOverlay = document.getElementById('cakeOverlay');
 const cakeOverlayBody = document.getElementById('cakeOverlayBody');
+
+// 蛋糕每天只接一单。前端负责立即置灰，服务端在提交时也会再做原子校验，
+// 这样两个顾客同时打开日历也不可能抢到同一天。
+async function loadCakeUnavailableDates() {
+  const requestId = ++cakeFlow.availabilityRequest;
+  cakeFlow.availabilityLoaded = false;
+  try {
+    const config = await siteApiRequest('/api/cake-orders/config');
+    if (requestId !== cakeFlow.availabilityRequest) return;
+    cakeFlow.unavailableDates = new Set(
+      Array.isArray(config && config.unavailable_dates) ? config.unavailable_dates : []
+    );
+    if (cakeFlow.unavailableDates.has(cakeFlow.selected)) cakeFlow.selected = '';
+  } catch (error) {
+    // 配置读取失败仍可继续；提交时由服务端权威拦截，不能把临时网络错误变成无法询单。
+    if (requestId !== cakeFlow.availabilityRequest) return;
+    cakeFlow.unavailableDates = new Set();
+  } finally {
+    if (requestId !== cakeFlow.availabilityRequest) return;
+    cakeFlow.availabilityLoaded = true;
+    if (cakeFlow.step === 'date' && !cakeOverlay.hidden) renderCakeDate();
+  }
+}
 
 function openCakeOverlay() {
   const earliest = cakeYmdAddDays(cakeLaToday(), CAKE_MIN_LEAD_DAYS);
@@ -5479,9 +5507,12 @@ function openCakeOverlay() {
   cakeFlow.selected = '';
   cakeFlow.preferredTime = '';
   cakeFlow.notes = '';
+  cakeFlow.unavailableDates = new Set();
+  cakeFlow.availabilityLoaded = false;
   cakeFlow.month = { y: Number(earliest.slice(0, 4)), m: Number(earliest.slice(5, 7)) };
   renderCakeStep();
   openOverlay(cakeOverlay);
+  loadCakeUnavailableDates();
 }
 function closeCakeOverlay() {
   closeOverlay(cakeOverlay, cakeOverlayBody);
@@ -5560,6 +5591,8 @@ function renderCakeDate() {
   const today = cakeLaToday();
   const earliest = cakeYmdAddDays(today, CAKE_MIN_LEAD_DAYS);
   const holidays = cakeHolidaySet();
+  const unavailableDates = cakeFlow.unavailableDates || new Set();
+  const availabilityLoading = !cakeFlow.availabilityLoaded;
   const { y, m } = cakeFlow.month;
   const firstDow = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
   const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
@@ -5570,9 +5603,11 @@ function renderCakeDate() {
   for (let i = 0; i < firstDow; i += 1) cells += '<div class="cake-cal-cell is-empty"></div>';
   for (let d = 1; d <= daysInMonth; d += 1) {
     const ds = cakeYmd(y, m, d);
-    const disabled = ds < earliest || holidays.has(ds) || cakeIsSaturday(ds);
+    const booked = unavailableDates.has(ds);
+    const disabled = availabilityLoading || ds < earliest || holidays.has(ds) || cakeIsSaturday(ds) || booked;
     const selected = ds === cakeFlow.selected;
-    cells += `<button class="cake-cal-cell ${disabled ? 'is-disabled' : ''} ${selected ? 'is-selected' : ''}" type="button" ${disabled ? 'disabled' : `data-cake-date="${ds}"`}>${d}</button>`;
+    const reason = booked ? '该日已有蛋糕预定' : (availabilityLoading ? '正在读取可预定日期' : '该日期不可预定');
+    cells += `<button class="cake-cal-cell ${disabled ? 'is-disabled' : ''} ${booked ? 'is-booked' : ''} ${selected ? 'is-selected' : ''}" type="button" ${disabled ? `disabled title="${reason}" aria-label="${ds}，${reason}"` : `data-cake-date="${ds}"`}>${d}</button>`;
   }
 
   cakeOverlayBody.innerHTML = `
@@ -5591,6 +5626,7 @@ function renderCakeDate() {
         ${dows.map((w) => `<div class="cake-cal-dow">${w}</div>`).join('')}
         ${cells}
       </div>
+      <div class="cake-cal-availability" aria-live="polite">${availabilityLoading ? '正在读取可预定日期…' : '灰色日期不可预定；已有蛋糕预定的日期会自动锁定。'}</div>
       <div class="cake-time-field">
         <label for="cakePreferredTime">期望自提时间（选填）</label>
         <input id="cakePreferredTime" class="cake-input" type="text" placeholder="例：下午 2-3 点" value="${escapeHtml(cakeFlow.preferredTime)}">
@@ -5598,7 +5634,7 @@ function renderCakeDate() {
     </div>
     <div class="cake-actions">
       <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="flavor">返回</button>
-      <button class="cake-btn cake-btn--primary" type="button" data-cake-next="review" ${cakeFlow.selected ? '' : 'disabled'}>下一步：确认订单</button>
+      <button class="cake-btn cake-btn--primary" type="button" data-cake-next="review" ${cakeFlow.selected && !availabilityLoading ? '' : 'disabled'}>下一步：确认订单</button>
     </div>
   `;
 }
@@ -5731,6 +5767,12 @@ async function submitCakeOrder(button) {
     loadMyOrders();
   } catch (error) {
     if (button) { button.disabled = false; button.textContent = '提交询单'; }
+    if (String(error.message || '').includes('已有蛋糕预定')) {
+      cakeFlow.selected = '';
+      cakeFlow.step = 'date';
+      loadCakeUnavailableDates();
+      renderCakeStep();
+    }
     alert(error.message || '提交失败，请稍后再试');
   }
 }
