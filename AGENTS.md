@@ -19,6 +19,8 @@
 
 # Frontend regressions: standing defences
 
+- 故障修复错题册维护在仓库根目录 `FIX_RECORDS.md`。排查类似故障前先查阅；完成故障修复后按其中模板追加根因、实际修复、验证局限与防复发措施，并更新索引。不得将未采用的建议记成已部署方案。
+
 These rules exist because the same class of bug has now happened four times in
 `index.html`: something invisible in a desktop Chrome check was dropped, and it
 was only caught weeks later by the user on a real phone.

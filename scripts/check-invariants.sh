@@ -30,6 +30,20 @@ want_count() {
 }
 
 # ---------- 下单卡片的丝绸背景 ----------
+shop_media_rule=$(sed -n '/^\.shop-card-media{/,/^}/p' assets/subpages.css)
+shop_image_rule=$(sed -n '/^\.shop-card-image{/,/^}/p' assets/subpages.css)
+for declaration in 'aspect-ratio:5/4;' 'flex-shrink:0;' 'overflow:hidden;'; do
+  if ! printf '%s\n' "$shop_media_rule" | grep -qF "$declaration"; then
+    printf '✗ 商品图片容器缺少 %s，Firefox 下原图可能撑高卡片\n' "$declaration"
+    fail=1
+  fi
+done
+for declaration in 'position:absolute;' 'inset:0;' 'width:100%;' 'height:100%;' 'object-fit:cover;'; do
+  if ! printf '%s\n' "$shop_image_rule" | grep -qF "$declaration"; then
+    printf '✗ 商品图片缺少 %s，Firefox 下图片可能溢出比例容器\n' "$declaration"
+    fail=1
+  fi
+done
 want index.html 'mask-image:radial-gradient(white,black)' \
   '两张下单卡的圆角裁不住 WebGL 画布，真机上圆角里套硬边方块（c00e047 干过一次）'
 
@@ -124,6 +138,20 @@ want index.html '.shop-shell--mid-autumn.is-active .mid-autumn-shop-rabbit' \
   '本周预定兔子装饰不再按可见区域启停动画'
 
 # ---------- iPhone / Duo / 折叠屏布局 ----------
+want index.html '(min-width:981px) and (max-width:1180px) and (pointer:coarse)' \
+  '展开触屏超过 980px 后又退回拥挤桌面导航，浏览器工具栏会挤占首屏'
+want index.html 'nav .top-tabs{display:none;}' \
+  '展开屏幕的页面入口未收进现有汉堡菜单，顶部仍有两行导航'
+want index.html 'padding-top:calc(var(--home-nav-height,68px) + 1.5rem);' \
+  '展开触屏首屏不再跟随单行导航高度预留顶部间距'
+want index.html 'padding-top:calc(var(--home-nav-height,128px) + 2rem);' \
+  '821–980px 双行固定导航未为首页首屏保留实测高度及间距，吉祥物会被遮住'
+want index.html 'homeNavResizeObserver.observe(stickyNav);' \
+  '导航高度不再随旋转、字体和语言变化同步，平板首屏可能再次被导航遮住'
+want index.html "document.documentElement.style.setProperty('--home-nav-height'," \
+  '首页首屏缺少实测导航高度变量'
+want index.html 'calc(var(--home-nav-height,68px) + .5rem)' \
+  '短横屏未给固定导航保留真实高度和间距'
 for html in ./*.html; do
   want "$html" 'width=device-width, initial-scale=1.0, viewport-fit=cover' \
     'iPhone 刘海、横屏安全区和折叠屏视口不能延伸到完整屏幕，左右内容可能被系统区域挤压'
@@ -147,7 +175,7 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
   '展开折叠屏和 iPhone 横屏又会误用桌面导航，容易挤出视口'
 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
-  want "$html" 'assets/subpages.css?v=20261004-mobile-drawer-76' \
+  want "$html" 'assets/subpages.css?v=20261027-firefox-product-media' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
   want "$html" 'assets/subpages.js?v=20261004-mobile-drawer-76' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'

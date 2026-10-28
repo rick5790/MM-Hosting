@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="site-version" content="7.3.1">
+<meta name="site-version" content="7.4">
 <title>Makkie Mua（MakkieMua）| 洛杉矶手作创意甜品</title>
 <meta name="description" content="Makkie Mua（MakkieMua）手作创意甜品首页。浏览 Los Angeles 与 Orange County 本周预订、巴斯克、胖曲奇、戚风夹心、米布丁与创意甜品。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
@@ -1334,6 +1334,9 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 }
 
 @media(min-width:821px) and (max-width:980px){
+  .hero{
+    padding-top:calc(var(--home-nav-height,128px) + 2rem);
+  }
   nav{
     flex-wrap:wrap;
     padding:0 .9rem .85rem;
@@ -1741,13 +1744,31 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
     min-height:100dvh;
     height:auto;
     justify-content:flex-start;
-    padding-top:calc(76px + env(safe-area-inset-top,0px));
+    padding-top:max(calc(76px + env(safe-area-inset-top,0px)),calc(var(--home-nav-height,68px) + .5rem));
     padding-bottom:2.75rem;
   }
   .hero-logo{width:clamp(60px,17vh,80px);}
   .hero-mascot-glass{margin-bottom:.25rem;padding:.25rem;}
   .hero-wordmark-art{width:min(42vw,210px);margin-bottom:.4rem;}
   .hero-tagline{bottom:max(.6rem,env(safe-area-inset-bottom,0px));font-size:10px;}
+}
+
+@media (min-width:821px) and (max-width:980px), (min-width:981px) and (max-width:1180px) and (pointer:coarse){
+  nav{
+    flex-wrap:nowrap;
+    min-height:calc(68px + env(safe-area-inset-top,0px));
+    padding:env(safe-area-inset-top,0px) max(.9rem,env(safe-area-inset-right,0px)) 0 max(.9rem,env(safe-area-inset-left,0px));
+  }
+  .nav-menu{display:inline-flex;}
+  nav .top-tabs{display:none;}
+  .hero{
+    min-height:100vh;
+    min-height:100svh;
+    min-height:100dvh;
+    justify-content:flex-start;
+    padding-top:calc(var(--home-nav-height,68px) + 1.5rem);
+    padding-bottom:4rem;
+  }
 }
 
 /* Window Segments API: keep primary content off a physical vertical hinge. */
@@ -5132,6 +5153,22 @@ if (stickyNav && topTabs && topTabs.parentElement !== stickyNav) {
   } else {
     stickyNav.appendChild(topTabs);
   }
+}
+
+function syncHomeNavHeight() {
+  if (!stickyNav) return;
+  const height = Math.ceil(stickyNav.getBoundingClientRect().height);
+  document.documentElement.style.setProperty('--home-nav-height', `${height}px`);
+}
+
+if (stickyNav) {
+  syncHomeNavHeight();
+  if (typeof ResizeObserver !== 'undefined') {
+    const homeNavResizeObserver = new ResizeObserver(syncHomeNavHeight);
+    homeNavResizeObserver.observe(stickyNav);
+  }
+  window.addEventListener('resize', syncHomeNavHeight, { passive:true });
+  if (document.fonts) document.fonts.ready.then(syncHomeNavHeight);
 }
 
 if (navLogo) {
