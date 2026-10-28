@@ -124,6 +124,12 @@ want index.html '.shop-shell--mid-autumn.is-active .mid-autumn-shop-rabbit' \
   '本周预定兔子装饰不再按可见区域启停动画'
 
 # ---------- iPhone / Duo / 折叠屏布局 ----------
+want index.html '(min-width:981px) and (max-width:1180px) and (pointer:coarse)' \
+  '展开触屏超过 980px 后又退回拥挤桌面导航，浏览器工具栏会挤占首屏'
+want index.html 'nav .top-tabs{display:none;}' \
+  '展开屏幕的页面入口未收进现有汉堡菜单，顶部仍有两行导航'
+want index.html 'padding-top:calc(var(--home-nav-height,68px) + 1.5rem);' \
+  '展开触屏首屏不再跟随单行导航高度预留顶部间距'
 want index.html 'padding-top:calc(var(--home-nav-height,128px) + 2rem);' \
   '821–980px 双行固定导航未为首页首屏保留实测高度及间距，吉祥物会被遮住'
 want index.html 'homeNavResizeObserver.observe(stickyNav);' \

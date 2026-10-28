@@ -1753,6 +1753,24 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   .hero-tagline{bottom:max(.6rem,env(safe-area-inset-bottom,0px));font-size:10px;}
 }
 
+@media (min-width:821px) and (max-width:980px), (min-width:981px) and (max-width:1180px) and (pointer:coarse){
+  nav{
+    flex-wrap:nowrap;
+    min-height:calc(68px + env(safe-area-inset-top,0px));
+    padding:env(safe-area-inset-top,0px) max(.9rem,env(safe-area-inset-right,0px)) 0 max(.9rem,env(safe-area-inset-left,0px));
+  }
+  .nav-menu{display:inline-flex;}
+  nav .top-tabs{display:none;}
+  .hero{
+    min-height:100vh;
+    min-height:100svh;
+    min-height:100dvh;
+    justify-content:flex-start;
+    padding-top:calc(var(--home-nav-height,68px) + 1.5rem);
+    padding-bottom:4rem;
+  }
+}
+
 /* Window Segments API: keep primary content off a physical vertical hinge. */
 @media (horizontal-viewport-segments:2){
   .nav-logo{
