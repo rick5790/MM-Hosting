@@ -30,6 +30,20 @@ want_count() {
 }
 
 # ---------- 下单卡片的丝绸背景 ----------
+shop_media_rule=$(sed -n '/^\.shop-card-media{/,/^}/p' assets/subpages.css)
+shop_image_rule=$(sed -n '/^\.shop-card-image{/,/^}/p' assets/subpages.css)
+for declaration in 'aspect-ratio:5/4;' 'flex-shrink:0;' 'overflow:hidden;'; do
+  if ! printf '%s\n' "$shop_media_rule" | grep -qF "$declaration"; then
+    printf '✗ 商品图片容器缺少 %s，Firefox 下原图可能撑高卡片\n' "$declaration"
+    fail=1
+  fi
+done
+for declaration in 'position:absolute;' 'inset:0;' 'width:100%;' 'height:100%;' 'object-fit:cover;'; do
+  if ! printf '%s\n' "$shop_image_rule" | grep -qF "$declaration"; then
+    printf '✗ 商品图片缺少 %s，Firefox 下图片可能溢出比例容器\n' "$declaration"
+    fail=1
+  fi
+done
 want index.html 'mask-image:radial-gradient(white,black)' \
   '两张下单卡的圆角裁不住 WebGL 画布，真机上圆角里套硬边方块（c00e047 干过一次）'
 
@@ -161,7 +175,7 @@ want index.html "const mobileTabsQuery = window.matchMedia('(max-width: 820px), 
   '展开折叠屏和 iPhone 横屏又会误用桌面导航，容易挤出视口'
 
 for html in collection.html contact.html instagram.html intro.html layers.html privacy.html shop.html terms.html; do
-  want "$html" 'assets/subpages.css?v=20261004-mobile-drawer-76' \
+  want "$html" 'assets/subpages.css?v=20261027-firefox-product-media' \
     '子页面仍可能从浏览器缓存拿到 6.7 样式，看不到折叠屏修复'
   want "$html" 'assets/subpages.js?v=20261004-mobile-drawer-76' \
     '子页面仍可能从浏览器缓存拿到旧的图鉴窄屏加载逻辑'
