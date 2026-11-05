@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="site-version" content="7.4">
+<meta name="site-version" content="7.5">
 <title>Makkie Mua（MakkieMua）| 洛杉矶手作创意甜品</title>
 <meta name="description" content="Makkie Mua（MakkieMua）手作创意甜品首页。浏览 Los Angeles 与 Orange County 本周预订、巴斯克、胖曲奇、戚风夹心、米布丁与创意甜品。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
@@ -1771,6 +1771,41 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
   }
 }
 
+html.has-side-navigation .nav-menu{
+  display:inline-flex;
+  position:fixed;
+  top:auto;
+  right:max(1rem,env(safe-area-inset-right,0px));
+  bottom:max(1.5rem,env(safe-area-inset-bottom,0px));
+  left:auto;
+  z-index:180;
+  width:54px;
+  height:54px;
+  border:1px solid rgba(245,237,224,.5);
+  background:rgba(45,31,15,.88);
+  color:var(--bg);
+  box-shadow:0 8px 24px rgba(20,10,4,.2);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+html.has-side-navigation .nav-menu:focus-visible{
+  outline:3px solid var(--accent);
+  outline-offset:4px;
+}
+html.has-side-navigation .mobile-drawer-panel{
+  left:auto;
+  right:0;
+  width:min(360px,calc(100vw - 4rem));
+  max-width:min(360px,calc(100vw - 4rem));
+  padding-top:max(1rem,env(safe-area-inset-top,0px));
+  padding-right:max(.95rem,env(safe-area-inset-right,0px));
+  padding-bottom:max(1.35rem,env(safe-area-inset-bottom,0px));
+  padding-left:max(.95rem,env(safe-area-inset-left,0px));
+  box-shadow:-18px 0 38px rgba(20,10,4,.12);
+  transform:translateX(100%);
+}
+html.has-side-navigation .mobile-drawer.is-open .mobile-drawer-panel{transform:translateX(0);}
+
 /* Window Segments API: keep primary content off a physical vertical hinge. */
 @media (horizontal-viewport-segments:2){
   .nav-logo{
@@ -1838,7 +1873,7 @@ body[data-lang='en'] .qr-overlay-title{font-family:'Inter',sans-serif;}
 </svg>
 
 <nav>
-  <button class="nav-menu" id="navMenuButton" type="button" aria-label="Open navigation" aria-expanded="false">
+  <button class="nav-menu" id="navMenuButton" type="button" aria-label="Open navigation" aria-controls="mobileDrawer" aria-expanded="false">
     <span class="nav-menu-lines"></span>
   </button>
   <div class="nav-logo">
@@ -5170,6 +5205,25 @@ if (stickyNav) {
   window.addEventListener('resize', syncHomeNavHeight, { passive:true });
   if (document.fonts) document.fonts.ready.then(syncHomeNavHeight);
 }
+
+const sideNavigationQuery = window.matchMedia('(device-width: 466px) and (device-height: 678px) and (min-width: 381px) and (max-width: 383px) and (orientation: portrait) and (pointer: coarse)');
+const navMenuHome = navMenuButton ? { parent:navMenuButton.parentNode, next:navMenuButton.nextSibling } : null;
+
+function syncSideNavigation() {
+  if (!navMenuButton || !navMenuHome) return;
+  const wasFocused = document.activeElement === navMenuButton;
+  document.documentElement.classList.toggle('has-side-navigation', sideNavigationQuery.matches);
+  if (sideNavigationQuery.matches) {
+    if (navMenuButton.parentNode !== document.body) document.body.appendChild(navMenuButton);
+  } else if (navMenuButton.parentNode !== navMenuHome.parent) {
+    navMenuHome.parent.insertBefore(navMenuButton, navMenuHome.next);
+  }
+  if (wasFocused) navMenuButton.focus({ preventScroll:true });
+  syncHomeNavHeight();
+}
+
+sideNavigationQuery.addEventListener('change', syncSideNavigation);
+syncSideNavigation();
 
 if (navLogo) {
   navLogo.addEventListener('click', () => {

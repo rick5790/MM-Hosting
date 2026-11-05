@@ -29,6 +29,17 @@ want_count() {
   fi
 }
 
+want index.html '(device-width: 466px) and (device-height: 678px) and (min-width: 381px) and (max-width: 383px) and (orientation: portrait) and (pointer: coarse)' \
+  '右侧悬浮菜单仅适配 Duo 外屏竖屏 Safari，不能扩散到内屏、385px 分屏或普通手机'
+want index.html 'document.body.appendChild(navMenuButton)' \
+  '悬浮按钮需离开带 transform 的导航，否则 fixed 会被困在顶栏内'
+want index.html 'navMenuHome.parent.insertBefore(navMenuButton, navMenuHome.next)' \
+  '离开外屏竖屏布局后必须归还原导航按钮，不能丢失菜单入口'
+want index.html 'html.has-side-navigation .mobile-drawer.is-open .mobile-drawer-panel{transform:translateX(0);}' \
+  '右侧抽屉必须能从 translateX(100%) 回到屏幕内'
+want index.html 'sideNavigationQuery.addEventListener('\''change'\'', syncSideNavigation)' \
+  '展开或旋转后必须恢复原来的导航布局'
+
 # ---------- 下单卡片的丝绸背景 ----------
 shop_media_rule=$(sed -n '/^\.shop-card-media{/,/^}/p' assets/subpages.css)
 shop_image_rule=$(sed -n '/^\.shop-card-image{/,/^}/p' assets/subpages.css)
