@@ -20,8 +20,8 @@
 - 用户明确要求：网页及 agent 相关改动通过 7.5 PR，后台直接通过 SSH 修改；两个发布面独立。
 - 仓库 / 分支：`MM-Hosting` / `7.5`；基线 `origin/main` `2bf2da6`。
 - 内容：仅 Duo 外屏竖屏的首页右侧悬浮菜单和右开导览；agent 规则、错题册、版本文档、视觉 QA 状态、定向回归及 CI。对应 FIX-20261105-03，另记录已独立部署的看板 FIX-20261105-02。
-- PR：待创建；目标 `main`，视觉采集受阻时保留 draft，不自动合并。
-- 检查：承重 invariant、外屏定向/切屏模拟、五段内联 JS 语法、九页静态站点、版本/缓存约定、发布上下文和 21 项节日边界均通过。脚本在本地 Node 执行环境验证；完整 CI 和 HTTP smoke 以 PR 后续结果为准。
+- PR：[ #75](https://github.com/rick5790/MM-Hosting/pull/75)，head `7.5` → base `main`，open/draft，未合并；网页与 agent 改动已推送，视觉采集受阻时不自动转为 ready 或合并。
+- 检查：提交 `c4e497b` 通过承重 invariant、外屏定向/切屏模拟、五段内联 JS 语法、九页静态站点、版本/缓存约定、发布上下文和 21 项节日边界。本地无 Node CLI，脚本通过本地 Node 执行环境验证；完整 CI 和 HTTP smoke 以 PR Actions 结果为准，不把本地部分检查写成完整流水线通过。
 - 发布：前端未合并/未发布；后台独立部署完成且镜像同步到 `Makkie-Backend` main，没有后台发布提交。
 - 设备验证：没有浏览器实例，`design-qa.md` 为 blocked；真实 GPU、WebKit/iOS、微信、窄屏、减少动态效果未完成验收。
 - 新教训：外屏硬件像素不是网页视口；WebKit 官方外屏竖屏 382px、内屏分窗 385px，不能用一个宽泛的“触屏/窄屏”条件当作外屏识别，也不能把 partially-folded API 当作内/外屏识别。
@@ -32,7 +32,7 @@
 
 | 前端版本 | 合并日期 | PR | main 合并提交 | 主要内容 / 状态 |
 | --- | --- | --- | --- | --- |
-| 7.5 | 未合并 | 待创建 | — | Duo 外屏竖屏导览及 agent/版本/错题记录；前端未发布 |
+| 7.5 | 未合并 | [#75](https://github.com/rick5790/MM-Hosting/pull/75)（draft） | — | Duo 外屏竖屏导览及 agent/版本/错题记录；分支已推送，前端未发布 |
 | 7.4 | 2026-10-27 | [#74](https://github.com/rick5790/MM-Hosting/pull/74) | `2bf2da6` | 修复错题册、平板/展开触屏导航、Firefox 商品图布局；已合并 |
 | 7.3.1 | 2026-10-04、2026-10-09 | [#71](https://github.com/rick5790/MM-Hosting/pull/71)、[#72](https://github.com/rick5790/MM-Hosting/pull/72) | `d488d01`、`59d3199` | 手机菜单及蛋糕档期锁定；已合并 |
 | 7.3 | 2026-10-04 | [#70](https://github.com/rick5790/MM-Hosting/pull/70) | `f25db04` | 版本元数据统一到 7.3；已合并 |
