@@ -2,6 +2,8 @@
 
 ## Version branches
 
+- 版本上下文与既往教训维护在 `VERSION_HISTORY.md`。版本、分支、PR 或发布操作前先查阅，先 fetch 再核验 `origin/main` 与 PR 状态；完成操作后更新记录，明确区分推送、合并、发布和设备验证。
+
 - `MM-Hosting` is the only repository used for release/version branches such as `5.30` and `5.31`.
 - Create, switch, rename, delete, commit, and push release branches only in `MM-Hosting`, unless the user explicitly requests otherwise.
 - Before any branch operation, verify that the working directory is `/Users/rickmac/Documents/VS-Code/MM-Hosting`.
@@ -20,6 +22,7 @@
 # Frontend regressions: standing defences
 
 - 故障修复错题册维护在仓库根目录 `FIX_RECORDS.md`。排查类似故障前先查阅；完成故障修复后按其中模板追加根因、实际修复、验证局限与防复发措施，并更新索引。不得将未采用的建议记成已部署方案。
+- Duo 的硬件像素、逻辑屏幕和 Safari 网页视口不同。调整外屏/内屏专属行为前先核对 WebKit 官方视口表，不用图片分辨率直接当 CSS 宽度，也不靠 UA 或实验性的 posture API 猜折叠状态。外屏竖屏菜单定向与切屏回归由 `scripts/ci/check-duo-navigation.mjs` 保护；实测前不得声称所有显示模式已确认。
 
 These rules exist because the same class of bug has now happened four times in
 `index.html`: something invisible in a desktop Chrome check was dropped, and it
