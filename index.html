@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="site-version" content="7.5">
+<meta name="site-version" content="7.6">
 <title>Makkie Mua（MakkieMua）| 洛杉矶手作创意甜品</title>
 <meta name="description" content="Makkie Mua（MakkieMua）手作创意甜品首页。浏览 Los Angeles 与 Orange County 本周预订、巴斯克、胖曲奇、戚风夹心、米布丁与创意甜品。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
@@ -5482,18 +5482,23 @@ const CAKE_CATALOG = [
   {
     id: 'quartet',
     name: '稻香米奶油四重奏',
+    nameEn: 'Rice Cream Quartet',
     price: 88,
     image: 'assets/images/cakes/quartet.jpg',
     meta: '六寸 · 单一口味',
+    metaEn: '6-inch · One signature flavor',
     flavorNote: '大米戚风 · 米麻薯 · 米布丁 · 米奶油',
+    flavorNoteEn: 'Rice chiffon · Rice mochi · Rice pudding · Rice cream',
     flavors: []
   },
   {
     id: 'basque',
     name: '巴斯克蛋糕',
+    nameEn: 'Basque Cheesecake',
     price: 68,
     image: 'assets/images/cakes/basque.jpg',
     meta: '六寸 · 17 款口味',
+    metaEn: '6-inch · 17 flavors',
     flavors: [
       '提拉米苏巴斯克', '黑芝麻豆乳巴斯克', '斑斓芭乐巴斯克', '伯爵茶巴斯克',
       '蔓越莓巴斯克', '覆盆子巴斯克', '百香果西米巴斯克', '绿豆沙巴斯克',
@@ -5504,10 +5509,112 @@ const CAKE_CATALOG = [
   }
 ];
 const CAKE_MIN_LEAD_DAYS = 14;
-const CAKE_STATUS_LABELS = {
-  pending: '待确认', confirmed: '已确认', making: '制作中',
-  ready: '待取货', completed: '已完成', cancelled: '已取消'
+const CAKE_FLAVOR_EN = {
+  '提拉米苏巴斯克': 'Tiramisu Basque',
+  '黑芝麻豆乳巴斯克': 'Black Sesame Soy Milk Basque',
+  '斑斓芭乐巴斯克': 'Pandan Guava Basque',
+  '伯爵茶巴斯克': 'Earl Grey Basque',
+  '蔓越莓巴斯克': 'Cranberry Basque',
+  '覆盆子巴斯克': 'Raspberry Basque',
+  '百香果西米巴斯克': 'Passion Fruit Sago Basque',
+  '绿豆沙巴斯克': 'Mung Bean Basque',
+  '芋泥巴斯克': 'Taro Basque',
+  '抹茶巴斯克': 'Matcha Basque',
+  '山楂巴斯克': 'Hawthorn Basque',
+  '咸蛋黄麻薯巴斯克': 'Salted Egg Yolk Mochi Basque',
+  '雪媚娘巴斯克': 'Snow Mochi Basque',
+  '海盐榴莲巴斯克': 'Sea Salt Durian Basque',
+  '酒酿姜撞奶巴斯克': 'Fermented Rice Ginger Milk Basque',
+  '法葱巴斯克': 'Scallion Basque',
+  '龙井抹茶巴斯克': 'Longjing Matcha Basque'
 };
+const CAKE_COPY = {
+  zh: {
+    title: '蛋糕询单', leadTime: '整糕至少提前 2 周预定 · 仅自提', size: '六寸',
+    singleFlavor: '单一口味', singleHeading: '这款为单一口味 · 一次尝到四层', chooseFlavor: '选择口味',
+    notice: '请至少<strong>提前 2 周</strong>预定，蛋糕<strong>仅支持自提</strong>。',
+    back: '返回', nextDate: '下一步：选自提日期', nextReview: '下一步：确认询单',
+    chooseDate: '选择自提日期', earliest: '最早', previousMonth: '上个月', nextMonth: '下个月',
+    weekdays: ['日', '一', '二', '三', '四', '五', '六'],
+    booked: '该日已有蛋糕预定', loadingDates: '正在读取可预定日期', unavailable: '该日期不可预定',
+    availability: '灰色日期不可预定；已有蛋糕预定的日期会自动锁定。',
+    preferredTime: '期望自提时间（选填）', timePlaceholder: '例：下午 2-3 点',
+    review: '确认询单', cake: '蛋糕', flavor: '口味', pickupDate: '自提日期',
+    time: '期望时间', unspecified: '未指定', total: '合计',
+    notes: '备注（选填）', notesPlaceholder: '口味调整、字牌、过敏原等',
+    warningTitle: '⚠️ 此处为「询单」，不是最终下单',
+    warning: '提交后请<strong>微信联系店家</strong>确认口味 / 自提时间与付款，<strong>确认后才会开始制作</strong>。',
+    payment: '付款方式（任选其一，确认后支付）', copy: '复制', copied: '已复制 ✓',
+    rmb: '人民币', rmbMethods: '微信 / 支付宝', rateLoading: '汇率加载中…',
+    rate: '实时汇率', rateFailed: '汇率获取失败，请询问店家',
+    submit: '提交询单', submitting: '提交中…', submitFailed: '提交失败，请稍后再试',
+    successTitle: '询单已提交！',
+    success: '请微信联系店家确认口味 / 时间与付款，<strong>确认后才会开始制作</strong>。<br>可在右上角「我的」里查看询单进度～',
+    done: '知道了', viewOrders: '查看我的订单', orderedAt: '下单时间',
+    pickupOnly: '仅自提', cancelReason: '取消原因', customerCancelled: '用户主动取消',
+    reminder: '🕒 请微信联系店家确认自提时间，不确认的订单不会制作。',
+    showPayment: '查看付款方式', hidePayment: '收起付款方式', cancel: '取消预定',
+    confirmCancel: '确定取消这单蛋糕预定吗？', cancelFailed: '取消失败', close: '关闭蛋糕询单',
+    statusLabels: { pending: '待确认', confirmed: '已确认', making: '制作中', ready: '待取货', completed: '已完成', cancelled: '已取消' }
+  },
+  en: {
+    title: 'Whole Cake Inquiry', leadTime: 'At least 2 weeks’ notice · Pickup only', size: '6-inch',
+    singleFlavor: 'Signature flavor', singleHeading: 'One signature flavor · Four layers in every slice', chooseFlavor: 'Choose a flavor',
+    notice: 'Please inquire at least <strong>2 weeks ahead</strong>. Cakes are <strong>pickup only</strong>.',
+    back: 'Back', nextDate: 'Next: Pickup date', nextReview: 'Next: Review inquiry',
+    chooseDate: 'Choose a pickup date', earliest: 'Earliest pickup:', previousMonth: 'Previous month', nextMonth: 'Next month',
+    weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    booked: 'A cake is already booked for this date', loadingDates: 'Loading available dates', unavailable: 'This date is unavailable',
+    availability: 'Gray dates are unavailable. Dates with an existing cake booking are automatically blocked.',
+    preferredTime: 'Preferred pickup time (optional)', timePlaceholder: 'e.g. 2–3 PM',
+    review: 'Review your inquiry', cake: 'Cake', flavor: 'Flavor', pickupDate: 'Pickup date',
+    time: 'Preferred time', unspecified: 'Not specified', total: 'Total',
+    notes: 'Notes (optional)', notesPlaceholder: 'Flavor requests, cake message, allergies, etc.',
+    warningTitle: '⚠️ This is an inquiry, not a confirmed order',
+    warning: 'After submitting, <strong>contact us on WeChat</strong> to confirm the flavor, pickup time and payment. <strong>We only start making your cake after confirmation.</strong>',
+    payment: 'Payment options (choose one; pay after confirmation)', copy: 'Copy', copied: 'Copied ✓',
+    rmb: 'CNY', rmbMethods: 'WeChat Pay / Alipay', rateLoading: 'Loading exchange rate…',
+    rate: 'Live rate', rateFailed: 'Exchange rate unavailable. Please ask us.',
+    submit: 'Submit inquiry', submitting: 'Submitting…', submitFailed: 'Unable to submit. Please try again later.',
+    successTitle: 'Inquiry submitted!',
+    success: 'Contact us on WeChat to confirm the flavor, pickup time and payment. <strong>We only start making your cake after confirmation.</strong><br>Track your inquiry under Profile in the top-right corner.',
+    done: 'Got it', viewOrders: 'View my orders', orderedAt: 'Submitted on',
+    pickupOnly: 'Pickup only', cancelReason: 'Cancellation reason', customerCancelled: 'Cancelled by customer',
+    reminder: '🕒 Please confirm your pickup time with us on WeChat. We only make confirmed orders.',
+    showPayment: 'View payment options', hidePayment: 'Hide payment options', cancel: 'Cancel inquiry',
+    confirmCancel: 'Cancel this cake inquiry?', cancelFailed: 'Unable to cancel. Please try again.', close: 'Close cake inquiry',
+    statusLabels: { pending: 'Awaiting confirmation', confirmed: 'Confirmed', making: 'Being made', ready: 'Ready for pickup', completed: 'Completed', cancelled: 'Cancelled' }
+  }
+};
+const CAKE_ERROR_EN = {
+  '蛋糕款式不存在': 'This cake is unavailable. Please choose another style.',
+  '请选择口味': 'Please choose a flavor.',
+  '口味不存在': 'This flavor is unavailable. Please choose another.',
+  '自提日期格式不正确': 'Please choose a valid pickup date.',
+  '自提日期不存在': 'Please choose a valid pickup date.',
+  '蛋糕需至少提前 14 天预定': 'Please allow at least 14 days before pickup.',
+  '每周六为团购自提日，蛋糕询单暂不开放': 'Saturdays are reserved for weekly-order pickups. Please choose another date.',
+  '该日期为节假日，暂不接单': 'Cake pickups are unavailable on this holiday.',
+  '该日期暂不开放蛋糕预定，请选择其他日期': 'This date is unavailable for cakes. Please choose another date.',
+  '该日期已有蛋糕预定，请选择其他日期': 'A cake is already booked for this date. Please choose another date.',
+  '订单不存在': 'This inquiry could not be found.',
+  '不能取消别人的订单': 'You can only cancel your own inquiries.',
+  '不能替其他用户下单': 'You can only submit an inquiry for your own account.',
+  '当前状态不可取消': 'This inquiry can no longer be cancelled.'
+};
+
+function getCakeCopy() { return CAKE_COPY[getUiLang()]; }
+function cakeName(cake) { return getUiLang() === 'en' ? (cake.nameEn || cake.name) : cake.name; }
+function cakeFlavorName(flavor, cake) {
+  if (getUiLang() !== 'en') return flavor;
+  if (cake && flavor === cake.flavorNote) return cake.flavorNoteEn || flavor;
+  return CAKE_FLAVOR_EN[flavor] || flavor;
+}
+function cakeErrorMessage(error, fallback) {
+  const message = String(error && error.message || '');
+  if (getUiLang() !== 'en') return message || fallback;
+  return CAKE_ERROR_EN[message] || (message && !/[\u3400-\u9fff]/.test(message) ? message : fallback);
+}
 
 // —— 美国联邦节假日（与后端 cakeOrderService.js 逻辑一致）——
 function cakePad(n) { return String(n).padStart(2, '0'); }
@@ -5553,8 +5660,11 @@ function cakeHolidaySet() {
 function cakeIsSaturday(str) {
   return new Date(`${str}T00:00:00Z`).getUTCDay() === 6;
 }
-function cakeFormatDateCn(str) {
+function cakeFormatDate(str) {
   if (!str) return '';
+  if (getUiLang() === 'en') return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'
+  }).format(new Date(`${str}T00:00:00Z`));
   const [y, m, d] = str.split('-');
   const wd = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][new Date(`${str}T00:00:00Z`).getUTCDay()];
   return `${y} 年 ${Number(m)} 月 ${Number(d)} 日 ${wd}`;
@@ -5562,7 +5672,7 @@ function cakeFormatDateCn(str) {
 
 const cakeFlow = {
   step: 'pick', cakeId: '', flavor: '', month: null, selected: '', preferredTime: '', notes: '',
-  unavailableDates: new Set(), availabilityLoaded: false, availabilityRequest: 0
+  unavailableDates: new Set(), availabilityLoaded: false, availabilityRequest: 0, submitting: false
 };
 const cakeOverlay = document.getElementById('cakeOverlay');
 const cakeOverlayBody = document.getElementById('cakeOverlayBody');
@@ -5591,6 +5701,7 @@ async function loadCakeUnavailableDates() {
 }
 
 function openCakeOverlay() {
+  if (cakeFlow.submitting) return;
   const earliest = cakeYmdAddDays(cakeLaToday(), CAKE_MIN_LEAD_DAYS);
   cakeFlow.step = 'pick';
   cakeFlow.cakeId = '';
@@ -5623,22 +5734,24 @@ function renderCakeStep() {
   if (cakeFlow.step === 'flavor') return renderCakeFlavor();
   if (cakeFlow.step === 'date') return renderCakeDate();
   if (cakeFlow.step === 'review') return renderCakeReview();
+  if (cakeFlow.step === 'success') return renderCakeSuccess();
 }
 
 function renderCakePick() {
+  const copy = getCakeCopy();
   cakeOverlayBody.innerHTML = `
     <div class="cake-step-head">
-      <div class="cake-step-title" id="cakeOverlayTitle">蛋糕询单</div>
-      <div class="cake-step-sub">整糕至少提前 2 周预定 · 仅自提</div>
+      <div class="cake-step-title" id="cakeOverlayTitle">${copy.title}</div>
+      <div class="cake-step-sub">${copy.leadTime}</div>
       ${cakeStepDots('pick')}
     </div>
     <div class="cake-pick-grid">
       ${CAKE_CATALOG.map((cake) => `
         <button class="cake-pick-card" type="button" data-cake-pick="${escapeHtml(cake.id)}">
-          <div class="cake-pick-media"><img src="${escapeHtml(cake.image)}" alt="${escapeHtml(cake.name)}" loading="lazy" onerror="this.style.display='none'"></div>
+          <div class="cake-pick-media"><img src="${escapeHtml(cake.image)}" alt="${escapeHtml(cakeName(cake))}" loading="lazy" onerror="this.style.display='none'"></div>
           <div class="cake-pick-body">
-            <div class="cake-pick-name">${escapeHtml(cake.name)}</div>
-            <div class="cake-pick-meta">${escapeHtml(cake.meta)}</div>
+            <div class="cake-pick-name">${escapeHtml(cakeName(cake))}</div>
+            <div class="cake-pick-meta">${escapeHtml(getUiLang() === 'en' ? cake.metaEn : cake.meta)}</div>
             <div class="cake-pick-price">$${cake.price}</div>
           </div>
         </button>
@@ -5648,36 +5761,38 @@ function renderCakePick() {
 }
 
 function renderCakeFlavor() {
+  const copy = getCakeCopy();
   const cake = getCakeById(cakeFlow.cakeId);
   if (!cake) { cakeFlow.step = 'pick'; return renderCakeStep(); }
   const isSingle = !cake.flavors.length;
-  const components = isSingle ? String(cake.flavorNote || '').split(/\s*·\s*/).filter(Boolean) : [];
+  const components = isSingle ? String(cakeFlavorName(cake.flavorNote || '', cake)).split(/\s*·\s*/).filter(Boolean) : [];
   const body = isSingle
     ? `<div class="cake-single-card">
         ${components.map((c, i) => `${i ? '<span class="cake-layer-plus">+</span>' : ''}<span class="cake-layer">${escapeHtml(c)}</span>`).join('')}
       </div>`
     : `<div class="cake-flavor-grid">${cake.flavors.map((f) => `
-        <button class="cake-flavor-chip ${cakeFlow.flavor === f ? 'is-active' : ''}" type="button" data-cake-flavor="${escapeHtml(f)}">${escapeHtml(f)}</button>
+        <button class="cake-flavor-chip ${cakeFlow.flavor === f ? 'is-active' : ''}" type="button" data-cake-flavor="${escapeHtml(f)}">${escapeHtml(cakeFlavorName(f, cake))}</button>
       `).join('')}</div>`;
   const canNext = isSingle ? true : Boolean(cakeFlow.flavor);
-  const heading = isSingle ? '这款为单一口味 · 一次尝到四层' : '选择口味';
+  const heading = isSingle ? copy.singleHeading : copy.chooseFlavor;
   cakeOverlayBody.innerHTML = `
     <div class="cake-step-head">
-      <div class="cake-step-title">${escapeHtml(cake.name)}</div>
-      <div class="cake-step-sub">$${cake.price} · 六寸</div>
+      <div class="cake-step-title" id="cakeOverlayTitle">${escapeHtml(cakeName(cake))}</div>
+      <div class="cake-step-sub">$${cake.price} · ${copy.size}</div>
       ${cakeStepDots('flavor')}
     </div>
-    <div class="cake-notice"><span>🕒</span><div>请至少<strong>提前 2 周</strong>预定，蛋糕<strong>仅支持自提</strong>。</div></div>
+    <div class="cake-notice"><span>🕒</span><div>${copy.notice}</div></div>
     <div class="cake-step-sub" style="margin-bottom:.8rem;">${heading}</div>
     ${body}
     <div class="cake-actions">
-      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="pick">返回</button>
-      <button class="cake-btn cake-btn--primary" type="button" data-cake-next="date" ${canNext ? '' : 'disabled'}>下一步：选自提日期</button>
+      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="pick">${copy.back}</button>
+      <button class="cake-btn cake-btn--primary" type="button" data-cake-next="date" ${canNext ? '' : 'disabled'}>${copy.nextDate}</button>
     </div>
   `;
 }
 
 function renderCakeDate() {
+  const copy = getCakeCopy();
   const cake = getCakeById(cakeFlow.cakeId);
   const today = cakeLaToday();
   const earliest = cakeYmdAddDays(today, CAKE_MIN_LEAD_DAYS);
@@ -5687,7 +5802,7 @@ function renderCakeDate() {
   const { y, m } = cakeFlow.month;
   const firstDow = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
   const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
-  const dows = ['日', '一', '二', '三', '四', '五', '六'];
+  const dows = copy.weekdays;
   const canPrev = `${y}-${cakePad(m)}` > earliest.slice(0, 7);
 
   let cells = '';
@@ -5697,66 +5812,67 @@ function renderCakeDate() {
     const booked = unavailableDates.has(ds);
     const disabled = availabilityLoading || ds < earliest || holidays.has(ds) || cakeIsSaturday(ds) || booked;
     const selected = ds === cakeFlow.selected;
-    const reason = booked ? '该日已有蛋糕预定' : (availabilityLoading ? '正在读取可预定日期' : '该日期不可预定');
-    cells += `<button class="cake-cal-cell ${disabled ? 'is-disabled' : ''} ${booked ? 'is-booked' : ''} ${selected ? 'is-selected' : ''}" type="button" ${disabled ? `disabled title="${reason}" aria-label="${ds}，${reason}"` : `data-cake-date="${ds}"`}>${d}</button>`;
+    const reason = booked ? copy.booked : (availabilityLoading ? copy.loadingDates : copy.unavailable);
+    cells += `<button class="cake-cal-cell ${disabled ? 'is-disabled' : ''} ${booked ? 'is-booked' : ''} ${selected ? 'is-selected' : ''}" type="button" ${disabled ? `disabled title="${escapeHtml(reason)}" aria-label="${ds}: ${escapeHtml(reason)}"` : `data-cake-date="${ds}" aria-label="${escapeHtml(cakeFormatDate(ds))}"`}>${d}</button>`;
   }
 
   cakeOverlayBody.innerHTML = `
     <div class="cake-step-head">
-      <div class="cake-step-title">选择自提日期</div>
-      <div class="cake-step-sub">${escapeHtml(cake ? cake.name : '')} · 最早 ${cakeFormatDateCn(earliest)}</div>
+      <div class="cake-step-title" id="cakeOverlayTitle">${copy.chooseDate}</div>
+      <div class="cake-step-sub">${escapeHtml(cake ? cakeName(cake) : '')} · ${copy.earliest} ${escapeHtml(cakeFormatDate(earliest))}</div>
       ${cakeStepDots('date')}
     </div>
     <div class="cake-cal">
       <div class="cake-cal-head">
-        <button class="cake-cal-nav" type="button" data-cake-month="-1" ${canPrev ? '' : 'disabled'}>‹</button>
-        <div class="cake-cal-title">${y} 年 ${m} 月</div>
-        <button class="cake-cal-nav" type="button" data-cake-month="1">›</button>
+        <button class="cake-cal-nav" type="button" data-cake-month="-1" aria-label="${copy.previousMonth}" ${canPrev ? '' : 'disabled'}>‹</button>
+        <div class="cake-cal-title">${getUiLang() === 'en' ? new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', year: 'numeric', month: 'long' }).format(new Date(Date.UTC(y, m - 1, 1))) : `${y} 年 ${m} 月`}</div>
+        <button class="cake-cal-nav" type="button" data-cake-month="1" aria-label="${copy.nextMonth}">›</button>
       </div>
       <div class="cake-cal-grid">
         ${dows.map((w) => `<div class="cake-cal-dow">${w}</div>`).join('')}
         ${cells}
       </div>
-      <div class="cake-cal-availability" aria-live="polite">${availabilityLoading ? '正在读取可预定日期…' : '灰色日期不可预定；已有蛋糕预定的日期会自动锁定。'}</div>
+      <div class="cake-cal-availability" aria-live="polite">${availabilityLoading ? `${copy.loadingDates}…` : copy.availability}</div>
       <div class="cake-time-field">
-        <label for="cakePreferredTime">期望自提时间（选填）</label>
-        <input id="cakePreferredTime" class="cake-input" type="text" placeholder="例：下午 2-3 点" value="${escapeHtml(cakeFlow.preferredTime)}">
+        <label for="cakePreferredTime">${copy.preferredTime}</label>
+        <input id="cakePreferredTime" class="cake-input" type="text" placeholder="${copy.timePlaceholder}" value="${escapeHtml(cakeFlow.preferredTime)}">
       </div>
     </div>
     <div class="cake-actions">
-      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="flavor">返回</button>
-      <button class="cake-btn cake-btn--primary" type="button" data-cake-next="review" ${cakeFlow.selected && !availabilityLoading ? '' : 'disabled'}>下一步：确认订单</button>
+      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="flavor">${copy.back}</button>
+      <button class="cake-btn cake-btn--primary" type="button" data-cake-next="review" ${cakeFlow.selected && !availabilityLoading ? '' : 'disabled'}>${copy.nextReview}</button>
     </div>
   `;
 }
 
 function renderCakeReview() {
+  const copy = getCakeCopy();
   const cake = getCakeById(cakeFlow.cakeId);
   if (!cake || !cakeFlow.selected) { cakeFlow.step = 'date'; return renderCakeStep(); }
   cakeOverlayBody.innerHTML = `
     <div class="cake-step-head">
-      <div class="cake-step-title">确认询单</div>
+      <div class="cake-step-title" id="cakeOverlayTitle">${copy.review}</div>
       ${cakeStepDots('review')}
     </div>
     <div class="cake-review">
-      <div class="cake-review-row"><span class="k">蛋糕</span><span class="v">${escapeHtml(cake.name)}（六寸）</span></div>
-      <div class="cake-review-row"><span class="k">口味</span><span class="v">${escapeHtml(cakeFlow.flavor || cake.flavorNote || '单一口味')}</span></div>
-      <div class="cake-review-row"><span class="k">自提日期</span><span class="v">${escapeHtml(cakeFormatDateCn(cakeFlow.selected))}</span></div>
-      <div class="cake-review-row"><span class="k">期望时间</span><span class="v">${escapeHtml(cakeFlow.preferredTime || '未指定')}</span></div>
-      <div class="cake-review-total"><span>合计</span><span>$${cake.price}</span></div>
+      <div class="cake-review-row"><span class="k">${copy.cake}</span><span class="v">${escapeHtml(cakeName(cake))} · ${copy.size}</span></div>
+      <div class="cake-review-row"><span class="k">${copy.flavor}</span><span class="v">${escapeHtml(cakeFlavorName(cakeFlow.flavor || cake.flavorNote || copy.singleFlavor, cake))}</span></div>
+      <div class="cake-review-row"><span class="k">${copy.pickupDate}</span><span class="v">${escapeHtml(cakeFormatDate(cakeFlow.selected))}</span></div>
+      <div class="cake-review-row"><span class="k">${copy.time}</span><span class="v">${escapeHtml(cakeFlow.preferredTime || copy.unspecified)}</span></div>
+      <div class="cake-review-total"><span>${copy.total}</span><span>$${cake.price}</span></div>
     </div>
     <div class="cake-time-field">
-      <label for="cakeNotes">备注（选填）</label>
-      <textarea id="cakeNotes" class="cake-textarea" placeholder="口味调整、字牌、过敏原等">${escapeHtml(cakeFlow.notes)}</textarea>
+      <label for="cakeNotes">${copy.notes}</label>
+      <textarea id="cakeNotes" class="cake-textarea" placeholder="${copy.notesPlaceholder}">${escapeHtml(cakeFlow.notes)}</textarea>
     </div>
     <div class="cake-inquiry-warn">
-      <div class="cake-inquiry-warn-title">⚠️ 此处为「询单」，不是最终下单</div>
-      <div class="cake-inquiry-warn-body">提交后请<strong>微信联系店家</strong>确认口味 / 自提时间与付款，<strong>确认后才会开始制作</strong>。</div>
+      <div class="cake-inquiry-warn-title">${copy.warningTitle}</div>
+      <div class="cake-inquiry-warn-body">${copy.warning}</div>
     </div>
     ${cakePayBlockHtml(cake.price)}
     <div class="cake-actions">
-      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="date">返回</button>
-      <button class="cake-btn cake-btn--primary" type="button" data-cake-submit>提交询单</button>
+      <button class="cake-btn cake-btn--ghost" type="button" data-cake-back="date">${copy.back}</button>
+      <button class="cake-btn cake-btn--primary" type="button" data-cake-submit ${cakeFlow.submitting ? 'disabled' : ''}>${cakeFlow.submitting ? copy.submitting : copy.submit}</button>
     </div>
   `;
   refreshCakeRmb();
@@ -5764,24 +5880,25 @@ function renderCakeReview() {
 
 // 付款方式区块（Venmo / Zelle 可复制 + 人民币实时汇率），询单确认页与订单卡共用。
 function cakePayBlockHtml(price, head) {
+  const copy = getCakeCopy();
   return `
     <div class="cake-pay">
-      <div class="cake-pay-head">${escapeHtml(head || '付款方式（任选其一，确认后支付）')}</div>
+      <div class="cake-pay-head">${escapeHtml(head || copy.payment)}</div>
       <div class="cake-pay-list">
         <button class="cake-pay-item" type="button" data-cake-copy="makkiemua">
           <span class="cake-pay-brand cake-pay-brand--venmo">Venmo</span>
           <span class="cake-pay-value">makkiemua</span>
-          <span class="cake-pay-copy">复制</span>
+          <span class="cake-pay-copy">${copy.copy}</span>
         </button>
         <button class="cake-pay-item" type="button" data-cake-copy="makkiemua@gmail.com">
           <span class="cake-pay-brand cake-pay-brand--zelle">Zelle</span>
           <span class="cake-pay-value">makkiemua@gmail.com</span>
-          <span class="cake-pay-copy">复制</span>
+          <span class="cake-pay-copy">${copy.copy}</span>
         </button>
         <div class="cake-pay-item cake-pay-item--rmb">
-          <span class="cake-pay-brand cake-pay-brand--rmb">人民币</span>
-          <span class="cake-pay-value" data-cake-rmb-price="${Number(price) || 0}">≈ ¥— · 微信 / 支付宝</span>
-          <span class="cake-pay-rate" data-cake-rmb-rate>汇率加载中…</span>
+          <span class="cake-pay-brand cake-pay-brand--rmb">${copy.rmb}</span>
+          <span class="cake-pay-value" data-cake-rmb-price="${Number(price) || 0}">≈ ¥— · ${copy.rmbMethods}</span>
+          <span class="cake-pay-rate" data-cake-rmb-rate>${copy.rateLoading}</span>
         </div>
       </div>
     </div>`;
@@ -5789,14 +5906,16 @@ function cakePayBlockHtml(price, head) {
 
 // 询单提交成功界面（参考甜品下单成功弹窗，替代原生 alert）
 function renderCakeSuccess() {
+  const copy = getCakeCopy();
+  cakeFlow.step = 'success';
   cakeOverlayBody.innerHTML = `
     <div class="cake-success">
       <div class="cake-success-icon">✓</div>
-      <div class="cake-success-title">询单已提交！</div>
-      <div class="cake-success-msg">请微信联系店家确认口味 / 时间与付款，<strong>确认后才会开始制作</strong>。<br>可在右上角「我的」里查看询单进度～</div>
+      <div class="cake-success-title" id="cakeOverlayTitle">${copy.successTitle}</div>
+      <div class="cake-success-msg">${copy.success}</div>
       <div class="cake-actions cake-actions--center">
-        <button class="cake-btn cake-btn--ghost" type="button" data-cake-success-close>知道了</button>
-        <button class="cake-btn cake-btn--primary" type="button" data-cake-success-orders>查看我的订单</button>
+        <button class="cake-btn cake-btn--ghost" type="button" data-cake-success-close>${copy.done}</button>
+        <button class="cake-btn cake-btn--primary" type="button" data-cake-success-orders>${copy.viewOrders}</button>
       </div>
     </div>
   `;
@@ -5820,16 +5939,17 @@ function refreshCakeRmb() {
     if (!rate) throw new Error('no rate');
     document.querySelectorAll('[data-cake-rmb-price]').forEach((el) => {
       const price = Number(el.getAttribute('data-cake-rmb-price')) || 0;
-      el.textContent = `≈ ¥${Math.round(price * rate)} · 微信 / 支付宝`;
+      el.textContent = `≈ ¥${Math.round(price * rate)} · ${getCakeCopy().rmbMethods}`;
       const rateEl = el.parentElement && el.parentElement.querySelector('[data-cake-rmb-rate]');
-      if (rateEl) rateEl.textContent = `实时汇率 1 USD ≈ ${rate.toFixed(2)} CNY`;
+      if (rateEl) rateEl.textContent = `${getCakeCopy().rate} 1 USD ≈ ${rate.toFixed(2)} CNY`;
     });
   }).catch(() => {
-    document.querySelectorAll('[data-cake-rmb-rate]').forEach((el) => { el.textContent = '汇率获取失败，请询问店家'; });
+    document.querySelectorAll('[data-cake-rmb-rate]').forEach((el) => { el.textContent = getCakeCopy().rateFailed; });
   });
 }
 
 async function submitCakeOrder(button) {
+  if (cakeFlow.submitting) return;
   if (!siteState.auth || !siteState.auth.user) {
     closeCakeOverlay();
     renderProfileOverlay();
@@ -5840,7 +5960,8 @@ async function submitCakeOrder(button) {
   const notesEl = document.getElementById('cakeNotes');
   if (notesEl) cakeFlow.notes = notesEl.value;
   const nickname = (siteState.auth.user.profile && siteState.auth.user.profile.nickname) || siteState.auth.user.nickname || '';
-  if (button) { button.disabled = true; button.textContent = '提交中…'; }
+  cakeFlow.submitting = true;
+  if (button) { button.disabled = true; button.textContent = getCakeCopy().submitting; }
   try {
     await siteApiRequest('/api/cake-orders', {
       method: 'POST',
@@ -5857,52 +5978,59 @@ async function submitCakeOrder(button) {
     renderCakeSuccess();
     loadMyOrders();
   } catch (error) {
-    if (button) { button.disabled = false; button.textContent = '提交询单'; }
+    const submitButton = cakeOverlayBody.querySelector('[data-cake-submit]') || button;
+    if (submitButton) { submitButton.disabled = false; submitButton.textContent = getCakeCopy().submit; }
     if (String(error.message || '').includes('已有蛋糕预定')) {
       cakeFlow.selected = '';
       cakeFlow.step = 'date';
       loadCakeUnavailableDates();
       renderCakeStep();
     }
-    alert(error.message || '提交失败，请稍后再试');
+    alert(cakeErrorMessage(error, getCakeCopy().submitFailed));
+  } finally {
+    cakeFlow.submitting = false;
   }
 }
 
 function renderCakeOrderCard(order, allowActions) {
+  const copy = getCakeCopy();
   const status = String(order.status || 'pending');
-  const label = CAKE_STATUS_LABELS[status] || status;
+  const label = copy.statusLabels[status] || status;
   const dateText = formatOrderDate(order.created_at || order.createdAt);
-  const flavor = order.flavor || '单一口味';
+  const cake = getCakeById(order.cake_id || order.cakeId)
+    || CAKE_CATALOG.find((item) => item.name === (order.cake_name || order.cakeName));
+  const flavor = cakeFlavorName(order.flavor || '', cake) || copy.singleFlavor;
   const totalText = (order.total && order.total.text) || formatMoney(order.unit_price || order.total_amount || 0);
   const cancellable = allowActions && status === 'pending';
-  const reason = String(order.cancel_reason || order.cancelReason || '');
+  const originalReason = String(order.cancel_reason || order.cancelReason || '');
+  const reason = originalReason === '用户主动取消' ? copy.customerCancelled : originalReason;
   const showPay = allowActions && status !== 'cancelled' && status !== 'completed';
   const price = Number(order.unit_price || order.total_amount || 0);
   return `
     <div class="my-order-card my-order-card--rich my-order-card--cake">
       <div class="my-order-top">
         <div class="my-order-date">
-          <span class="my-order-date-label">下单时间</span>
+          <span class="my-order-date-label">${copy.orderedAt}</span>
           <strong class="my-order-date-value">${escapeHtml(dateText)}</strong>
         </div>
         <div class="my-order-badges">
-          <span class="my-order-num-badge">蛋糕</span>
+          <span class="my-order-num-badge">${copy.cake}</span>
           <span class="my-order-status my-order-status--${escapeHtml(status)}">${escapeHtml(label)}</span>
         </div>
       </div>
-      <div class="my-order-cake-name">${escapeHtml(order.cake_name || order.cakeName || '')}（六寸）</div>
+      <div class="my-order-cake-name">${escapeHtml(cake ? cakeName(cake) : (order.cake_name || order.cakeName || ''))} · ${copy.size}</div>
       <div class="my-order-cake-flavor">${escapeHtml(flavor)}</div>
-      <div class="my-order-cake-pickup">自提日期：<strong>${escapeHtml(cakeFormatDateCn(order.pickup_date || order.pickupDate))}</strong>${(order.preferred_time || order.preferredTime) ? ` · ${escapeHtml(order.preferred_time || order.preferredTime)}` : ''}</div>
-      ${status === 'cancelled' && reason ? `<div class="my-order-reason">取消原因：${escapeHtml(reason)}</div>` : ''}
-      ${showPay ? '<div class="my-order-cake-remind">🕒 请微信联系店家确认自提时间，不确认的订单不会制作。</div>' : ''}
+      <div class="my-order-cake-pickup">${copy.pickupDate}: <strong>${escapeHtml(cakeFormatDate(order.pickup_date || order.pickupDate))}</strong>${(order.preferred_time || order.preferredTime) ? ` · ${escapeHtml(order.preferred_time || order.preferredTime)}` : ''}</div>
+      ${status === 'cancelled' && reason ? `<div class="my-order-reason">${copy.cancelReason}: ${escapeHtml(reason)}</div>` : ''}
+      ${showPay ? `<div class="my-order-cake-remind">${copy.reminder}</div>` : ''}
       <div class="my-order-foot">
-        <span class="my-order-pay">仅自提</span>
+        <span class="my-order-pay">${copy.pickupOnly}</span>
         <span class="my-order-total">${escapeHtml(totalText)}</span>
       </div>
       ${(showPay || cancellable) ? `
       <div class="my-order-btnrow">
-        ${showPay ? `<button class="my-order-paybtn" type="button" aria-expanded="false" data-pay-toggle="cake-${escapeHtml(order.id)}">查看付款方式</button>` : ''}
-        ${cancellable ? `<button class="my-order-cancel-btn" type="button" data-cake-cancel="${escapeHtml(order.id)}">取消预定</button>` : ''}
+        ${showPay ? `<button class="my-order-paybtn" type="button" aria-expanded="false" data-pay-label-open="${copy.showPayment}" data-pay-label-close="${copy.hidePayment}" data-pay-toggle="cake-${escapeHtml(order.id)}">${copy.showPayment}</button>` : ''}
+        ${cancellable ? `<button class="my-order-cancel-btn" type="button" data-cake-cancel="${escapeHtml(order.id)}">${copy.cancel}</button>` : ''}
       </div>` : ''}
       ${showPay ? `<div class="my-order-paypanel" data-pay-panel="cake-${escapeHtml(order.id)}" hidden>${cakePayBlockHtml(price)}</div>` : ''}
     </div>
@@ -5910,12 +6038,40 @@ function renderCakeOrderCard(order, allowActions) {
 }
 
 async function cancelCakeOrder(orderId) {
-  if (!confirm('确定取消这单蛋糕预定吗？')) return;
+  if (!confirm(getCakeCopy().confirmCancel)) return;
   try {
     await siteApiRequest(`/api/cake-orders/${orderId}/cancel`, { method: 'PATCH' });
     loadMyOrders();
   } catch (error) {
-    alert(error.message || '取消失败');
+    alert(cakeErrorMessage(error, getCakeCopy().cancelFailed));
+  }
+}
+
+function saveCakeDraftInputs() {
+  const timeInput = cakeOverlayBody.querySelector('#cakePreferredTime');
+  const notesInput = cakeOverlayBody.querySelector('#cakeNotes');
+  if (timeInput) cakeFlow.preferredTime = timeInput.value;
+  if (notesInput) cakeFlow.notes = notesInput.value;
+}
+
+function refreshCakeLanguage() {
+  document.querySelectorAll('[data-cake-close]').forEach((button) => {
+    if (button.tagName === 'BUTTON') button.setAttribute('aria-label', getCakeCopy().close);
+  });
+  if (!cakeOverlay || cakeOverlay.hidden) return;
+  saveCakeDraftInputs();
+  const panel = cakeOverlay.querySelector('.cake-overlay-panel');
+  const scrollTop = panel ? panel.scrollTop : 0;
+  const focused = cakeOverlayBody.contains(document.activeElement) ? document.activeElement : null;
+  const focusId = focused && focused.id;
+  const selectionStart = focused && focused.selectionStart;
+  const selectionEnd = focused && focused.selectionEnd;
+  renderCakeStep();
+  if (panel) panel.scrollTop = scrollTop;
+  const nextFocused = focusId && cakeOverlayBody.querySelector(`#${focusId}`);
+  if (nextFocused) {
+    nextFocused.focus({ preventScroll: true });
+    if (typeof nextFocused.setSelectionRange === 'function' && Number.isInteger(selectionStart)) nextFocused.setSelectionRange(selectionStart, selectionEnd);
   }
 }
 
@@ -5932,6 +6088,9 @@ if (new URLSearchParams(window.location.search).get('cake') === 'inquiry') {
 }
 
 if (cakeOverlay) {
+  cakeOverlay.addEventListener('input', (event) => {
+    if (event.target.id === 'cakePreferredTime' || event.target.id === 'cakeNotes') saveCakeDraftInputs();
+  });
   cakeOverlay.addEventListener('click', (event) => {
     const closeEl = event.target.closest('[data-cake-close]');
     if (closeEl) { closeCakeOverlay(); return; }
@@ -6031,7 +6190,7 @@ document.addEventListener('click', (event) => {
     const done = () => {
       if (!badge) return;
       const prev = badge.textContent;
-      badge.textContent = '已复制 ✓';
+      badge.textContent = getCakeCopy().copied;
       copyEl.classList.add('is-copied');
       setTimeout(() => { badge.textContent = prev; copyEl.classList.remove('is-copied'); }, 1600);
     };
@@ -6634,6 +6793,8 @@ function applyBilingualLanguage(lang) {
   bilingualSetText('#cakeEntryTitle', copy.cakeEntry.title);
   bilingualSetText('#cakeEntrySub', copy.cakeEntry.sub);
   bilingualSetText('#cakeEntryCta', copy.cakeEntry.cta);
+  refreshCakeLanguage();
+  refreshMyOrdersSection();
   bilingualSetAttr('.hero-logo', 'aria-label', copy.hero.videoAria);
   if (typeof window.updateMakkieMidAutumnEggLanguage === 'function') {
     window.updateMakkieMidAutumnEggLanguage(lang);

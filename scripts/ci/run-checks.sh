@@ -33,6 +33,7 @@ echo '::endgroup::'
 echo '::group::Holiday mascot schedule'
 node scripts/ci/check-mascot-schedule.mjs
 node scripts/ci/check-duo-navigation.mjs
+node scripts/ci/check-cake-i18n.mjs
 echo '::endgroup::'
 
 echo '::group::HTML, CSS, JavaScript, and local links'

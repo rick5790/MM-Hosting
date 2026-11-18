@@ -40,6 +40,11 @@ want index.html 'html.has-side-navigation .mobile-drawer.is-open .mobile-drawer-
 want index.html 'sideNavigationQuery.addEventListener('\''change'\'', syncSideNavigation)' \
   '展开或旋转后必须恢复原来的导航布局'
 
+want index.html 'refreshCakeLanguage();' \
+  '蛋糕询单不能只翻译入口，已打开的款式/口味/日期/确认/成功页也要随语言切换'
+want scripts/ci/run-checks.sh 'node scripts/ci/check-cake-i18n.mjs' \
+  '蛋糕双语与原口味提交值的回归必须进入 CI，不能只检查中文首页'
+
 # ---------- 下单卡片的丝绸背景 ----------
 shop_media_rule=$(sed -n '/^\.shop-card-media{/,/^}/p' assets/subpages.css)
 shop_image_rule=$(sed -n '/^\.shop-card-image{/,/^}/p' assets/subpages.css)
