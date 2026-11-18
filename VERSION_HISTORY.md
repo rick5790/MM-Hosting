@@ -4,7 +4,7 @@
 
 ## 当前核验状态
 
-核验日期：2026-11-18（America/Los_Angeles）；本次前端任务已重新 fetch，origin/main 仍为 `4af3ad9`。PR #75 的合并事实与该 main 合并提交一致，未重新调用 GitHub PR 接口。
+核验日期：2026-11-18（America/Los_Angeles）；本次前端任务已重新 fetch，origin/main 仍为 `4af3ad9`。PR #75 的合并事实与该 main 合并提交一致；PR #76 已通过 GitHub 接口核验为 open、draft、未合并。
 
 - 仓库：`MM-Hosting`；远端：`rick5790/MM-Hosting`。
 - 当前工作分支：`7.6`，基线为刚 fetch 的 origin/main `4af3ad9`。用户随后明确要求数字分支并推送；核实本地/远端未占用 `7.6` 后，将尚未推送的 `fix/cake-inquiry-english` 改名。`VERSION` 与九个页面的 `site-version` 同步为 `7.6`。
@@ -17,14 +17,14 @@
 - 2026-11-09 后台独立部署：团购保留至美西周日结束、合并账号按下单人归组、移动端详情弹窗、业务标题汉化、会员分区间距及可忽略的 Gmail/IP 重复账号提示；缓存标记 `20261109-accounts-sunday-mobile`。349 项契约及隔离 SQLite、本地 DOM 回归通过；HTTPS 静态文件逐字节匹配，API 200，原订单/余额/账号关联均未改变。备份 `/home/ubuntu/admin-nov09-backup-LadBb9cn`。
 - 同日后续后台静态部署：Pickup 按人列表只显示商品合计，个人详情改为手机/Duo/桌面弹窗；备注、原订单和交付操作移入弹窗，未分组逐单界面不变。当次缓存 `20261109-pickup-customer-popup`，352 项契约、本地 DOM、HTTPS 字节比对及 API 健康检查通过。备份 `/home/ubuntu/admin-pickup-customer-popup-backup-Xvqtdnpi`；没有重启服务或更改数据库。
 - 2026-11-18 图片热修与后台说明入口：只对新增 products 图片目录补齐 CORP 公开例外；后台图鉴/本周产品预览官网说明，产品管理独立编辑，图鉴重新上架保留既有说明。当前后台缓存 `20261118-product-description`。354 项契约、专项请求/DOM 检查、HTTPS 字节校验及图片/保护路径检查通过；原说明与库存未改，没有新前端版本或 PR。
-- 当前前端工作分支补齐蛋糕询单双语，准备提交/推送并创建草稿 PR；尚未合并或部署。用户明确要求等待 marketing strategy announcement，不能启用自动合并或擅自上线。之前的后台镜像仍为 main 上未提交备份。没有可连接的浏览器，真实手机/Duo 视觉验收待用户确认。
+- 当前前端工作分支补齐蛋糕询单双语，代码提交 `61812b9` 已推送 origin/7.6；草稿 PR [#76](https://github.com/rick5790/MM-Hosting/pull/76) 为 7.6 → main。推送与 PR 的完整 GitHub Actions 均通过；尚未合并，未执行客户网站部署。用户明确要求等待 marketing strategy announcement，未启用自动合并。之前的后台镜像仍为 main 上未提交备份。没有可连接的浏览器，真实手机/Duo 视觉验收待用户确认。
 
 ## 7.6：蛋糕询单双语，等待营销公告（2026-11-18）
 
 - 分支：`7.6`；基线 origin/main `4af3ad9`；关联 FIX-20261118-03。原工作分支 `fix/cake-inquiry-english` 尚未推送、没有 PR，按用户最新要求改为未占用的下一数字版本，不在已合并的 7.5 上追加发布。
 - 内容：两款整糕、17 个口味、组成/尺寸、日历/档期提示、询单确认、付款/汇率/复制、成功页和蛋糕订单卡补齐英文；切换保留输入、日期、步骤与提交锁，API 原始口味、价格与档期规则不变。
-- 检查：定向双语回归、承重、九页静态站点、版本/资源约定、21 个节日边界及 Duo 回归通过。既有静态检查通过本地 JS 环境适配执行；完整 shell CI/HTTP smoke 未运行，GitHub Actions 未触发。
-- 发布：准备提交/推送 `7.6` 并创建以 main 为目标的草稿 PR，实际结果另行核验；尚未合并或部署，本次不修改后台。真实 GPU、WebKit/iOS/Duo、微信、窄屏与减少动态效果未验证。
+- 检查：本地定向双语回归、承重、九页静态站点、版本/资源约定、21 个节日边界及 Duo 回归通过。既有静态检查通过本地 JS 环境适配执行，本地未运行完整 shell CI/HTTP smoke；推送后代码提交 `61812b9` 的 [push CI](https://github.com/rick5790/MM-Hosting/actions/runs/44415890990) 和 [PR CI](https://github.com/rick5790/MM-Hosting/actions/runs/44416196540) 均 success，后者 quality-gate 的 release/regression/integration 步骤通过，包含完整 shell 流水线及 HTTP smoke。
+- 发布：代码提交 `61812b9` 已推送 `origin/7.6`；草稿 PR [#76](https://github.com/rick5790/MM-Hosting/pull/76) 已创建，head 7.6、base main、open、draft、merged=false、auto_merge=null。创建后远端 main 仍为 `4af3ad9`。尚未合并，未执行客户网站部署，本次不修改后台。真实 GPU、WebKit/iOS/Duo、微信、窄屏与减少动态效果未验证。
 - 暂缓条件：用户要求等待 marketing strategy announcement。只推送，不合并、不启用自动合并、不发布；公告内容尚未提供，不自行补写。解除暂缓需用户明确确认。
 
 ## 图片热修与后台说明入口（2026-11-18，美西时间）
@@ -33,7 +33,7 @@
 - Nginx：补上 `/uploads/products/` 的 cross-origin 例外，保留 collection 和默认保护；语法通过后平滑 reload，应用无重启。备份 `/etc/nginx/order-images-products-backup-dznixpt1/default`。
 - 后台：图鉴与本周产品显示同一份产品说明，管理页独立保存；不存在说明字段的图鉴重上架操作不再清空原说明。静态缓存 `20261118-product-description`，备份 `/home/ubuntu/admin-product-description-backup-SvTYdw0V`。
 - 验证：354 项契约、专项请求夹具、本地 DOM 和 CSS 结构通过；线上 HTML/JS/CSS 与部署内容逐字节一致；3 张公开图片与 6 个受保护路径检查通过。部署前后公开商品 JSON 相同，说明仍在、售罄库存仍为 0；无生产数据修订或数据库迁移。
-- 镜像：后台 main 未提交备份已同步；根目录错题册/规则/版本记录本地更新未推送。真实 GPU、WebKit/iOS/Duo、微信、窄屏与减少动态效果仍待实机确认。
+- 镜像：后台 main 未提交备份已同步；根目录错题册/规则/版本记录随后随前端 7.6 分支归档推送，不代表再次部署后台。真实 GPU、WebKit/iOS/Duo、微信、窄屏与减少动态效果仍待实机确认。
 
 ## 后台自提卡片后续部署（2026-11-09，美西时间）
 
@@ -70,7 +70,7 @@
 
 | 前端版本 | 合并日期 | PR | main 合并提交 | 主要内容 / 状态 |
 | --- | --- | --- | --- | --- |
-| 7.6 | 未合并 | 待创建草稿 | — | 蛋糕询单双语；等待营销公告，禁止自动合并/发布 |
+| 7.6 | 未合并 | [#76](https://github.com/rick5790/MM-Hosting/pull/76)，草稿 | — | 蛋糕询单双语；已推送、代码 CI 通过；等待营销公告，禁止自动合并/发布 |
 | 7.5 | 2026-11-05 | [#75](https://github.com/rick5790/MM-Hosting/pull/75) | `4af3ad9` | Duo 外屏竖屏导览及 agent/版本/错题记录；已合并，客户站点部署及设备验收未核验 |
 | 7.4 | 2026-10-27 | [#74](https://github.com/rick5790/MM-Hosting/pull/74) | `2bf2da6` | 修复错题册、平板/展开触屏导航、Firefox 商品图布局；已合并 |
 | 7.3.1 | 2026-10-04、2026-10-09 | [#71](https://github.com/rick5790/MM-Hosting/pull/71)、[#72](https://github.com/rick5790/MM-Hosting/pull/72) | `d488d01`、`59d3199` | 手机菜单及蛋糕档期锁定；已合并 |
